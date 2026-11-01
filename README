@@ -1,7 +1,6 @@
-/*
 # Lustre
 
-Mobile detailing assistant powered by Gemini. Static PWA (`index.html`, `sw.js`, `manifest.webmanifest`) plus two EdgeOne Pages Edge Functions that keep your API key server-side: `edge-functions/api/chat.js` (streaming answers) and `edge-functions/api/tts.js` (Gemini voice).
+Mobile detailing assistant powered by Gemini. Static PWA (`index.html`, `sw.js`, `manifest.webmanifest`) plus edge functions that keep your API key server-side: `api/chat` (streaming answers) and `api/tts` (Gemini voice).
 
 ## Deploy
 1. Push this folder to GitHub.
@@ -10,15 +9,34 @@ Mobile detailing assistant powered by Gemini. Static PWA (`index.html`, `sw.js`,
 4. Redeploy. Open the site on your phone over HTTPS and use "Add to Home Screen" for the offline app.
 
 ## What's inside
-- **Job (home):** vehicle card with progress ring, service type picker (full exterior, interior detail, interior deep clean, trim restoration, headlight restoration, maintenance wash, engine bay), 4-step tracker, live checklist, site weather, shortcut tiles.
+- **New job wizard:** full-screen setup for vehicle, one or more services, condition, issues, optional photos, client and ETA. Runs on first launch and from Job > New job. Cancel leaves the current job untouched.
+- **Job (home):** vehicle card with progress ring, multi-service picker (full exterior, paint correction, interior detail, interior deep clean, trim restoration, headlight restoration, maintenance wash, engine bay), combined checklist, progress tracker, site weather, shortcut tiles.
 - **Ask:** streaming chat with typing effect and a stop button, voice input, photo/video attach, quick chips. Job context goes with every message.
-- **Tools:** Mix (dilution calculator, presets), Timers, Depth (µm log).
+- **Tools:** Mix (dilution calculator, presets), Timers (standard or large digits), Depth (multi-spot paint depth grid).
+- **Kit:** chemicals with mix ratios, tools and equipment. Chemical entries can jump to the calculator.
 - **Log:** inspection photos, notes, client text templates.
 - **Audio:** Gemini voices with an automatic fallback to the best voice on the device. Pick them in Settings.
 
+## Multiple services
+Select one or more services during setup or from the Job tab. Lustre merges shared stages (for example Wash or Correct) into one checklist and orders the remaining stages for the job. The package label, progress tracker, client texts and AI context all use the full service list.
+
+## Paint depth
+Each of the nine standard panels stores any number of readings for the current job in IndexedDB. The panel color comes from the lowest reading: safe above 110 µm, caution at 85–110 µm, danger below 85 µm. Units switch between microns and mils (1 mil = 25.4 µm).
+
+## Alerts and timers
+- Headphone alerts use native system notifications through the service worker. Enable them in Settings; the OS decides whether the sound routes to connected headphones.
+- Larger timers make the digits glanceable from the bench.
+- Timers and job alerts run while Lustre is open. Background delivery while the app is closed needs a push backend.
+- The service worker and `/api/push/subscribe` hook are in place, but `VAPID_PUBLIC_KEY` in `index.html` is empty. Add a VAPID public key and a sender endpoint to enable server push.
+
+## Hey Lustre
+The wake word uses the browser SpeechRecognition API while Lustre is open. Say “Hey Lustre” and then a command. It pauses while the mic or a chat request is active. Browser speech recognition may need a connection, and it stops when the app is closed.
+
+## iOS home screen
+`apple-touch-icon.png` (180 px), `icon-192.png`, `icon-512.png` and `icon-maskable-512.png` are generated from the Lustre mark. In Safari, tap Share > Add to Home Screen to use it as the app icon.
+
 ## Offline
-Everything except chat, Gemini voice and the live weather fetch works offline. Data lives on the device (localStorage and IndexedDB).
+Everything except chat, Gemini voice, live weather and wake-word speech recognition works offline. Data lives on the device (localStorage and IndexedDB).
 
 ## Media in chat
 Photos are resized in the browser. Videos are reduced to 8 frames to stay under edge payload limits.
-*/

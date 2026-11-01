@@ -6,8 +6,9 @@
 <meta name="theme-color" content="#080a09">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lustre">
 <title>Lustre — Detailing assistant</title>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -54,7 +55,7 @@ textarea.f{padding:12px 14px;resize:vertical;min-height:90px;line-height:1.45}se
 .hrow{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.veh{font:600 26px/1.15 var(--serif);letter-spacing:-.01em}
 .ring{position:relative;width:78px;height:78px;flex:none}.ring svg{transform:rotate(-90deg);width:100%;height:100%}.ring circle{fill:none;stroke-width:3;stroke-linecap:round}.rb{stroke:rgba(255,255,255,.08)}.rf{stroke:var(--g);transition:stroke-dasharray .8s var(--ease);filter:drop-shadow(0 0 3px rgba(61,255,133,.6))}
 .ring b{position:absolute;inset:0;display:grid;place-items:center;font:600 20px var(--serif)}
-.stp{display:flex;margin:4px 0 14px}.sn{flex:1;background:none;border:0;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;font-weight:600;font-size:13px;padding:4px 0}
+.stp{display:flex;margin:4px 0 14px}.stp.many{overflow-x:auto;gap:6px;scrollbar-width:none}.stp.many::-webkit-scrollbar{display:none}.stp.many .sn{flex:0 0 auto;min-width:88px}.sn{flex:1;background:none;border:0;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;font-weight:600;font-size:13px;padding:4px 0}
 .sn::after{content:"";position:absolute;top:21px;left:calc(50% + 24px);right:calc(-50% + 24px);height:2px;background:rgba(255,255,255,.1);border-radius:2px}.sn:last-child::after{display:none}.sn.done::after{background:var(--g)}
 .dot{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:#0e1210;font-weight:600;font-size:15px;transition:all .35s var(--ease)}.sn.done .dot{background:rgba(61,255,133,.14);border-color:var(--g2);color:var(--g)}
 .sn.now{color:var(--text)}.sn.now .dot{background:var(--g);color:#04120a;border-color:var(--g);animation:pulse 2.2s infinite}@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(61,255,133,.5)}70%,100%{box-shadow:0 0 0 12px rgba(61,255,133,0)}}
@@ -86,8 +87,8 @@ textarea.f{padding:12px 14px;resize:vertical;min-height:90px;line-height:1.45}se
 .ib{flex:none;width:48px;height:48px;border-radius:16px;border:0;display:grid;place-items:center;background:transparent;color:var(--mute);transition:all .2s}.ib.on{background:var(--bad);color:#fff;animation:pulse2 1.2s infinite}@keyframes pulse2{50%{opacity:.7}}
 .send{background:linear-gradient(180deg,#5bff9b,#27d96d);color:#04120a}.send:active{transform:scale(.92)}
 /* dock */
-.dock{position:relative;display:grid;grid-template-columns:repeat(4,1fr);margin:4px 12px calc(env(safe-area-inset-bottom) + 8px);padding:6px;border-radius:24px;background:rgba(20,25,22,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);box-shadow:0 14px 34px -12px #000}
-.ind{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/4);border-radius:18px;background:rgba(61,255,133,.12);box-shadow:inset 0 0 0 1px rgba(61,255,133,.32);transform:translateX(calc(var(--ti,0)*100%));transition:transform .45s cubic-bezier(.3,1.25,.4,1)}
+.dock{position:relative;display:grid;grid-template-columns:repeat(5,1fr);margin:4px 12px calc(env(safe-area-inset-bottom) + 8px);padding:6px;border-radius:24px;background:rgba(20,25,22,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);box-shadow:0 14px 34px -12px #000}
+.ind{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/5);border-radius:18px;background:rgba(61,255,133,.12);box-shadow:inset 0 0 0 1px rgba(61,255,133,.32);transform:translateX(calc(var(--ti,0)*100%));transition:transform .45s cubic-bezier(.3,1.25,.4,1)}
 .dock button{position:relative;min-height:56px;background:none;border:0;color:var(--mute);font-weight:600;font-size:12.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:color .25s}.dock button.on{color:var(--g)}
 /* sheet + toast */
 #sheet{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(5px)}#sheet.on{display:flex;animation:fade .25s both}@keyframes fade{from{opacity:0}}
@@ -95,6 +96,83 @@ textarea.f{padding:12px 14px;resize:vertical;min-height:90px;line-height:1.45}se
 .grab{width:42px;height:4px;border-radius:4px;background:rgba(255,255,255,.18);margin:0 auto 14px}
 .opt{width:100%;text-align:left;padding:14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03);margin-bottom:8px;display:block;transition:all .2s}.opt.on{border-color:var(--g);background:rgba(61,255,133,.08)}.opt b{display:block;font-size:16px}.opt span{color:var(--mute);font-size:14px;display:block}.opt em{font-style:normal;font-size:13px;color:var(--g)}
 #toast{position:fixed;left:50%;bottom:104px;transform:translate(-50%,10px);background:var(--g);color:#04120a;font-weight:600;padding:11px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:all .3s var(--ease);z-index:70}#toast.on{opacity:1;transform:translate(-50%,0)}
+/* hands-free / wake */
+#wake{position:fixed;top:calc(env(safe-area-inset-top) + 66px);left:50%;transform:translateX(-50%) translateY(-6px);z-index:50;display:none;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(18,24,20,.92);border:1px solid rgba(61,255,133,.35);color:var(--g);font-size:12.5px;font-weight:600;backdrop-filter:blur(12px);pointer-events:none;opacity:0;transition:all .25s var(--ease)}
+#wake.on{display:flex;opacity:1;transform:translateX(-50%)}
+#wake.hot{border-color:var(--g);box-shadow:0 0 0 4px rgba(61,255,133,.14)}
+#wake i{width:8px;height:8px;border-radius:50%;background:var(--g);animation:pulse 1.6s infinite;flex:none}
+/* switches */
+.sw{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid var(--line);min-height:54px}
+.sw:first-of-type{border-top:0}
+.sw b{display:block;font-size:15px;font-weight:600}
+.sw span{display:block;color:var(--mute);font-size:13px;line-height:1.35;margin-top:2px}
+.sw input{appearance:none;-webkit-appearance:none;width:50px;height:30px;border-radius:99px;background:#2a342e;border:1px solid var(--line);position:relative;transition:background .25s;flex:none;cursor:pointer}
+.sw input::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#c9d6cf;transition:transform .25s var(--ease),background .25s}
+.sw input:checked{background:var(--g);border-color:var(--g)}
+.sw input:checked::after{transform:translateX(20px);background:#04120a}
+/* big timers */
+#tlist.big{gap:10px}
+#tlist.big .tm{flex-direction:column;align-items:flex-start;gap:8px}
+#tlist.big .tm b{font-size:58px;line-height:.95;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+#tlist.big .tm .btn{align-self:stretch}
+/* paint wireframe */
+.wirewrap{width:100%;max-width:360px;margin:2px auto 6px}
+.wire{width:100%;height:auto;display:block;touch-action:manipulation;overflow:visible}
+.wire .body{fill:#0d110f;stroke:#39483f;stroke-width:2.4}
+.wire .glass{fill:rgba(255,255,255,.035);stroke:#334139;stroke-width:1.4;pointer-events:none}
+.pw{fill:#18201b;stroke:#3b4a41;stroke-width:1.6;cursor:pointer;transition:fill .25s,stroke .25s}
+.pw:hover{stroke:var(--g)}
+.pw:focus-visible{outline:none;stroke:#fff;stroke-width:2.4}
+.pw.safe{fill:rgba(61,255,133,.30);stroke:#3dff85}
+.pw.caution{fill:rgba(255,201,61,.30);stroke:#ffc93d}
+.pw.danger{fill:rgba(255,107,91,.38);stroke:#ff6b5b;animation:dngr .85s infinite}
+@keyframes dngr{50%{fill:rgba(255,107,91,.62);stroke:#ffd1cb}}
+.pwt{fill:#dfe9e3;font:600 10px var(--sans);text-anchor:middle;letter-spacing:.1em;pointer-events:none;user-select:none}
+.legend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:8px 0 12px;font-size:12.5px;color:var(--mute)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:11px;height:11px;border-radius:3px;display:block;flex:none}
+.legend .ls{background:rgba(61,255,133,.5);box-shadow:0 0 0 1px #3dff85}
+.legend .lc{background:rgba(255,201,61,.5);box-shadow:0 0 0 1px #ffc93d}
+.legend .ld{background:rgba(255,107,91,.6);box-shadow:0 0 0 1px #ff6b5b;animation:blink 1s infinite}
+.pdrow{width:100%;display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;margin-top:6px;text-align:left;transition:border-color .2s,background .2s}
+.pdrow:active{transform:scale(.99)}
+.pdrow span:first-child{font-weight:600}
+.pdrow.safe{border-color:rgba(61,255,133,.38)}
+.pdrow.caution{border-color:rgba(255,201,61,.45)}
+.pdrow.danger{border-color:rgba(255,107,91,.55);background:rgba(255,107,91,.07)}
+/* kit */
+.kititem{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03);margin-top:8px}
+.kititem b{display:block;font-size:15px}
+.kititem span{display:block;color:var(--mute);font-size:13px;margin-top:2px}
+.kitbtns{display:flex;gap:6px;flex:none}
+.kitbtns .btn{min-width:40px;padding:0 10px}
+.kitempty{color:var(--mute);font-size:14px;margin-top:12px}
+/* onboarding */
+#onboard{position:fixed;inset:0;z-index:95;display:none;flex-direction:column;background:var(--bg) radial-gradient(900px 600px at 50% 0%,rgba(61,255,133,.13),transparent 60%);padding-top:env(safe-area-inset-top)}
+#onboard.on{display:flex;animation:fade .3s both}
+.onbw{width:100%;max-width:760px;margin:0 auto;flex:1;min-height:0;display:flex;flex-direction:column}
+.onbtop{display:flex;align-items:center;gap:12px;padding:14px 18px 8px}
+.onbtop .lg{width:34px;height:34px;flex:none}
+.onbprog{flex:1;height:6px;border-radius:6px;background:rgba(255,255,255,.09);overflow:hidden}
+.onbprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--g2),var(--g));border-radius:6px;transition:width .45s var(--ease)}
+.onbbody{flex:1;min-height:0;overflow-y:auto;padding:10px 18px 20px;display:flex;flex-direction:column;justify-content:flex-start}
+.onbin{max-width:560px;width:100%;margin:auto;animation:pin .35s var(--ease) both}
+.onbin>.lg{width:80px;height:80px;margin-bottom:20px}
+.onbin h2{font:600 34px/1.08 var(--serif);letter-spacing:-.01em;margin-bottom:10px}
+.onbin p.lead{color:var(--mute);font-size:16px;margin-bottom:20px;max-width:480px}
+.onbfoot{display:flex;gap:8px;align-items:center;padding:10px 18px calc(14px + env(safe-area-inset-bottom));max-width:760px;width:100%;margin:0 auto}
+.onbfoot .btn{flex:1}
+.onbfoot .btn[hidden]{display:none}
+.onbskip{border:0;background:none;color:var(--mute);font-weight:600;font-size:14px;padding:10px 6px;flex:none}
+.onbskip[hidden]{display:none}
+.onbphotos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.onbphotos figure{position:relative;margin:0}
+.onbphotos img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;border:1px solid var(--line);display:block}
+.onbphotos button{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.75);color:#fff;font-size:16px}
+.swatches{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.swatch{width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,.15);padding:0;transition:transform .15s,border-color .2s}
+.swatch.on{border-color:var(--g);transform:scale(1.08)}
+.swatch:active{transform:scale(.92)}
 @media(max-width:380px){.veh{font-size:22px}.ring{width:64px;height:64px}.tile{font-size:13px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}#chat{scroll-behavior:auto}}
 </style>
@@ -137,11 +215,32 @@ textarea.f{padding:12px 14px;resize:vertical;min-height:90px;line-height:1.45}se
     <label class="lab" for="cnote">Notes for this chemical (kept offline)</label><input class="f" id="cnote" placeholder="Dwell time, surfaces, warnings…">
     <div class="row" style="margin-top:12px"><button class="btn pri" id="csay"></button><button class="btn" id="csave">Save preset</button></div>
     <div class="row" id="pre" style="margin-top:12px"></div><p class="hint">Follow the product label. Presets save on this device.</p></div></div>
-  <div class="sub" id="s-timers"><div class="card"><h3>Timers</h3><div class="row" id="tp"></div>
+  <div class="sub" id="s-timers"><div class="card"><div class="nh"><div><h3>Timers</h3></div><button class="chipb" id="tbig" aria-pressed="false">Large</button></div><div class="row" id="tp"></div>
     <div class="row" style="margin-top:12px"><input class="f" id="tl" placeholder="Label (dwell, flash…)"><input class="f" id="tmn" type="number" inputmode="decimal" placeholder="Min" style="max-width:100px"><button class="btn pri" id="tgo">Start</button></div><div id="tlist"></div></div></div>
-  <div class="sub" id="s-depth"><div class="card"><h3>Paint depth and defects</h3><p class="mut">Microns (µm). Measure the same spot before and after each cut.</p><div id="dp"></div>
+  <div class="sub" id="s-depth"><div class="card"><div class="nh"><div><h3>Paint depth grid</h3></div><span class="mut" id="pdsum"></span></div><p class="mut">Tap a panel to log multiple spots. Switch units any time — values convert automatically.</p><div id="dp"></div>
     <button class="btn pri wide" id="dai" style="margin-top:12px">Ask Lustre to review</button>
-    <p class="hint">Rule of thumb only: factory paint is often about 100–150 µm and repainted panels vary. Stop and reassess when a panel gets thin.</p></div></div>
+    <p class="hint">Status uses the lowest reading on each panel: green above 110 µm, yellow 85–110 µm, flashing red below 85 µm. Factory paint is often 100–150 µm; repainted panels vary.</p></div></div>
+  </div>
+</section>
+
+<section class="pane" id="p-kit">
+  <div class="seg"><button class="on" data-s="chem">Chemicals</button><button data-s="tools">Tools</button><button data-s="equip">Equipment</button></div>
+  <div class="scroll">
+  <div class="sub on" id="s-chem"><div class="card"><h3>Chemicals on hand</h3><p class="mut">Build your shelf. Tap Mix to load a product straight into the dilution calculator.</p>
+    <label class="lab" for="kcn" style="margin-top:0">Product</label><input class="f" id="kcn" list="cl" placeholder="APC, Dark Fury…" autocomplete="off">
+    <div class="row" style="margin-top:8px"><div class="f" style="padding:0;border:0;background:none"><label class="lab" style="margin-top:0" for="kcr">Dilution 1 :</label><input class="f" id="kcr" type="number" inputmode="decimal" placeholder="10"></div><div class="f" style="padding:0;border:0;background:none"><label class="lab" style="margin-top:0" for="kcq">Bottles</label><input class="f" id="kcq" type="number" inputmode="decimal" placeholder="1"></div></div>
+    <label class="lab" for="kck">Notes</label><input class="f" id="kck" placeholder="Dwell 2 min, wheels only…">
+    <button class="btn pri wide" id="kca" style="margin-top:12px">Add chemical</button><div id="kclist"></div></div></div>
+  <div class="sub" id="s-tools"><div class="card"><h3>Tools</h3><p class="mut">Pads, brushes, towels and machines.</p>
+    <label class="lab" for="ktn" style="margin-top:0">Tool</label><input class="f" id="ktn" list="ktl" placeholder="Rupes LHR15, microfiber…" autocomplete="off">
+    <label class="lab" for="ktc">Type</label><input class="f" id="ktc" list="ktl" placeholder="Polisher, pad, towel…"><datalist id="ktl"><option>Polisher</option><option>Pad</option><option>Brush</option><option>Towel</option><option>Applicator</option><option>Clay bar</option><option>Extractor</option></datalist>
+    <label class="lab" for="ktk">Notes</label><input class="f" id="ktk" placeholder="Condition, size, where it lives…">
+    <button class="btn pri wide" id="kta" style="margin-top:12px">Add tool</button><div id="ktlist"></div></div></div>
+  <div class="sub" id="s-equip"><div class="card"><h3>Equipment</h3><p class="mut">Machines and gear you bring to the job.</p>
+    <label class="lab" for="ken" style="margin-top:0">Equipment</label><input class="f" id="ken" list="kel" placeholder="Pressure washer, steamer…" autocomplete="off">
+    <label class="lab" for="kec">Type</label><input class="f" id="kec" list="kel" placeholder="Machine, light, tank…"><datalist id="kel"><option>Pressure washer</option><option>Steamer</option><option>Extractor</option><option>Compressor</option><option>Generator</option><option>Light stand</option><option>Water tank</option></datalist>
+    <label class="lab" for="kek">Notes</label><input class="f" id="kek" placeholder="Condition, fuel, servicing…">
+    <button class="btn pri wide" id="kea" style="margin-top:12px">Add equipment</button><div id="kelist"></div></div></div>
   </div>
 </section>
 
@@ -157,40 +256,121 @@ textarea.f{padding:12px 14px;resize:vertical;min-height:90px;line-height:1.45}se
 </section>
 
 <nav class="dock" id="dock" aria-label="Sections"><span class="ind"></span>
-  <button class="on" data-t="job"></button><button data-t="ask"></button><button data-t="tools"></button><button data-t="log"></button></nav>
+  <button class="on" data-t="job"></button><button data-t="ask"></button><button data-t="tools"></button><button data-t="kit"></button><button data-t="log"></button></nav>
 </div>
+<div id="onboard" role="dialog" aria-modal="true" aria-label="New job setup"><div class="onbw">
+  <div class="onbtop"><div class="lg" id="onblogo"></div><div class="onbprog"><i id="onbbar"></i></div><button class="pill" id="onbclose" aria-label="Close new job setup">×</button></div>
+  <div class="onbbody" id="onbbody"></div>
+  <div class="onbfoot"><button class="btn" id="onbback">Back</button><button class="onbskip" id="onbskip" hidden>Skip</button><button class="btn pri" id="onbnext">Continue</button></div>
+</div></div>
+<input type="file" id="onbfile" accept="image/*" multiple hidden><input type="file" id="onbcam" accept="image/*" capture="environment" hidden>
+<div id="wake"><i></i>Listening for “Hey Lustre”</div>
 <div id="sheet"><div class="sh" id="shc"></div></div><div id="toast" role="status"></div>
 
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 /* ---------- icons + logo ---------- */
-const ICON={list:'M5 4h14v17H5zM9 4v3h6V4M9 13l2 2 4-4',msg:'M4 5h16v11H9l-5 4z',flask:'M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3',book:'M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11',timer:'M12 8v5l3 2M9 2h6M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16',gauge:'M4 18a8 8 0 1 1 16 0M12 18l4-6',camera:'M4 8h3l2-3h6l2 3h3v11H4zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7',bulb:'M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3',sliders:'M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M6 14v6',spk:'M4 9v6h4l5 4V5L8 9zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11',mute:'M4 9v6h4l5 4V5L8 9zM17 9l4 6M21 9l-4 6',mic:'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3M5 11a7 7 0 0 0 14 0M12 18v3',clip:'M21 12.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l9-9a3.7 3.7 0 0 1 5.2 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8.3-8.3',up:'M12 19V5M5 12l7-7 7 7',stop:'M7 7h10v10H7z',check:'M5 12l4 4 10-10',edit:'M4 20h4L19 9l-4-4L4 16z',cloud:'M6 19a4 4 0 0 1 0-8 6 6 0 0 1 11.5 1.5A3.3 3.3 0 0 1 17 19z',chev:'M9 6l6 6-6 6',wrench:'M14 6a4 4 0 0 0 5 5l-9 9a2.1 2.1 0 0 1-3-3z'};
+const ICON={list:'M5 4h14v17H5zM9 4v3h6V4M9 13l2 2 4-4',msg:'M4 5h16v11H9l-5 4z',flask:'M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3',book:'M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11',timer:'M12 8v5l3 2M9 2h6M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16',gauge:'M4 18a8 8 0 1 1 16 0M12 18l4-6',camera:'M4 8h3l2-3h6l2 3h3v11H4zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7',bulb:'M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3',sliders:'M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M6 14v6',spk:'M4 9v6h4l5 4V5L8 9zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11',mute:'M4 9v6h4l5 4V5L8 9zM17 9l4 6M21 9l-4 6',mic:'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3M5 11a7 7 0 0 0 14 0M12 18v3',clip:'M21 12.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l9-9a3.7 3.7 0 0 1 5.2 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8.3-8.3',up:'M12 19V5M5 12l7-7 7 7',stop:'M7 7h10v10H7z',check:'M5 12l4 4 10-10',edit:'M4 20h4L19 9l-4-4L4 16z',cloud:'M6 19a4 4 0 0 1 0-8 6 6 0 0 1 11.5 1.5A3.3 3.3 0 0 1 17 19z',chev:'M9 6l6 6-6 6',wrench:'M14 6a4 4 0 0 0 5 5l-9 9a2.1 2.1 0 0 1-3-3z',plus:'M12 5v14M5 12h14'};
 const ic=(n,c='')=>`<svg class="i ${c}"><use href="#i-${n}"/></svg>`;
 document.body.insertAdjacentHTML('afterbegin',`<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><radialGradient id="lo" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#26302a"/><stop offset="1" stop-color="#090c0a"/></radialGradient><linearGradient id="lr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3dff85"/><stop offset="1" stop-color="#3dff85" stop-opacity=".06"/></linearGradient><linearGradient id="la" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#3dff85"/><stop offset="1" stop-color="#eafff2"/></linearGradient></defs>${Object.entries(ICON).map(([k,v])=>`<symbol id="i-${k}" viewBox="0 0 24 24"><path d="${v}"/></symbol>`).join('')}</svg>`);
 const LOGO='<svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="url(#lo)" stroke="url(#lr)" stroke-width="1.6"/><path class="a" pathLength="1" stroke-width="5" d="M12 38A21 21 0 0 1 38 12"/><path class="a a2" pathLength="1" stroke-width="2.2" stroke-opacity=".6" d="M19 40A15 15 0 0 1 40 19"/><circle class="dot" cx="45" cy="46" r="2.6" fill="#c4ffdb"/></svg>';
-['#splash .lg','#hlogo','#elogo'].forEach(s=>$(s).innerHTML=LOGO);
+['#splash .lg','#hlogo','#elogo','#onblogo'].forEach(s=>$(s).innerHTML=LOGO);
 $('#attach').innerHTML=ic('clip');$('#mic').innerHTML=ic('mic');$('#send').innerHTML=ic('up');$('#set').innerHTML=ic('sliders');$('#csay').innerHTML=ic('spk')+'Read aloud';
 $$('[data-cam]').forEach(b=>b.innerHTML=ic('camera')+(b.dataset.cam==='before'?'Before':'After'));
-$$('#dock button').forEach((b,i)=>b.innerHTML=ic(['list','msg','flask','book'][i])+['Job','Ask','Tools','Log'][i]);
+$$('#dock button').forEach((b,i)=>b.innerHTML=ic(['list','msg','flask','wrench','book'][i])+['Job','Ask','Tools','Kit','Log'][i]);
 
 /* ---------- data ---------- */
 const MODES={
 full:{n:'Full exterior detail',d:'Wash, correct and protect the paint',s:[['Wash',['Pre-rinse and foam dwell','Wheels and tires first','Two-bucket contact wash','Iron and tar decon','Clay or chemical decon','Dry with clean towels']],['Prep',['Cover trim and seals','Inspect under direct light','Take paint depth readings','Panel wipe to see true defects','Mask edges and sharp lines']],['Correct',['Test spot and judge the result','Pick pad and polish from the test','Work small sections','Wipe and inspect each section','Re-measure depth on cut panels']],['Coat',['Final panel wipe','Check temp, humidity and rain','Apply in small sections','Level or buff within the flash time','Keep dry for the label cure time']]]},
+paintCorrect:{n:'Paint correction',d:'Remove swirls, scratches and oxidation',s:[['Wash',['Foam and contact wash','Iron and tar decon','Clay if needed','Dry and inspect']],['Prep',['Take paint depth readings','Inspect under direct light','Identify defects and repaint risk','Agree on the finish level','Mask edges and trim']],['Correct',['Test spot and judge the result','Work small sections','Keep pads clean and primed','Wipe and inspect each section','Re-measure depth on cut panels']],['Polish',['Refine with a finer polish','Inspect in sunlight','Panel wipe to remove oils','Clean pads and tools']],['Coat',['Apply sealant or coating','Keep dry for the label cure time','Final inspection','Photos for the job file']]]},
 intDetail:{n:'Interior detail',d:'Vacuum, clean and protect every surface',s:[['Vacuum',['Remove mats and loose items','Brush and blow out vents and seams','Vacuum seats, carpet and trunk','Vacuum under seats']],['Clean',['Dust with a brush and cleaner','Wipe dash, doors and console','Clean seats (leather or fabric)','Spot treat stains']],['Finish',['Clean glass inside with two towels','Dress plastics with a non-greasy protectant','Condition leather','Clean mats and refit']],['Check',['Look for streaks in angled light','Check tracks and cup holders','Odor check','Photo for the job file']]]},
 intDeep:{n:'Interior deep clean',d:'Extraction, steam and stain removal',s:[['Vacuum',['Remove mats and personal items','Vacuum with the crevice tool','Agitate carpet with a brush first','Note spills and odor sources']],['Treat',['Pre-treat stains and let dwell','Test cleaner on a hidden spot','Steam seams and vents','Agitate fabric and carpet']],['Extract',['Extract in overlapping passes','Rinse with clean water','Extract again until it runs clear','Avoid soaking foam and electronics']],['Dry',['Fans or airflow on wet areas','Check for damp spots','Protect fabric or leather','Odor check before handback']]]},
 trim:{n:'Trim restoration',d:'Bring faded plastic trim back to black',s:[['Clean',['Wash and degrease trim','Scrub with a brush and cleaner','Dry completely','Note fade and white haze']],['Mask',['Tape paint and glass edges','Test the restorer on a hidden spot','Check temp and work in shade','Wear gloves']],['Restore',['Apply thin even coats','Work small sections','Wipe excess before it sets','Check for streaks']],['Cure',['Keep dry for the label cure time','Remove tape at the right time','Inspect in sunlight','Photo after']]]},
 headlight:{n:'Headlight restoration',d:'Remove haze and seal against UV',s:[['Prep',['Wash and dry the lenses','Mask surrounding paint','Check for cracks or moisture inside','Note yellowing and haze']],['Sand',['Start at the grit your kit calls for','Keep the surface wet if wet-sanding','Step through finer grits','Aim for an even uniform haze']],['Polish',['Machine or hand polish','Wipe and check clarity','Repeat if still hazy','Clean off residue']],['Seal',['Wipe with panel prep','Apply UV sealant or coating','Keep dry for the label cure time','Final photo']]]},
 wash:{n:'Maintenance wash',d:'Quick wash, decon and protect',s:[['Wash',['Rinse and foam','Wheels and tires','Contact wash','Rinse']],['Decon',['Iron spray on paint and wheels','Rinse thoroughly','Clay if needed']],['Dry',['Dry with clean towels','Blow out mirrors and seams','Glass']],['Protect',['Spray sealant or wax','Buff off','Tire dressing','Final walk-around']]]},
 engine:{n:'Engine bay clean',d:'Degrease, rinse and dress safely',s:[['Cover',['Engine cool to the touch','Cover alternator, intake and exposed electrical','Remove loose debris']],['Degrease',['Apply degreaser','Agitate with brushes','Short dwell, never let it dry']],['Rinse',['Low-pressure rinse','No direct pressure on electrical','Blow dry']],['Dress',['Apply water-based dressing to plastics','Wipe excess','Remove covers','Start the engine and check']]]}};
-const PANELS=['Hood','Roof','Trunk','L fender','R fender','L door','R door','L quarter','R quarter'],RAT=[2,4,10,16,32,64];
-let S={job:{vehicle:'2024 Porsche 911',pkg:'Full detail',client:'',mode:'full',step:0,notes:'',checks:{}},depth:{},presets:[],timers:[],audio:false,engine:'gemini',gv:'Kore',dv:'',rate:1,ratio:10,eta:'',wx:null};
-try{const o=JSON.parse(localStorage.getItem('lustre.s')||'{}');S={...S,...o,job:{...S.job,...(o.job||{})}}}catch{}
+const STAGE_ORDER=['Cover','Vacuum','Wash','Decon','Prep','Assess','Sand','Mask','Treat','Clean','Degrease','Correct','Polish','Restore','Extract','Rinse','Dry','Finish','Seal','Coat','Protect','Dress','Cure','Check'];
+const RAT=[2,4,10,16,32,64];
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const freshJob=()=>({id:uid(),vehicle:'',year:'',make:'',model:'',color:'',plate:'',vin:'',pkg:'',client:'',mode:'full',modes:['full'],step:0,notes:'',condition:'',issues:[],checks:{}});
+let S={job:{id:uid(),vehicle:'2024 Porsche 911',year:'',make:'',model:'',color:'',plate:'',vin:'',pkg:'Full detail',client:'',mode:'full',modes:['full'],step:0,notes:'',condition:'',issues:[],checks:{}},depth:{},presets:[],timers:[],audio:false,alerts:false,bigTimers:false,wake:false,engine:'gemini',gv:'Kore',dv:'',rate:1,ratio:10,eta:'',wx:null,kit:{chem:[],tools:[],equip:[]}};
+let firstRun=false;
+try{firstRun=!localStorage.getItem('lustre.s');const o=JSON.parse(localStorage.getItem('lustre.s')||'{}');S={...S,...o,job:{...S.job,...(o.job||{})},kit:{...S.kit,...(o.kit||{})}}}catch{firstRun=true}
+if(!S.job.id)S.job.id=uid();
+if(!Array.isArray(S.job.issues))S.job.issues=[];
+['chem','tools','equip'].forEach(k=>{if(!Array.isArray(S.kit[k]))S.kit[k]=[]});
 if(!MODES[S.job.mode])S.job.mode='full';
+if(!Array.isArray(S.job.modes)||!S.job.modes.length)S.job.modes=[S.job.mode];
+S.job.modes=[...new Set(S.job.modes.filter(k=>MODES[k]))];
+if(!S.job.modes.length)S.job.modes=[S.job.mode];
+S.job.mode=S.job.modes[0];
 const save=()=>{try{localStorage.setItem('lustre.s',JSON.stringify(S))}catch{}};
-const M=()=>MODES[S.job.mode],N=()=>M().s.length,key=(st,i)=>`${S.job.mode}:${st}:${i}`;
+const jobModes=()=>{const a=(S.job.modes||[]).filter(k=>MODES[k]);return a.length?a:[MODES[S.job.mode]?S.job.mode:'full']};
+let mCacheSig='',mCacheVal=null;
+const M=()=>{
+  const ks=jobModes(),sig=ks.join('+');
+  if(sig===mCacheSig&&mCacheVal)return mCacheVal;
+  let val=MODES[ks[0]];
+  if(ks.length>1){
+    const map=new Map();let seq=0;
+    ks.forEach(k=>MODES[k].s.forEach(([name,tasks])=>{
+      let e=map.get(name);if(!e){e={name,t:[],order:STAGE_ORDER.indexOf(name),seq:seq++};map.set(name,e)}
+      tasks.forEach(t=>{if(!e.t.includes(t))e.t.push(t)})
+    }));
+    const steps=[...map.values()].sort((a,b)=>{const ar=a.order<0?999:a.order,br=b.order<0?999:b.order;return ar-br||a.seq-b.seq}).map(e=>[e.name,e.t]);
+    val={n:ks.map(k=>MODES[k].n).join(' + '),d:ks.map(k=>MODES[k].d).join(' · '),s:steps};
+  }
+  mCacheSig=sig;mCacheVal=val;return val;
+};
+const N=()=>M().s.length;
+const key=(st,i)=>{const ks=jobModes();if(ks.length===1)return `${ks[0]}:${st}:${i}`;const s=M().s[st];return s?`${s[0]}|${s[1][i]??i}`:`${st}:${i}`};
 const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.i);toast.i=setTimeout(()=>t.classList.remove('on'),2200)};
 const fmt=n=>(n>=10?n.toFixed(1):n.toFixed(2)).replace(/\.?0+$/,'');
+/* ---------- system notifications ---------- */
+const VAPID_PUBLIC_KEY='';
+function urlBase64ToUint8Array(base64String){
+  const padding='='.repeat((4-(base64String.length%4))%4);
+  const base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');
+  const rawData=window.atob(base64);
+  const outputArray=new Uint8Array(rawData.length);
+  for(let i=0;i<rawData.length;++i)outputArray[i]=rawData.charCodeAt(i);
+  return outputArray;
+}
+const canNotify=()=>typeof Notification!=='undefined';
+const swReady=(ms=1500)=>Promise.race([navigator.serviceWorker.ready,new Promise(r=>setTimeout(()=>r(null),ms))]);
+async function triggerSystemAlert(title,body,tag='lustre-alert',force=false){
+  if(!force&&!S.alerts)return;
+  if(!canNotify()||Notification.permission!=='granted')return;
+  try{
+    if('serviceWorker' in navigator){
+      const reg=await swReady();
+      if(reg&&reg.showNotification){
+        await reg.showNotification(title,{body,icon:'/icon-192.png',badge:'/favicon.svg',vibrate:[200,100,200,100,200],tag,renotify:true,data:{url:'/'}});
+        return;
+      }
+    }
+    new Notification(title,{body,icon:'/icon-192.png',tag});
+  }catch{try{new Notification(title,{body,icon:'/icon-192.png'})}catch{}}
+}
+async function enablePushNotifications(){
+  if(!('serviceWorker' in navigator)||!('PushManager' in window))return null;
+  if(!canNotify())return null;
+  if(Notification.permission==='default'){try{await Notification.requestPermission()}catch{}}
+  if(Notification.permission!=='granted')return null;
+  const reg=await swReady();
+  if(!reg)return null;
+  let sub=await reg.pushManager.getSubscription();
+  if(!sub&&VAPID_PUBLIC_KEY){
+    try{sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC_KEY)})}
+    catch(e){console.warn('Push subscribe failed',e)}
+  }
+  if(sub){
+    try{localStorage.setItem('lustre.push',JSON.stringify(sub))}catch{}
+    try{await fetch('/api/push/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(sub)})}catch{}
+  }
+  return sub;
+}
 
 /* ---------- sheet ---------- */
 const openSheet=h=>{$('#shc').innerHTML='<div class="grab"></div>'+h;$('#sheet').classList.add('on')},closeSheet=()=>$('#sheet').classList.remove('on');
@@ -217,17 +397,46 @@ function audUI(){const b=$('#aud');b.setAttribute('aria-pressed',S.audio);b.clas
 $('#aud').onclick=()=>{unlock();S.audio=!S.audio;save();audUI();S.audio?speak('Audio on'):stopSpeech()};
 speechSynthesis?.addEventListener?.('voiceschanged',()=>{});
 function settings(){const vs=voices(),GV=['Kore','Charon','Puck','Aoede','Fenrir','Zephyr'];
+  const ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const standalone=matchMedia('(display-mode:standalone)').matches||navigator.standalone;
   openSheet(`<h3>Voice and audio</h3><label class="lab">Voice engine</label><select class="f" id="se">${[['gemini','Gemini voice (natural, needs signal)'],['device','This device']].map(([v,l])=>`<option value="${v}" ${S.engine===v?'selected':''}>${l}</option>`).join('')}</select>
   <label class="lab">Gemini voice</label><select class="f" id="sg">${GV.map(v=>`<option ${S.gv===v?'selected':''}>${v}</option>`).join('')}</select>
   <label class="lab">Device voice (fallback and offline)</label><select class="f" id="sd"><option value="">Best available</option>${vs.map(v=>`<option ${S.dv===v.name?'selected':''}>${esc(v.name)}</option>`).join('')}</select>
   <label class="lab">Device speed</label><input type="range" id="sr" min=".8" max="1.3" step=".05" value="${S.rate}" style="width:100%;accent-color:var(--g)">
+  <h3 style="margin-top:22px">Hands-free alerts</h3>
+  <div class="sw"><div><b>Headphone alerts</b><span>Timer, step and weather alerts as native system notifications.</span></div><input type="checkbox" id="sal" ${S.alerts?'checked':''}></div>
+  <div class="row" style="margin-top:8px"><button class="btn sm" id="stest">Send test alert</button></div>
+  <div class="sw" style="margin-top:4px"><div><b>Larger timers</b><span>Glanceable timer digits for the bench or dash.</span></div><input type="checkbox" id="sbig" ${S.bigTimers?'checked':''}></div>
+  <div class="sw"><div><b>“Hey Lustre” wake word</b><span>Listens while Lustre is open, then runs your spoken command.</span></div><input type="checkbox" id="swake" ${S.wake?'checked':''}></div>
+  ${ios&&!standalone?'<div class="card" style="margin:16px 0 0;padding:14px"><b>Add Lustre to your Home Screen</b><p class="hint" style="margin-top:4px">In Safari tap Share, then Add to Home Screen. The Lustre mark becomes the app icon.</p></div>':''}
   <div class="row" style="margin-top:16px"><button class="btn pri" id="st">Test voice</button><button class="btn" id="sx">Done</button></div>`);
   const sv=()=>{S.engine=$('#se').value;S.gv=$('#sg').value;S.dv=$('#sd').value;S.rate=+$('#sr').value;save()};
-  ['se','sg','sd','sr'].forEach(i=>$('#'+i).onchange=sv);$('#st').onclick=()=>{sv();unlock();speak('Mix one to ten. For a thirty two ounce bottle, use about three ounces of chemical.',true)};$('#sx').onclick=closeSheet}
+  ['se','sg','sd','sr'].forEach(i=>$('#'+i).onchange=sv);
+  $('#st').onclick=()=>{sv();unlock();speak('Mix one to ten. For a thirty two ounce bottle, use about three ounces of chemical.',true)};
+  $('#sal').onchange=async e=>{
+    if(e.target.checked){
+      if(!canNotify()){e.target.checked=false;return toast('This browser cannot show notifications')}
+      let p='denied';try{p=await Notification.requestPermission()}catch{}
+      if(p!=='granted'){e.target.checked=false;return toast('Notification permission denied')}
+      S.alerts=true;save();
+      await enablePushNotifications();
+      await triggerSystemAlert('Headphone alerts on','Lustre will chime through your connected headphones.','setup',true);
+      toast('Headphone alerts enabled');
+    }else{S.alerts=false;save();toast('Headphone alerts off')}
+  };
+  $('#stest').onclick=async()=>{
+    if(!canNotify())return toast('This browser cannot show notifications');
+    if(Notification.permission!=='granted')return toast('Enable Headphone alerts first');
+    await triggerSystemAlert('Lustre test alert','If you can hear this through your headphones, you are set.','test',true);
+    toast('Test alert sent');
+  };
+  $('#sbig').onchange=e=>{S.bigTimers=e.target.checked;save();renderT();toast(S.bigTimers?'Large timers on':'Large timers off')};
+  $('#swake').onchange=e=>setWake(e.target.checked);
+  $('#sx').onclick=closeSheet}
 $('#set').onclick=settings;
 
 /* ---------- navigation ---------- */
-const TABS=['job','ask','tools','log'];let cur='job';
+const TABS=['job','ask','tools','kit','log'];let cur='job';
 function go(t,sub){cur=t;$$('.pane').forEach(p=>p.classList.toggle('on',p.id==='p-'+t));$$('#dock button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));$('#dock').style.setProperty('--ti',TABS.indexOf(t));
   if(sub){const p=$('#p-'+t);p.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.s===sub));p.querySelectorAll('.sub').forEach(s=>s.classList.toggle('on',s.id==='s-'+sub))}
   if(t==='ask')setTimeout(()=>chat.scrollTop=chat.scrollHeight,60)}
@@ -236,31 +445,173 @@ $$('#dock button').forEach(b=>b.onclick=()=>go(b.dataset.t));$$('.seg button').f
 /* ---------- job tab ---------- */
 let prevPct=0;
 function renderHero(){const j=S.job,m=M(),n=N(),pct=j.step/n*100;
-  $('#hero').innerHTML=`<div class="hrow"><div><div class="veh">${esc(j.vehicle||'Add a vehicle')}</div><div class="mut">${esc(j.pkg||'Set up this job')}${j.client?' · '+esc(j.client):''}</div></div><div class="ring"><svg viewBox="0 0 36 36"><circle class="rb" cx="18" cy="18" r="15.9"/><circle class="rf" cx="18" cy="18" r="15.9" pathLength="100" stroke-dasharray="${prevPct} 100"/></svg><b>${j.step}/${n}</b></div></div>
-  <div class="row" style="margin-top:14px"><button class="chipb" id="mchip">${ic('wrench')}${esc(m.n)}${ic('chev')}</button><button class="chipb" id="jedit">${ic('edit')}Edit job</button></div>`;
+  $('#hero').innerHTML=`<div class="hrow"><div><div class="veh">${esc(j.vehicle||'Add a vehicle')}</div><div class="mut">${esc(j.pkg||'Set up this job')}${j.client?' · '+esc(j.client):''}${j.color?' · '+esc(j.color):''}${j.condition?' · '+esc(j.condition):''}</div></div><div class="ring"><svg viewBox="0 0 36 36"><circle class="rb" cx="18" cy="18" r="15.9"/><circle class="rf" cx="18" cy="18" r="15.9" pathLength="100" stroke-dasharray="${prevPct} 100"/></svg><b>${j.step}/${n}</b></div></div>
+  <div class="row" style="margin-top:14px"><button class="chipb" id="mchip">${ic('wrench')}${esc(m.n)}${ic('chev')}</button><button class="chipb" id="jedit">${ic('edit')}Edit job</button><button class="chipb" id="jnew">${ic('plus')}New job</button></div>`;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{$('.rf')?.setAttribute('stroke-dasharray',pct+' 100');prevPct=pct}));
-  $('#mchip').onclick=pickMode;$('#jedit').onclick=editJob}
-function renderStepper(){const j=S.job;$('#stepper').innerHTML=M().s.map(([nm],i)=>`<button class="sn ${i<j.step?'done':i===j.step?'now':''}" data-s="${i}"><span class="dot">${i<j.step?ic('check'):i+1}</span>${nm}</button>`).join('');
+  $('#mchip').onclick=pickMode;$('#jedit').onclick=editJob;$('#jnew').onclick=()=>openOnboarding(false)}
+function renderStepper(){const j=S.job,steps=M().s;$('#stepper').classList.toggle('many',steps.length>5);$('#stepper').innerHTML=steps.map(([nm],i)=>`<button class="sn ${i<j.step?'done':i===j.step?'now':''}" data-s="${i}"><span class="dot">${i<j.step?ic('check'):i+1}</span>${nm}</button>`).join('');
   $$('.sn').forEach(b=>b.onclick=()=>{j.step=+b.dataset.s;save();renderAll()})}
 const ck=st=>M().s[st][1].map((t,i)=>`<label class="ck"><input type="checkbox" data-k="${key(st,i)}" ${S.job.checks[key(st,i)]?'checked':''}><span>${esc(t)}</span></label>`).join('');
 document.addEventListener('change',e=>{const k=e.target.dataset?.k;if(!k)return;S.job.checks[k]=e.target.checked;save();$$(`input[data-k="${k}"]`).forEach(i=>i.checked=e.target.checked);renderNowCount()});
 function renderNow(){const j=S.job,n=N(),st=Math.min(j.step,n-1),done=j.step>=n;
   $('#now').innerHTML=`<div class="nh"><div><div class="mut">${done?'All steps complete':'Now'}</div><h3>${M().s[st][0]}</h3></div><span class="cnt" id="ncnt"></span></div>${ck(st)}<button class="btn pri wide" id="jd" style="margin-top:14px" ${done?'disabled':''}>${done?'Job complete':'Finish '+M().s[st][0]}</button>`;renderNowCount();
-  $('#jd').onclick=()=>{j.step=Math.min(n,j.step+1);save();renderAll();$('#hero').classList.remove('sweep');void $('#hero').offsetWidth;$('#hero').classList.add('sweep');if(navigator.vibrate)navigator.vibrate(30);speak(j.step<n?'Next step: '+M().s[j.step][0]:'Job complete')}}
+  $('#jd').onclick=()=>{j.step=Math.min(n,j.step+1);save();renderAll();$('#hero').classList.remove('sweep');void $('#hero').offsetWidth;$('#hero').classList.add('sweep');if(navigator.vibrate)navigator.vibrate(30);const msg=j.step<n?'Next step: '+M().s[j.step][0]:'Job complete';triggerSystemAlert(msg,j.step<n?M().s[j.step][1][0]:'All steps are done. Nice work.','step');speak(msg)}}
 function renderNowCount(){const j=S.job,st=Math.min(j.step,N()-1),it=M().s[st][1],c=it.filter((_,i)=>j.checks[key(st,i)]).length;const e=$('#ncnt');if(e)e.textContent=c+'/'+it.length}
-function pickMode(){openSheet('<h3>Service type</h3>'+Object.entries(MODES).map(([k,m])=>`<button class="opt ${S.job.mode===k?'on':''}" data-m="${k}"><b>${m.n}</b><span>${m.d}</span><em>${m.s.map(x=>x[0]).join(' ➔ ')}</em></button>`).join(''));
-  $$('.opt').forEach(b=>b.onclick=()=>{S.job.mode=b.dataset.m;S.job.step=0;prevPct=0;save();closeSheet();renderAll()})}
+function pickMode(){const cur=[...jobModes()],oldPkg=(jobModes().map(k=>MODES[k].n).join(' + ')).trim();
+  openSheet(`<h3>Services</h3><p class="mut">Select one or more. Shared stages are combined into one checklist.</p>${Object.entries(MODES).map(([k,m])=>`<button class="opt ${cur.includes(k)?'on':''}" data-m="${k}"><b>${m.n}</b><span>${m.d}</span><em>${m.s.map(x=>x[0]).join(' ➔ ')}</em></button>`).join('')}<div class="row" style="margin-top:14px"><button class="btn pri wide" id="pmapply">Use these services</button></div>`);
+  $$('.opt').forEach(b=>b.onclick=()=>{const k=b.dataset.m,i=cur.indexOf(k);i<0?cur.push(k):cur.splice(i,1);b.classList.toggle('on',cur.includes(k))});
+  $('#pmapply').onclick=()=>{if(!cur.length)return toast('Pick at least one service');S.job.modes=cur.slice();S.job.mode=cur[0];S.job.step=0;prevPct=0;if(!S.job.pkg||S.job.pkg===oldPkg)S.job.pkg=cur.map(k=>MODES[k].n).join(' + ');save();closeSheet();renderAll();toast('Services updated')}}
 function editJob(){const j=S.job;openSheet(`<h3>Job details</h3><label class="lab" style="margin-top:0">Vehicle</label><input class="f" id="jv" value="${esc(j.vehicle)}" placeholder="2024 Porsche 911"><label class="lab">Package</label><input class="f" id="jp" value="${esc(j.pkg)}" placeholder="Full detail"><label class="lab">Client first name</label><input class="f" id="jc" value="${esc(j.client)}">
   <div class="row" style="margin-top:16px"><button class="btn pri" id="js">Save</button><button class="btn" id="jn">New job</button></div>`);
   $('#js').onclick=()=>{j.vehicle=$('#jv').value.trim();j.pkg=$('#jp').value.trim();j.client=$('#jc').value.trim();save();closeSheet();renderAll()};
-  $('#jn').onclick=async()=>{if(!confirm('Start a new job? This clears photos, notes, depth readings and checklist progress.'))return;S.job={vehicle:'',pkg:'',client:'',mode:j.mode,step:0,notes:'',checks:{}};S.depth={};S.eta='';prevPct=0;await dbx('readwrite',s=>s.clear());save();closeSheet();renderAll();renderDepth();renderPhotos();editJob()}}
+  $('#jn').onclick=()=>{closeSheet();openOnboarding(false)}}
+/* ---------- new job onboarding ---------- */
+const OB_STEPS=['Start','Vehicle','Service','Condition','Photos','Client','Review'];
+const OB_COLORS=[['Black','#101110'],['White','#f1f1ee'],['Silver','#b7bcc0'],['Gray','#5d6266'],['Blue','#2f5f9e'],['Red','#b62a2a'],['Green','#2f7d4b'],['Yellow','#e2b93b'],['Orange','#d4682a'],['Brown','#6b4a32'],['Beige','#cdbb96'],['Purple','#6b4b8a']];
+const OB_CONDS=['Excellent','Good','Fair','Rough'];
+const OB_ISSUES=['Swirls','Deep scratches','RDS','Oxidation','Water spots','Etching','Stains','Odor','Pet hair','Faded trim','Curb rash','Other'];
+let OB=null;
+const obDraft=()=>({year:'',make:'',model:'',color:'',plate:'',vin:'',vehicle:'',condition:'Good',issues:[],notes:'',client:'',eta:'',modes:['full'],pkg:'',photos:[]});
+const obServiceNames=D=>(D.modes.length?D.modes:['full']).map(k=>MODES[k]?.n).filter(Boolean).join(' + ');
+const obVehicleName=D=>{const base=[D.year,D.make,D.model].filter(Boolean).join(' ');const extra=(D.vehicle||'').trim();return(base||extra||'New vehicle')+(base&&extra?' · '+extra:'')};
+async function openOnboarding(first=false){
+  if(!first&&!confirm('Start a new job? The current job file will be replaced when you finish setup.'))return;
+  OB={i:0,d:obDraft(),first:!!first};
+  $('#onboard').classList.add('on');
+  renderOB();
+}
+function closeOnboard(){OB=null;$('#onboard').classList.remove('on')}
+async function cancelOnboard(){
+  if(!OB)return;
+  if(OB.i>0&&!confirm('Cancel this setup? Photos added during onboarding will be removed.'))return;
+  for(const p of (OB.d.photos||[])){try{await dbx('readwrite',s=>s.delete(p.id))}catch{}}
+  closeOnboard();renderAll();renderPhotos();renderDepth();
+  toast('New job cancelled');
+}
+function obCollect(){
+  if(!OB)return;const D=OB.d,i=OB.i;
+  if(i===1){
+    D.year=$('#obYear')?.value.trim()||'';D.make=$('#obMake')?.value.trim()||'';D.model=$('#obModel')?.value.trim()||'';
+    D.color=$('#obColor')?.value.trim()||'';D.plate=$('#obPlate')?.value.trim()||'';D.vin=$('#obVin')?.value.trim()||'';D.vehicle=$('#obVehicle')?.value.trim()||'';
+  }
+  if(i===3)D.notes=$('#obNotes')?.value||'';
+  if(i===5){D.client=$('#obClient')?.value.trim()||'';D.pkg=$('#obPkg')?.value.trim()||'';D.eta=$('#obEta')?.value.trim()||''}
+}
+function renderObPhotos(){
+  const g=$('#obPhotos');if(!g||!OB)return;
+  g.innerHTML=(OB.d.photos||[]).map(p=>`<figure><img src="${p.data}" alt="Inspection photo"><button data-obx="${p.id}" aria-label="Remove photo">×</button></figure>`).join('');
+  $$('#obPhotos [data-obx]').forEach(b=>b.onclick=async()=>{
+    try{await dbx('readwrite',s=>s.delete(+b.dataset.obx))}catch{}
+    OB.d.photos=OB.d.photos.filter(p=>p.id!=+b.dataset.obx);renderObPhotos();
+  });
+}
+async function addObPhotos(files){
+  if(!OB)return;
+  for(const f of files){
+    if((OB.d.photos||[]).length>=9)break;
+    try{
+      const data=await loadImage(f,1280);
+      const id=Date.now()+Math.floor(Math.random()*1000);
+      await dbx('readwrite',s=>s.put({id,tag:'before',panel:'',jobId:S.job.id,data}));
+      OB.d.photos.push({id,data});
+    }catch(e){toast(e.message)}
+  }
+  renderObPhotos();toast('Photos added');
+}
+$('#onbfile').onchange=e=>{addObPhotos([...e.target.files]);e.target.value=''};
+$('#onbcam').onchange=e=>{addObPhotos([...e.target.files]);e.target.value=''};
+function renderOB(){
+  if(!OB)return;
+  const i=OB.i,D=OB.d,body=$('#onbbody');
+  const bar=$('#onbbar');bar.style.width=Math.round(((i+1)/OB_STEPS.length)*100)+'%';
+  $('#onbback').hidden=i===0;
+  $('#onbskip').hidden=![1,3,4,5].includes(i);
+  $('#onbnext').textContent=i===0?'Start':i===OB_STEPS.length-1?'Start job':'Continue';
+  let h='';
+  if(i===0){
+    h=`<div class="lg">${LOGO}</div><h2>New job, walked once</h2><p class="lead">Set up the vehicle like a customer hand-off. Add the basics, note condition and issues, then snap optional photos. Skip anything and edit later.</p>
+    <div class="row"><span class="chipb on">${ic('check')}About a minute</span><span class="chipb">${ic('camera')}Photos optional</span><span class="chipb">${ic('timer')}Timers ready</span></div>`;
+  }else if(i===1){
+    h=`<h2>Which car is it?</h2><p class="lead">Year, make and model. Color helps you spot a repainted panel later.</p>
+    <div class="row"><div class="f" style="padding:0;border:0;background:none"><label class="lab" style="margin-top:0" for="obYear">Year</label><input class="f" id="obYear" type="number" inputmode="numeric" min="1900" max="2100" value="${esc(D.year)}" placeholder="2024"></div><div class="f" style="padding:0;border:0;background:none"><label class="lab" style="margin-top:0" for="obMake">Make</label><input class="f" id="obMake" value="${esc(D.make)}" placeholder="Porsche"></div></div>
+    <label class="lab" for="obModel">Model</label><input class="f" id="obModel" value="${esc(D.model)}" placeholder="911 Carrera">
+    <label class="lab" for="obColor">Color</label><input class="f" id="obColor" value="${esc(D.color)}" placeholder="Guards Red">
+    <div class="swatches">${OB_COLORS.map(([n,c])=>`<button type="button" class="swatch ${D.color.toLowerCase()===n.toLowerCase()?'on':''}" data-col="${n}" title="${n}" aria-label="${n}" style="background:${c}"></button>`).join('')}</div>
+    <div class="row" style="margin-top:8px"><div class="f" style="padding:0;border:0;background:none"><label class="lab" for="obPlate">Plate (optional)</label><input class="f" id="obPlate" value="${esc(D.plate)}" placeholder="ABC 123"></div><div class="f" style="padding:0;border:0;background:none"><label class="lab" for="obVin">VIN (optional)</label><input class="f" id="obVin" value="${esc(D.vin)}" placeholder="Last 6 is fine"></div></div>
+    <label class="lab" for="obVehicle">Trim or nickname (optional)</label><input class="f" id="obVehicle" value="${esc(D.vehicle)}" placeholder="992 GT3, weekend car…">`;
+  }else if(i===2){
+    h=`<h2>What are we doing?</h2><p class="lead">Pick one or more services. Shared stages are combined into one checklist, and the client texts adapt to the full job.</p>
+    ${Object.entries(MODES).map(([k,m])=>`<button class="opt ${D.modes.includes(k)?'on':''}" data-mode="${k}"><b>${m.n}</b><span>${m.d}</span><em>${m.s.map(x=>x[0]).join(' → ')}</em></button>`).join('')}
+    <p class="hint" id="obsel">${D.modes.length?'Selected: '+esc(obServiceNames(D)):'Select at least one service.'}</p>`;
+  }else if(i===3){
+    h=`<h2>Condition and issues</h2><p class="lead">Note what you see now. This becomes the baseline for the job file.</p>
+    <label class="lab">Overall condition</label><div class="row">${OB_CONDS.map(c=>`<button class="chipb ${D.condition===c?'on':''}" data-cond="${c}">${c}</button>`).join('')}</div>
+    <label class="lab">Issues to flag</label><div class="row">${OB_ISSUES.map(c=>`<button class="chipb ${D.issues.includes(c)?'on':''}" data-issue="${c}">${c}</button>`).join('')}</div>
+    <label class="lab" for="obNotes">Walk-around notes</label><textarea class="f" id="obNotes" placeholder="Rock chips on bumper, prior repaint on driver door…">${esc(D.notes)}</textarea>`;
+  }else if(i===4){
+    h=`<h2>Optional photos</h2><p class="lead">Shoot the four corners and any damage. They save to the job file on this device.</p>
+    <div class="row"><button class="btn pri" id="obUpload">${ic('camera')}Add photos</button><button class="btn" id="obSnap">${ic('camera')}Camera</button></div>
+    <div class="onbphotos" id="obPhotos"></div><p class="hint">Up to 9 photos. You can add more from the Log tab.</p>`;
+  }else if(i===5){
+    h=`<h2>Client and hand-off</h2><p class="lead">Optional. These details feed the job card and client text templates.</p>
+    <label class="lab" style="margin-top:0" for="obClient">Client first name</label><input class="f" id="obClient" value="${esc(D.client)}" placeholder="Alex">
+    <label class="lab" for="obPkg">Package label</label><input class="f" id="obPkg" value="${esc(D.pkg)}" placeholder="${esc(obServiceNames(D)||'Full detail')}">
+    <label class="lab" for="obEta">Finish time / ETA</label><input class="f" id="obEta" value="${esc(D.eta)}" placeholder="3 PM">`;
+  }else{
+    h=`<h2>Ready to start</h2><p class="lead">Here is the job file. You can edit any of it later.</p>
+    <div class="card" style="margin:0;background:#0e1210"><div class="veh" style="font-size:22px">${esc(obVehicleName(D))}</div>
+    <p class="mut" style="margin-top:6px">${esc(obServiceNames(D)||'Detail')} · ${esc(D.condition||'Condition not set')}${D.client?' · '+esc(D.client):''}</p>
+    <div class="row" style="margin-top:10px">${D.color?`<span class="chipb">${esc(D.color)}</span>`:''}${D.issues.slice(0,4).map(x=>`<span class="chipb">${esc(x)}</span>`).join('')}${D.issues.length>4?`<span class="chipb">+${D.issues.length-4}</span>`:''}</div>
+    <p class="hint">${D.photos.length?D.photos.length+' photo(s) attached. ':'No photos yet — add them later. '}Paint depth and timers are ready when you are.</p></div>`;
+  }
+  body.innerHTML=`<div class="onbin">${h}</div>`;body.scrollTop=0;
+  if(i===1){
+    $$('#onbbody .swatch').forEach(b=>b.onclick=()=>{D.color=b.dataset.col;const inp=$('#obColor');if(inp)inp.value=D.color;$$('#onbbody .swatch').forEach(x=>x.classList.toggle('on',x.dataset.col===D.color))});
+  }
+  if(i===2)$$('#onbbody [data-mode]').forEach(b=>b.onclick=()=>{const k=b.dataset.mode,at=D.modes.indexOf(k);at<0?D.modes.push(k):D.modes.splice(at,1);b.classList.toggle('on',D.modes.includes(k));const sel=$('#obsel');if(sel)sel.textContent=D.modes.length?'Selected: '+obServiceNames(D):'Select at least one service.'});
+  if(i===3){
+    $$('#onbbody [data-cond]').forEach(b=>b.onclick=()=>{D.condition=b.dataset.cond;$$('#onbbody [data-cond]').forEach(x=>x.classList.toggle('on',x.dataset.cond===D.condition))});
+    $$('#onbbody [data-issue]').forEach(b=>b.onclick=()=>{const v=b.dataset.issue;D.issues=D.issues.includes(v)?D.issues.filter(x=>x!==v):[...D.issues,v];b.classList.toggle('on',D.issues.includes(v))});
+  }
+  if(i===4){
+    $('#obUpload').onclick=()=>$('#onbfile').click();
+    $('#obSnap').onclick=()=>$('#onbcam').click();
+    renderObPhotos();
+  }
+}
+async function finishOnboarding(){
+  if(!OB)return;
+  obCollect();const D=OB.d,j=freshJob(),oldId=S.job.id,staged=D.photos||[];
+  j.vehicle=obVehicleName(D);j.year=D.year;j.make=D.make;j.model=D.model;j.color=D.color;j.plate=D.plate;j.vin=D.vin;
+  const modes=D.modes.length?D.modes.filter(k=>MODES[k]):['full'];
+  j.modes=modes.length?modes.slice():['full'];j.mode=j.modes[0];j.client=D.client;j.pkg=(D.pkg||j.modes.map(k=>MODES[k].n).join(' + ')).trim();j.eta=D.eta;
+  j.condition=D.condition;j.issues=D.issues.slice();j.notes=D.notes;j.step=0;
+  S.job=j;S.eta=D.eta;S.timers=[];S.depth={};prevPct=0;
+  try{await dbx('readwrite',s=>{s.clear();staged.forEach(p=>s.put({id:p.id,tag:'before',panel:'',jobId:j.id,data:p.data}))})}catch{}
+  try{await dbx('readwrite',s=>s.delete(oldId),'paint_depth_logs')}catch{}
+  PD=pdEmpty(j.id);await savePaint();save();
+  closeOnboard();renderAll();renderT();renderDepth();await renderPhotos();
+  toast('Job ready — let’s get it');
+  if(S.alerts)triggerSystemAlert('Job ready',j.vehicle+' · '+j.pkg,'job');
+}
+function obNext(){
+  if(!OB)return;obCollect();
+  if(OB.i===2&&!OB.d.modes.length)return toast('Pick at least one service');
+  if(OB.i>=OB_STEPS.length-1){finishOnboarding();return}
+  OB.i++;renderOB();
+}
+$('#onbnext').onclick=obNext;
+$('#onbback').onclick=()=>{if(!OB)return;obCollect();OB.i=Math.max(0,OB.i-1);renderOB()};
+$('#onbskip').onclick=()=>{if(!OB)return;obCollect();OB.i=Math.min(OB_STEPS.length-1,OB.i+1);renderOB()};
+$('#onbclose').onclick=cancelOnboard;
+
 const advice=w=>{const a=[];if(w.t<50||w.t>90)a.push(`${Math.round(w.t)}°F is outside the 50–90°F range many coatings call for. Check the label.`);if(w.rh>80)a.push(`Humidity is ${w.rh}%. Expect slower drying and possible hazing.`);if(w.pop>=30)a.push(`${w.pop}% chance of rain in the next 6 hours. Protect fresh product.`);if(w.uv>=6||w.t>85)a.push('Strong sun. Work in shade; panels run hotter than the air.');if(w.wind>15)a.push(`Wind near ${Math.round(w.wind)} mph. Dust will settle on wet product.`);return a.length?a:['Conditions look workable for most products.']};
 function renderWx(){const w=S.wx;$('#wxp').innerHTML=ic('cloud')+(w?`${Math.round(w.t)}°`:'');
   $('#wxs').innerHTML=w?`<div class="nh"><div><div class="mut">Site weather · ${new Date(w.at).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}</div><h3>${Math.round(w.t)}°F · ${w.rh}% humidity</h3></div><button class="btn sm" id="wxr">Refresh</button></div><ul style="margin:0 0 0 20px">${advice(w).slice(0,3).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:`<div class="nh"><div><div class="mut">Site weather</div><h3>Check conditions</h3></div></div><p class="mut">See temperature, humidity, sun and rain warnings for this location.</p><button class="btn pri wide" id="wxr" style="margin-top:12px">Load weather</button>`;
   $('#wxr').onclick=loadWx}
 function loadWx(){return new Promise(res=>{if(!navigator.geolocation||!navigator.onLine){toast(navigator.onLine?'Location is not available':'Offline: showing saved weather');return res(S.wx)}
   navigator.geolocation.getCurrentPosition(async p=>{try{const j=await(await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${p.coords.latitude}&longitude=${p.coords.longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&hourly=precipitation_probability,uv_index&forecast_hours=6&temperature_unit=fahrenheit&wind_speed_unit=mph`)).json();
-    S.wx={t:j.current.temperature_2m,rh:j.current.relative_humidity_2m,wind:j.current.wind_speed_10m,pop:Math.max(...j.hourly.precipitation_probability),uv:Math.round(Math.max(...j.hourly.uv_index)),at:Date.now()};save();renderWx()}catch{toast('Could not load weather')}res(S.wx)},()=>{toast('Allow location to get site weather');res(S.wx)},{timeout:10000})})}
+    S.wx={t:j.current.temperature_2m,rh:j.current.relative_humidity_2m,wind:j.current.wind_speed_10m,pop:Math.max(...j.hourly.precipitation_probability),uv:Math.round(Math.max(...j.hourly.uv_index)),at:Date.now()};save();renderWx();const a=advice(S.wx);if(a.length&&a[0]!=='Conditions look workable for most products.')triggerSystemAlert('Weather warning',a[0],'weather')}catch{toast('Could not load weather')}res(S.wx)},()=>{toast('Allow location to get site weather');res(S.wx)},{timeout:10000})})}
 $('#wxp').onclick=()=>{go('job');$('#wxs').scrollIntoView({behavior:'smooth'});if(!S.wx)loadWx()};
 const TILES=[['flask','Mix ratios',()=>go('tools','mix')],['timer','Timers',()=>go('tools','timers')],['gauge','Depth log',()=>go('tools','depth')],['camera','Snap photo',()=>go('log','photos')],['bulb','Upsell ideas',()=>upsell()],['msg','Text client',()=>go('log','texts')]];
 $('#tiles').innerHTML=TILES.map(([i,l],k)=>`<button class="tile" data-k="${k}">${ic(i)}${l}</button>`).join('');$$('.tile').forEach(b=>b.onclick=TILES[b.dataset.k][2]);
@@ -282,27 +633,104 @@ function renderCalc(){$('#rat').innerHTML=RAT.map(n=>`<button class="chipb ${S.r
 $('#csay').onclick=()=>{unlock();renderCalc.say?speak(renderCalc.say,true):toast('Enter a container size first')};
 $('#csave').onclick=()=>{const name=$('#cn').value.trim();if(!name)return toast('Enter a chemical name');const r=+$('#cr').value||S.ratio,i=S.presets.findIndex(p=>p.name.toLowerCase()===name.toLowerCase()),p={name,ratio:r,note:$('#cnote').value.trim()};i<0?S.presets.push(p):S.presets[i]=p;save();renderCalc();toast('Preset saved')};
 
+/* ---------- kit inventory ---------- */
+function renderKit(){
+  const empty='<p class="kitempty">Nothing here yet. Add your first item above.</p>';
+  const chem=S.kit.chem.map((x,i)=>`<div class="kititem"><div><b>${esc(x.name)}</b><span>${[x.ratio?'1:'+x.ratio:null,x.qty?x.qty+' bottle'+(+x.qty===1?'':'s'):null,x.note].filter(Boolean).map(esc).join(' · ')}</span></div><div class="kitbtns">${x.ratio?`<button class="btn sm" data-mix="${i}">Mix</button>`:''}<button class="btn sm" data-kdel="chem:${i}" aria-label="Delete ${esc(x.name)}">×</button></div></div>`).join('')||empty;
+  const tools=S.kit.tools.map((x,i)=>`<div class="kititem"><div><b>${esc(x.name)}</b><span>${[x.cat,x.note].filter(Boolean).map(esc).join(' · ')||'No notes'}</span></div><div class="kitbtns"><button class="btn sm" data-kdel="tools:${i}" aria-label="Delete ${esc(x.name)}">×</button></div></div>`).join('')||empty;
+  const equip=S.kit.equip.map((x,i)=>`<div class="kititem"><div><b>${esc(x.name)}</b><span>${[x.cat,x.note].filter(Boolean).map(esc).join(' · ')||'No notes'}</span></div><div class="kitbtns"><button class="btn sm" data-kdel="equip:${i}" aria-label="Delete ${esc(x.name)}">×</button></div></div>`).join('')||empty;
+  $('#kclist').innerHTML=chem;$('#ktlist').innerHTML=tools;$('#kelist').innerHTML=equip;
+  $$('[data-mix]').forEach(b=>b.onclick=()=>{const c=S.kit.chem[+b.dataset.mix];if(!c)return;$('#cn').value=c.name;$('#cnote').value=c.note||'';S.ratio=c.ratio||S.ratio;$('#cr').value='';save();renderCalc();go('tools','mix');toast('Loaded '+c.name)});
+  $$('[data-kdel]').forEach(b=>b.onclick=()=>{const[k,idx]=b.dataset.kdel.split(':');S.kit[k].splice(+idx,1);save();renderKit()});
+}
+$('#kca').onclick=()=>{const name=$('#kcn').value.trim();if(!name)return toast('Enter a chemical name');S.kit.chem.push({id:uid(),name,ratio:+$('#kcr').value||null,qty:+$('#kcq').value||null,note:$('#kck').value.trim()});save();$('#kcn').value='';$('#kcr').value='';$('#kcq').value='';$('#kck').value='';renderKit();toast('Chemical added')};
+$('#kta').onclick=()=>{const name=$('#ktn').value.trim();if(!name)return toast('Enter a tool name');S.kit.tools.push({id:uid(),name,cat:$('#ktc').value.trim(),note:$('#ktk').value.trim()});save();$('#ktn').value='';$('#ktc').value='';$('#ktk').value='';renderKit();toast('Tool added')};
+$('#kea').onclick=()=>{const name=$('#ken').value.trim();if(!name)return toast('Enter an equipment name');S.kit.equip.push({id:uid(),name,cat:$('#kec').value.trim(),note:$('#kek').value.trim()});save();$('#ken').value='';$('#kec').value='';$('#kek').value='';renderKit();toast('Equipment added')};
+
 /* ---------- timers ---------- */
 $('#tp').innerHTML=[['Dwell',3],['Dwell',5],['Flash',3],['Cure',10],['Cure',30]].map(([l,m])=>`<button class="chipb" data-m="${m}" data-l="${l}">${l} ${m}m</button>`).join('');
 const addT=(l,m)=>{S.timers.push({id:Date.now(),label:l||'Timer',end:Date.now()+m*60000,fired:false});save();renderT()};
 $$('#tp button').forEach(b=>b.onclick=()=>addT(b.dataset.l,+b.dataset.m));
 $('#tgo').onclick=()=>{const m=+$('#tmn').value;if(!m)return toast('Enter minutes');addT($('#tl').value.trim(),m);$('#tl').value=$('#tmn').value=''};
-function renderT(){const now=Date.now();$('#tlist').innerHTML=S.timers.map(t=>{const left=Math.max(0,Math.ceil((t.end-now)/1000)),d=!left;return`<div class="tm ${d?'done':''}"><div><div class="mut">${esc(t.label)}</div><b>${d?'Time is up':Math.floor(left/60)+':'+String(left%60).padStart(2,'0')}</b></div><button class="btn sm" data-x="${t.id}">${d?'Dismiss':'Cancel'}</button></div>`}).join('')||'<p class="hint">No timers running.</p>';
+function renderT(){const now=Date.now(),l=$('#tlist');if(!l)return;
+  l.classList.toggle('big',!!S.bigTimers);
+  const tb=$('#tbig');if(tb){tb.classList.toggle('on',!!S.bigTimers);tb.setAttribute('aria-pressed',!!S.bigTimers);tb.textContent=S.bigTimers?'Large on':'Large'}
+  l.innerHTML=S.timers.map(t=>{const left=Math.max(0,Math.ceil((t.end-now)/1000)),d=!left;return`<div class="tm ${d?'done':''}"><div><div class="mut">${esc(t.label)}</div><b>${d?'Time is up':Math.floor(left/60)+':'+String(left%60).padStart(2,'0')}</b></div><button class="btn sm" data-x="${t.id}">${d?'Dismiss':'Cancel'}</button></div>`}).join('')||'<p class="hint">No timers running.</p>';
   $$('#tlist [data-x]').forEach(b=>b.onclick=()=>{S.timers=S.timers.filter(t=>t.id!=b.dataset.x);save();renderT()});
-  S.timers.forEach(t=>{if(!t.fired&&t.end<=now){t.fired=true;save();beep();speak(t.label+' timer is up',true)}})}
+  S.timers.forEach(t=>{if(!t.fired&&t.end<=now){t.fired=true;save();beep();speak(t.label+' timer is up',true);triggerSystemAlert(t.label+' timer is up','Tap to return to Lustre.','timer-'+t.id)}})}
+$('#tbig').onclick=()=>{S.bigTimers=!S.bigTimers;save();renderT();toast(S.bigTimers?'Large timers on':'Large timers off')};
 setInterval(()=>{if(S.timers.length)renderT()},1000);
 
-/* ---------- depth ---------- */
-function renderDepth(){$('#dp').innerHTML=PANELS.map(p=>{const d=S.depth[p]||{},rem=d.b&&d.a?d.b-d.a:null;let st='',c='';
-  if(d.a&&d.a<100){st='Thin: stop and reassess';c='bd'}else if(rem>15){st='High removal';c='wn'}else if(rem!==null){st='OK';c='ok'}
-  return`<div class="pn"><div class="hd"><span>${p}</span><span class="${c}">${st}</span></div><div class="g3"><div><label class="lab" style="margin:0 0 4px">Before</label><input class="f" type="number" inputmode="decimal" data-p="${p}" data-f="b" value="${d.b??''}"></div><div><label class="lab" style="margin:0 0 4px">After</label><input class="f" type="number" inputmode="decimal" data-p="${p}" data-f="a" value="${d.a??''}"></div><div><label class="lab" style="margin:0 0 4px">Removed</label><div class="f" style="display:flex;align-items:center">${rem!==null?fmt(rem)+' µm':'—'}</div></div></div><input class="f" style="margin-top:8px" placeholder="Defects: swirls, RDS, etching…" data-p="${p}" data-f="n" value="${esc(d.n||'')}"></div>`}).join('');
-  $$('#dp input').forEach(i=>i.onchange=()=>{const d=S.depth[i.dataset.p]=S.depth[i.dataset.p]||{},f=i.dataset.f;d[f]=f==='n'?i.value:(i.value===''?undefined:+i.value);save();renderDepth()})}
-const depthSum=()=>Object.entries(S.depth).filter(([,d])=>d.b||d.a||d.n).map(([p,d])=>`${p}: ${d.b??'?'} to ${d.a??'?'} um${d.n?' ('+d.n+')':''}`).join('; ');
-$('#dai').onclick=()=>send('Review my paint depth readings and defects. Which panels are safe to keep correcting, and which need caution?');
+/* ---------- paint depth (IndexedDB) ---------- */
+const PD_PANELS=[['hood','Hood'],['roof','Roof'],['trunk','Trunk'],['door_driver','Driver door'],['door_passenger','Passenger door'],['fender_fl','L front fender'],['fender_fr','R front fender'],['quarter_rl','L rear quarter'],['quarter_rr','R rear quarter']];
+const PD_OLD={'Hood':'hood','Roof':'roof','Trunk':'trunk','L fender':'fender_fl','R fender':'fender_fr','L door':'door_driver','R door':'door_passenger','L quarter':'quarter_rl','R quarter':'quarter_rr'};
+let PD={jobId:'',unit:'um',panels:{}};
+const pdName=k=>PD_PANELS.find(x=>x[0]===k)?.[1]||k;
+const pdEmpty=id=>({jobId:id,unit:'um',panels:{},updated:Date.now()});
+const pdToUm=v=>PD.unit==='mils'?v*25.4:v;
+function pdCalc(readings){const vals=(readings||[]).map(pdToUm);if(!vals.length)return{min:null,max:null,avg:null,status:''};const min=Math.min(...vals),max=Math.max(...vals),avg=vals.reduce((a,b)=>a+b,0)/vals.length;return{min,max,avg,status:min<85?'danger':min<=110?'caution':'safe'}}
+function pdSet(k,readings){const c=pdCalc(readings);PD.panels[k]={readings,min:c.min,max:c.max,avg:c.avg,status:c.status,updated:Date.now()};return PD.panels[k]}
+async function savePaint(){PD.updated=Date.now();try{await dbx('readwrite',s=>s.put(PD),'paint_depth_logs')}catch(e){console.warn('Paint log save failed',e)}}
+async function loadPaint(){
+  try{const r=await dbx('readonly',s=>s.get(S.job.id),'paint_depth_logs');PD=r&&r.jobId===S.job.id?r:pdEmpty(S.job.id)}catch{PD=pdEmpty(S.job.id)}
+  PD.panels=PD.panels||{};PD.unit=PD.unit||'um';
+  if(S.depth&&Object.keys(S.depth).length){
+    Object.entries(S.depth).forEach(([name,d])=>{const k=PD_OLD[name];if(!k)return;const p=PD.panels[k]=PD.panels[k]||{readings:[]};p.readings=p.readings||[];const add=v=>{if(v==null||v===''||!isFinite(+v))return;p.readings.push(+(PD.unit==='mils'?+v/25.4:+v).toFixed(2))};add(d.b);add(d.a);pdSet(k,p.readings)});
+    S.depth={};save();await savePaint();
+  }
+  renderDepth();
+}
+async function pdAdd(k,v){v=parseFloat(v);if(!isFinite(v)||v<=0)return toast('Enter a valid reading');const p=PD.panels[k]=PD.panels[k]||{readings:[]};p.readings=p.readings||[];p.readings.push(+v.toFixed(2));pdSet(k,p.readings);await savePaint();renderDepth();return PD.panels[k]}
+async function pdSetUnit(u){if(u===PD.unit)return;const f=u==='mils'?1/25.4:25.4;Object.entries(PD.panels).forEach(([k,p])=>{p.readings=(p.readings||[]).map(v=>+(v*f).toFixed(2));pdSet(k,p.readings)});PD.unit=u;await savePaint();renderDepth();toast('Showing '+(u==='mils'?'mils':'microns'))}
+function pdSheet(k){
+  const p=PD.panels[k]||{readings:[]},c=pdCalc(p.readings||[]),u=PD.unit==='mils'?'mils':'µm',st=c.status;
+  openSheet(`<h3>${esc(pdName(k))}</h3><p class="mut">${(p.readings||[]).length} spot${(p.readings||[]).length===1?'':'s'} logged. Tap a reading to remove it.</p>
+  <div class="row" style="margin-top:12px"><input class="f" id="pdin" type="number" inputmode="decimal" step="any" min="0" placeholder="Reading in ${u}" style="flex:1"><button class="btn pri" id="pdaddb">Add</button></div>
+  <div class="row" style="margin-top:12px">${(p.readings||[]).map((v,i)=>`<button class="chipb" data-rm="${i}">${fmt(v)} ${u} ×</button>`).join('')||'<p class="hint">No spots yet. Add the first reading above.</p>'}</div>
+  <div class="res"><div><b>${c.min!=null?fmt(c.min):'—'}</b><span>Min µm</span></div><div><b>${c.avg!=null?fmt(c.avg):'—'}</b><span>Avg µm</span></div></div>
+  <p class="hint" style="margin-top:10px">Status: <b class="${st==='safe'?'ok':st==='caution'?'wn':st==='danger'?'bd':''}">${st?st.toUpperCase():'NO READINGS'}</b> · thresholds use the lowest spot (${PD.unit==='mils'?'1 mil = 25.4 µm':'µm'}).</p>
+  <div class="row" style="margin-top:14px"><button class="btn" id="pdunitb">Switch to ${PD.unit==='mils'?'µm':'mils'}</button><button class="btn" id="pdclear">Clear panel</button></div>`);
+  const add=async()=>{const el=$('#pdin');if(!el||el.value==='')return;await pdAdd(k,el.value);pdSheet(k);toast('Reading saved')};
+  $('#pdaddb').onclick=add;$('#pdin').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();add()}};
+  $$('#shc [data-rm]').forEach(b=>b.onclick=async()=>{const p=PD.panels[k];if(!p)return;p.readings.splice(+b.dataset.rm,1);pdSet(k,p.readings);await savePaint();pdSheet(k);renderDepth()});
+  $('#pdunitb').onclick=async()=>{await pdSetUnit(PD.unit==='mils'?'um':'mils');pdSheet(k)};
+  $('#pdclear').onclick=async()=>{delete PD.panels[k];await savePaint();closeSheet();renderDepth()};
+}
+function renderDepth(){
+  const el=$('#dp');if(!el)return;
+  const cls=k=>PD.panels[k]?.status||'';
+  const stat=k=>{const p=PD.panels[k];return p&&p.readings&&p.readings.length?`${fmt(p.avg)} µm · ${p.readings.length} spot${p.readings.length===1?'':'s'}`:'Tap to log'};
+  const tone=k=>cls(k)==='safe'?'ok':cls(k)==='caution'?'wn':cls(k)==='danger'?'bd':'mut';
+  const pw=(k,x,y,w,h,rx)=>`<rect class="pw ${cls(k)}" data-pd="${k}" x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" tabindex="0" role="button" aria-label="${esc(pdName(k))}"><title>${esc(pdName(k))}</title></rect>`;
+  const total=PD_PANELS.filter(([k])=>PD.panels[k]?.readings?.length).length;
+  const sum=$('#pdsum');if(sum)sum.textContent=total?total+'/9 panels':'';
+  el.innerHTML=`<div class="wirewrap"><svg class="wire" viewBox="0 0 400 220" role="img" aria-label="Top-down paint depth panel grid">
+    <rect class="body" x="10" y="26" width="380" height="168" rx="54"/>
+    ${pw('fender_fl',36,34,84,14,7)}${pw('fender_fr',36,172,84,14,7)}
+    ${pw('quarter_rl',280,34,84,14,7)}${pw('quarter_rr',280,172,84,14,7)}
+    ${pw('door_driver',132,34,136,14,7)}${pw('door_passenger',132,172,136,14,7)}
+    ${pw('hood',36,54,84,112,14)}${pw('roof',132,52,136,116,22)}${pw('trunk',280,54,84,112,14)}
+    <text class="pwt" x="78" y="113">HOOD</text><text class="pwt" x="200" y="113">ROOF</text><text class="pwt" x="322" y="113">TRUNK</text>
+  </svg></div>
+  <div class="legend"><span><i class="ls"></i>Safe &gt;110 µm</span><span><i class="lc"></i>Caution 85–110</span><span><i class="ld"></i>Danger &lt;85</span></div>
+  <div>${PD_PANELS.map(([k])=>`<button class="pdrow ${cls(k)}" data-pdc="${k}"><span>${esc(pdName(k))}</span><span class="${tone(k)}">${stat(k)}</span></button>`).join('')}</div>
+  <div class="row" style="margin-top:12px"><button class="btn sm" id="pdunitchip">Units: ${PD.unit==='mils'?'mils':'µm'}</button><button class="btn sm" id="pdhelp">How it works</button></div>`;
+  $$('#dp .pw').forEach(p=>{p.onclick=()=>pdSheet(p.dataset.pd);p.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pdSheet(p.dataset.pd)}}});
+  $$('#dp [data-pdc]').forEach(b=>b.onclick=()=>pdSheet(b.dataset.pdc));
+  $('#pdunitchip').onclick=()=>pdSetUnit(PD.unit==='mils'?'um':'mils');
+  $('#pdhelp').onclick=()=>{openSheet(`<h3>Paint depth grid</h3><p class="mut">Tap any panel to log multiple readings per section. Lustre keeps the min, max and average, then colors the panel from the lowest spot.</p><div class="legend" style="justify-content:flex-start"><span><i class="ls"></i>Safe &gt;110 µm</span><span><i class="lc"></i>Caution 85–110</span><span><i class="ld"></i>Danger &lt;85</span></div><p class="hint">1 mil = 25.4 µm. Readings are stored per job in IndexedDB. When a panel is red, stay with a fine polish or gloss enhancer — do not heavy compound.</p><button class="btn pri wide" id="pdhx" style="margin-top:12px">Got it</button>`);$('#pdhx').onclick=closeSheet};
+}
+const depthSum=()=>PD_PANELS.filter(([k])=>PD.panels[k]?.readings?.length).map(([k])=>{const p=PD.panels[k];return`${pdName(k)}: ${p.readings.map(v=>fmt(v)).join('/')} ${PD.unit==='mils'?'mils':'um'} (min ${fmt(p.min)}, avg ${fmt(p.avg)}, ${p.status})`}).join('; ');
+$('#dai').onclick=()=>send('Review my paint depth readings and defects. Which panels are safe to keep correcting, which need caution, and which need fine polish only?');
 
 /* ---------- photos ---------- */
-const dbp=new Promise((res,rej)=>{const r=indexedDB.open('lustre',1);r.onupgradeneeded=()=>r.result.createObjectStore('p',{keyPath:'id'});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
-const dbx=async(m,f)=>{const d=await dbp;return new Promise((res,rej)=>{const t=d.transaction('p',m),q=f(t.objectStore('p'));t.oncomplete=()=>res(q?.result);t.onerror=()=>rej(t.error)})};
+const dbp=new Promise((res,rej)=>{const r=indexedDB.open('lustre',2);
+  r.onupgradeneeded=()=>{const db=r.result;
+    if(!db.objectStoreNames.contains('p'))db.createObjectStore('p',{keyPath:'id'});
+    if(!db.objectStoreNames.contains('paint_depth_logs'))db.createObjectStore('paint_depth_logs',{keyPath:'jobId'});
+  };
+  r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+const dbx=async(m,f,store='p')=>{const d=await dbp;return new Promise((res,rej)=>{const t=d.transaction(store,m),q=f(t.objectStore(store));t.oncomplete=()=>res(q?.result);t.onerror=()=>rej(t.error)})};
 let camTag='before';$$('[data-cam]').forEach(b=>b.onclick=()=>{camTag=b.dataset.cam;$('#cam').click()});
 $('#cam').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const data=await loadImage(f,1280);await dbx('readwrite',s=>s.put({id:Date.now(),tag:camTag,panel:$('#ppanel').value.trim(),data}));toast('Saved to job file');renderPhotos()}catch(x){toast(x.message)}};
 async function renderPhotos(){const all=((await dbx('readonly',s=>s.getAll()))||[]).sort((a,b)=>a.id-b.id);
@@ -331,7 +759,7 @@ $('#attach').onclick=()=>fileEl.click();
 function md(t){const il=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`(.+?)`/g,'<code>$1</code>');
   return t.split(/\n{2,}/).map(b=>{const l=b.split('\n');if(l.every(x=>/^\s*[-*•]\s+/.test(x)))return'<ul>'+l.map(x=>'<li>'+il(x.replace(/^\s*[-*•]\s+/,''))+'</li>').join('')+'</ul>';if(l.every(x=>/^\s*\d+[.)]\s+/.test(x)))return'<ol>'+l.map(x=>'<li>'+il(x.replace(/^\s*\d+[.)]\s+/,''))+'</li>').join('')+'</ol>';return'<p>'+l.map(il).join('<br>')+'</p>'}).join('')}
 function addMsg(c,content,html){$('#empty')?.remove();const d=document.createElement('div');d.className='msg '+c;html?d.innerHTML=content:d.textContent=content;chat.appendChild(d);chat.scrollTop=chat.scrollHeight;return d}
-const ctx=()=>{const j=S.job,w=S.wx;return`Vehicle: ${j.vehicle||'unknown'}. Package: ${j.pkg||'unknown'}. Service type: ${M().n}. Current step: ${j.step<N()?M().s[j.step][0]:'all steps done'}. Notes: ${j.notes||'none'}.${w?` Weather: ${Math.round(w.t)}F, ${w.rh}% humidity, wind ${Math.round(w.wind)} mph, UV ${w.uv}, rain chance ${w.pop}%.`:''}${depthSum()?` Paint depth: ${depthSum()}.`:''}`};
+const ctx=()=>{const j=S.job,w=S.wx;return`Vehicle: ${j.vehicle||'unknown'}${j.color?' ('+j.color+')':''}. Package: ${j.pkg||'unknown'}. Service type: ${M().n}. Current step: ${j.step<N()?M().s[j.step][0]:'all steps done'}. Condition: ${j.condition||'unknown'}. Issues: ${(j.issues||[]).join(', ')||'none'}. Notes: ${j.notes||'none'}.${w?` Weather: ${Math.round(w.t)}F, ${w.rh}% humidity, wind ${Math.round(w.wind)} mph, UV ${w.uv}, rain chance ${w.pop}%.`:''}${depthSum()?` Paint depth: ${depthSum()}.`:''}`};
 async function streamTo(el,body,signal,st){
   const r=await fetch('/api/chat',{method:'POST',signal,headers:{'Content-Type':'application/json'},body});
   if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.error||`Request failed (${r.status}). Try fewer files.`)}
@@ -345,6 +773,7 @@ async function send(text,extra=[]){
   if(busy){ctl?.abort();return}
   text=(text??input.value).trim();const media=[...pending,...extra];if(!text&&!media.length)return;
   go('ask');if(!navigator.onLine){addMsg('bot err','You are offline. Chat needs a connection, but the calculator, checklists, depth log, photos, timers and texts still work.');return}
+  if(S.wake)stopWake();
   unlock();busy=true;sendUI();pending=[];rp();input.value='';size();stopSpeech();
   addMsg('user',(media.length?`<div class="thumbs">${media.map(m=>`<img src="${m.thumb}" alt="">`).join('')}</div>`:'')+(text?`<div>${esc(text)}</div>`:''),true);
   const el=addMsg('bot','<div class="typing"><i></i><i></i><i></i></div>',true),st={text:'',shown:0,done:false,stop:false};ctl=new AbortController();
@@ -353,13 +782,53 @@ async function send(text,extra=[]){
   catch(e){st.stop=true;if(e.name!=='AbortError'){el.className='msg bot err';el.textContent=e.message;st.text=''}else st.text=st.text.slice(0,st.shown)}
   if(st.text){el.innerHTML=md(st.text);history.push({role:'user',parts:[{text:(media.length?`[${media.length} attachment(s) shown] `:'')+(text||'')}]},{role:'model',parts:[{text:st.text}]});speak(st.text)}
   else if(el.className.indexOf('err')<0){el.className='msg bot err';el.textContent='No answer came back. Try rephrasing or adding a clearer photo.'}
-  busy=false;sendUI();chat.scrollTop=chat.scrollHeight}
+  busy=false;sendUI();chat.scrollTop=chat.scrollHeight;if(S.wake)setTimeout(()=>startWake(),1400)}
 const size=()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,130)+'px'};
 input.oninput=size;input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!/Mobi|Android/i.test(navigator.userAgent)){e.preventDefault();send()}};sendBtn.onclick=()=>send();
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec;
 $('#mic').onclick=()=>{unlock();if(rec){rec.stop();return}if(!SR)return toast('Voice input is not supported in this browser');
+  if(S.wake)stopWake();
   rec=new SR();rec.lang='en-US';rec.interimResults=true;$('#mic').classList.add('on');
-  rec.onresult=e=>{input.value=[...e.results].map(r=>r[0].transcript).join('');size()};rec.onend=()=>{rec=null;$('#mic').classList.remove('on');if(input.value.trim())send()};rec.onerror=()=>{};rec.start()};
+  rec.onresult=e=>{input.value=[...e.results].map(r=>r[0].transcript).join('');size()};
+  rec.onend=()=>{rec=null;$('#mic').classList.remove('on');if(input.value.trim())send();else if(S.wake)setTimeout(()=>startWake(),600)};
+  rec.onerror=()=>{};rec.start()};
+
+/* ---------- Hey Lustre wake word ---------- */
+let wakeRec=null,wakeArmed=false,wakeTimer=null;
+const wakeSupported=()=>!!(window.SpeechRecognition||window.webkitSpeechRecognition);
+const wakeBadge=(on,hot)=>{const b=$('#wake');if(!b)return;b.classList.toggle('on',!!on);b.classList.toggle('hot',!!hot)};
+function stopWake(){try{wakeRec?.stop()}catch{}wakeRec=null;wakeArmed=false;clearTimeout(wakeTimer);wakeBadge(false,false)}
+function startWake(){
+  if(!S.wake||wakeRec||rec||busy)return;
+  if(!wakeSupported()){S.wake=false;save();toast('Wake word needs speech recognition support');return}
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  wakeRec=new R();wakeRec.lang='en-US';wakeRec.continuous=true;wakeRec.interimResults=true;
+  wakeRec.onresult=e=>{
+    if(busy||rec)return;
+    let txt='';for(let i=e.resultIndex;i<e.results.length;i++)txt+=e.results[i][0].transcript;
+    const last=e.results[e.results.length-1],final=!!(last&&last.isFinal);
+    const m=txt.toLowerCase().match(/hey\s+(lustre|luster|lustra)/);
+    if(m){
+      const cmd=txt.slice(m.index+m[0].length).replace(/^[\s,.:;!?-]+/,'').trim();
+      if(!wakeArmed){wakeArmed=true;beep();wakeBadge(true,true);toast('Yes?');clearTimeout(wakeTimer);wakeTimer=setTimeout(()=>{wakeArmed=false;wakeBadge(true,false)},6500)}
+      if(cmd.length>2&&final){wakeArmed=false;clearTimeout(wakeTimer);stopWake();input.value=cmd;size();send()}
+    }else if(wakeArmed&&final){
+      const cmd=txt.trim();
+      if(cmd.length>2){wakeArmed=false;clearTimeout(wakeTimer);stopWake();input.value=cmd;size();send()}
+    }
+  };
+  wakeRec.onerror=e=>{
+    if(e.error==='not-allowed'||e.error==='service-not-allowed'){S.wake=false;save();stopWake();const sw=$('#swake');if(sw)sw.checked=false;toast('Microphone permission is needed for Hey Lustre')}
+  };
+  wakeRec.onend=()=>{wakeRec=null;wakeBadge(false,false);if(S.wake&&!busy&&!rec)setTimeout(()=>startWake(),500)};
+  try{wakeRec.start();wakeBadge(true)}catch{wakeRec=null}
+}
+function syncWake(quiet){
+  if(!S.wake){stopWake();return}
+  if(!wakeSupported()){S.wake=false;save();if(!quiet)toast('Wake word needs speech recognition support');return}
+  startWake();if(!quiet)toast('Listening for “Hey Lustre”');
+}
+function setWake(on,quiet){S.wake=!!on;save();syncWake(quiet);const sw=$('#swake');if(sw)sw.checked=S.wake}
 const Q=[['flask','Mix ratios'],['check','Checklist'],['timer','Timers'],['cloud','Weather'],['camera','Snap photo'],['bulb','Upsells'],['msg','Text client']];
 $('#quick').innerHTML=Q.map(([i,l],k)=>`<button class="chipb" data-q="${k}">${ic(i)}${l}</button>`).join('');
 $$('#quick button').forEach(b=>b.onclick=async()=>{const q=+b.dataset.q;
@@ -370,7 +839,10 @@ $$('#quick button').forEach(b=>b.onclick=async()=>{const q=+b.dataset.q;
 /* ---------- boot ---------- */
 const net=()=>$('#off').hidden=navigator.onLine;addEventListener('online',net);addEventListener('offline',net);net();
 if(window.visualViewport){const vv=()=>{document.documentElement.style.setProperty('--h',visualViewport.height+'px');scrollTo(0,0)};visualViewport.addEventListener('resize',vv);vv()}
-audUI();sendUI();renderAll();renderCalc();renderT();renderDepth();renderWx();renderPhotos();
+audUI();sendUI();renderAll();renderCalc();renderKit();renderT();renderDepth();renderWx();renderPhotos();loadPaint();
+if(S.wake&&!wakeSupported()){S.wake=false;save()}
+addEventListener('pointerdown',()=>{if(S.wake&&!wakeRec)startWake()},{once:true});
+if(firstRun)setTimeout(()=>openOnboarding(true),400);
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('/sw.js').catch(()=>{});
 Promise.all([document.fonts?.ready?.catch(()=>0),new Promise(r=>setTimeout(r,1600))]).then(()=>{$('#splash').classList.add('out');setTimeout(()=>$('#splash').remove(),800)});
 </script>
