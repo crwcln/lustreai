@@ -1,16 +1,24 @@
+/*
 # Lustre
 
-Car detailing assistant powered by Gemini. Static front end (`index.html`) plus one EdgeOne Pages Edge Function (`edge-functions/api/chat.js`) that keeps your API key server-side.
+Mobile detailing assistant powered by Gemini. Static PWA (`index.html`, `sw.js`, `manifest.webmanifest`) plus one EdgeOne Pages Edge Function (`edge-functions/api/chat.js`) that keeps your API key server-side.
 
 ## Deploy
-1. Push this folder to a GitHub repo.
-2. In EdgeOne Pages, create a project from that repo (no build command; output directory is the repo root).
-3. Add environment variables: `GEMINI_API_KEY` (required), `GEMINI_MODEL` (optional, default `gemini-2.5-flash`).
-4. Redeploy so the function picks up the variables.
+1. Push this folder to GitHub.
+2. In EdgeOne Pages, create a project from the repo (no build command, output directory = repo root).
+3. Add env vars: `GEMINI_API_KEY` (required), `GEMINI_MODEL` (optional, default `gemini-2.5-flash`).
+4. Redeploy. Open the site on your phone over HTTPS and use "Add to Home Screen" for the offline app.
 
-## How media works
-- Photos are resized in the browser (max 1600px, JPEG) before sending.
-- Videos are never uploaded whole. The browser pulls 8 evenly spaced frames and sends them as images, which keeps requests under edge payload limits and works on phones. Short clips (under ~2 minutes) work best. A slow walk-around or a light sweeping across the panel shows defects best.
+## What's inside
+- **Chat:** text, voice (mic) and photo/video input, with quick-action chips and an audio read-back toggle.
+- **Job card:** vehicle, package, and Wash ➔ Prep ➔ Correct ➔ Coat progress. Its context, the weather and depth readings are sent with every chat message.
+- **Mix:** dilution calculator (1:N, oz / gal / L / mL), saved presets with notes, timers with alarm and voice.
+- **Depth:** per-panel µm before/after, removal, defect notes, warnings.
+- **Job:** step checklists, before/after inspection photos (stored on the device), live weather advice (Open-Meteo, no key), notes, client text templates.
 
-## Local test
-Use `edgeone pages dev` (EdgeOne CLI) with a local `.env`, then open the printed URL.
+## Offline
+Everything except chat and the live weather fetch works offline. Data is stored on the device (localStorage and IndexedDB), so clearing site data erases it.
+
+## Media in chat
+Photos are resized in the browser. Videos are reduced to 8 frames in the browser to stay under edge payload limits.
+*/
