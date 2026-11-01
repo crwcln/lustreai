@@ -1,4 +1,4 @@
-# Clearcoat
+# Lustre
 
 Car detailing assistant powered by Gemini. Static front end (`index.html`) plus one EdgeOne Pages Edge Function (`edge-functions/api/chat.js`) that keeps your API key server-side.
 
