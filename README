@@ -32,6 +32,14 @@ Each of the nine standard panels stores any number of readings for the current j
 ## Hey Lustre
 The wake word uses the browser SpeechRecognition API while Lustre is open. Say “Hey Lustre” and then a command. It pauses while the mic or a chat request is active. Browser speech recognition may need a connection, and it stops when the app is closed.
 
+Commands run locally first and fall back to the Gemini chat when Lustre does not recognize them. Examples:
+- Job: “set vehicle to 2022 BMW M3”, “set client to Sam”, “set ETA to 3 PM”, “add note that trim needs dressing”, “add paint correction”, “remove trim restoration”, “next step”, “back a step”, “check foam dwell”, “what’s next”.
+- Timers: “start a 5 minute dwell timer”, “cancel the cure timer”, “how much time is left”, “large timers on”.
+- Depth and mix: “log 120 microns on the hood”, “add 4.5 mils to the driver’s door”, “paint depth status”, “switch depth to mils”, “calculate 1 to 10 for a 32 ounce bottle”.
+- App: “open timers”, “open kit”, “show checklist”, “what’s the weather”, “turn on alerts”, “audio off”, “wake word on”, “help”.
+
+Voice commands reuse the same job, checklist, timer, calculator, paint-depth and kit state as the touch UI. Enabling alerts by voice can still be limited by the browser’s notification permission prompt.
+
 ## iOS home screen
 `apple-touch-icon.png` (180 px), `icon-192.png`, `icon-512.png` and `icon-maskable-512.png` are generated from the Lustre mark. In Safari, tap Share > Add to Home Screen to use it as the app icon.
 

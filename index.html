@@ -371,6 +371,20 @@ async function enablePushNotifications(){
   }
   return sub;
 }
+async function setAlerts(on,quiet=false){
+  on=!!on;
+  if(on){
+    if(!canNotify()){if(!quiet)toast('This browser cannot show notifications');return false}
+    if(Notification.permission!=='granted'){
+      let p='denied';try{p=await Notification.requestPermission()}catch{}
+      if(p!=='granted'){if(!quiet)toast('Notification permission denied');return false}
+    }
+    S.alerts=true;save();await enablePushNotifications();
+    if(!quiet){await triggerSystemAlert('Headphone alerts on','Lustre will chime through your connected headphones.','setup',true);toast('Headphone alerts enabled')}
+  }else{S.alerts=false;save();if(!quiet)toast('Headphone alerts off')}
+  const el=$('#sal');if(el)el.checked=S.alerts;
+  return true;
+}
 
 /* ---------- sheet ---------- */
 const openSheet=h=>{$('#shc').innerHTML='<div class="grab"></div>'+h;$('#sheet').classList.add('on')},closeSheet=()=>$('#sheet').classList.remove('on');
@@ -408,22 +422,13 @@ function settings(){const vs=voices(),GV=['Kore','Charon','Puck','Aoede','Fenrir
   <div class="row" style="margin-top:8px"><button class="btn sm" id="stest">Send test alert</button></div>
   <div class="sw" style="margin-top:4px"><div><b>Larger timers</b><span>Glanceable timer digits for the bench or dash.</span></div><input type="checkbox" id="sbig" ${S.bigTimers?'checked':''}></div>
   <div class="sw"><div><b>“Hey Lustre” wake word</b><span>Listens while Lustre is open, then runs your spoken command.</span></div><input type="checkbox" id="swake" ${S.wake?'checked':''}></div>
+  <p class="hint" style="margin-top:6px">Try “Hey Lustre, start a 5 minute timer”, “log 120 microns on the hood”, “add paint correction”, “next step”, or “what’s next”.</p>
   ${ios&&!standalone?'<div class="card" style="margin:16px 0 0;padding:14px"><b>Add Lustre to your Home Screen</b><p class="hint" style="margin-top:4px">In Safari tap Share, then Add to Home Screen. The Lustre mark becomes the app icon.</p></div>':''}
   <div class="row" style="margin-top:16px"><button class="btn pri" id="st">Test voice</button><button class="btn" id="sx">Done</button></div>`);
   const sv=()=>{S.engine=$('#se').value;S.gv=$('#sg').value;S.dv=$('#sd').value;S.rate=+$('#sr').value;save()};
   ['se','sg','sd','sr'].forEach(i=>$('#'+i).onchange=sv);
   $('#st').onclick=()=>{sv();unlock();speak('Mix one to ten. For a thirty two ounce bottle, use about three ounces of chemical.',true)};
-  $('#sal').onchange=async e=>{
-    if(e.target.checked){
-      if(!canNotify()){e.target.checked=false;return toast('This browser cannot show notifications')}
-      let p='denied';try{p=await Notification.requestPermission()}catch{}
-      if(p!=='granted'){e.target.checked=false;return toast('Notification permission denied')}
-      S.alerts=true;save();
-      await enablePushNotifications();
-      await triggerSystemAlert('Headphone alerts on','Lustre will chime through your connected headphones.','setup',true);
-      toast('Headphone alerts enabled');
-    }else{S.alerts=false;save();toast('Headphone alerts off')}
-  };
+  $('#sal').onchange=async e=>{const ok=await setAlerts(e.target.checked);if(!ok)e.target.checked=false};
   $('#stest').onclick=async()=>{
     if(!canNotify())return toast('This browser cannot show notifications');
     if(Notification.permission!=='granted')return toast('Enable Headphone alerts first');
@@ -455,7 +460,13 @@ const ck=st=>M().s[st][1].map((t,i)=>`<label class="ck"><input type="checkbox" d
 document.addEventListener('change',e=>{const k=e.target.dataset?.k;if(!k)return;S.job.checks[k]=e.target.checked;save();$$(`input[data-k="${k}"]`).forEach(i=>i.checked=e.target.checked);renderNowCount()});
 function renderNow(){const j=S.job,n=N(),st=Math.min(j.step,n-1),done=j.step>=n;
   $('#now').innerHTML=`<div class="nh"><div><div class="mut">${done?'All steps complete':'Now'}</div><h3>${M().s[st][0]}</h3></div><span class="cnt" id="ncnt"></span></div>${ck(st)}<button class="btn pri wide" id="jd" style="margin-top:14px" ${done?'disabled':''}>${done?'Job complete':'Finish '+M().s[st][0]}</button>`;renderNowCount();
-  $('#jd').onclick=()=>{j.step=Math.min(n,j.step+1);save();renderAll();$('#hero').classList.remove('sweep');void $('#hero').offsetWidth;$('#hero').classList.add('sweep');if(navigator.vibrate)navigator.vibrate(30);const msg=j.step<n?'Next step: '+M().s[j.step][0]:'Job complete';triggerSystemAlert(msg,j.step<n?M().s[j.step][1][0]:'All steps are done. Nice work.','step');speak(msg)}}
+  $('#jd').onclick=advanceStep}
+function advanceStep(){
+  const j=S.job,n=N();if(j.step>=n)return;
+  j.step=Math.min(n,j.step+1);save();renderAll();$('#hero').classList.remove('sweep');void $('#hero').offsetWidth;$('#hero').classList.add('sweep');if(navigator.vibrate)navigator.vibrate(30);
+  const msg=j.step<n?'Next step: '+M().s[j.step][0]:'Job complete';
+  triggerSystemAlert(msg,j.step<n?M().s[j.step][1][0]:'All steps are done. Nice work.','step');speak(msg)
+}
 function renderNowCount(){const j=S.job,st=Math.min(j.step,N()-1),it=M().s[st][1],c=it.filter((_,i)=>j.checks[key(st,i)]).length;const e=$('#ncnt');if(e)e.textContent=c+'/'+it.length}
 function pickMode(){const cur=[...jobModes()],oldPkg=(jobModes().map(k=>MODES[k].n).join(' + ')).trim();
   openSheet(`<h3>Services</h3><p class="mut">Select one or more. Shared stages are combined into one checklist.</p>${Object.entries(MODES).map(([k,m])=>`<button class="opt ${cur.includes(k)?'on':''}" data-m="${k}"><b>${m.n}</b><span>${m.d}</span><em>${m.s.map(x=>x[0]).join(' ➔ ')}</em></button>`).join('')}<div class="row" style="margin-top:14px"><button class="btn pri wide" id="pmapply">Use these services</button></div>`);
@@ -790,16 +801,16 @@ $('#mic').onclick=()=>{unlock();if(rec){rec.stop();return}if(!SR)return toast('V
   if(S.wake)stopWake();
   rec=new SR();rec.lang='en-US';rec.interimResults=true;$('#mic').classList.add('on');
   rec.onresult=e=>{input.value=[...e.results].map(r=>r[0].transcript).join('');size()};
-  rec.onend=()=>{rec=null;$('#mic').classList.remove('on');if(input.value.trim())send();else if(S.wake)setTimeout(()=>startWake(),600)};
+  rec.onend=()=>{rec=null;$('#mic').classList.remove('on');if(input.value.trim())runSpoken(input.value);else if(S.wake)setTimeout(()=>startWake(),600)};
   rec.onerror=()=>{};rec.start()};
 
 /* ---------- Hey Lustre wake word ---------- */
-let wakeRec=null,wakeArmed=false,wakeTimer=null;
+let wakeRec=null,wakeArmed=false,wakeTimer=null,voiceRun=false;
 const wakeSupported=()=>!!(window.SpeechRecognition||window.webkitSpeechRecognition);
 const wakeBadge=(on,hot)=>{const b=$('#wake');if(!b)return;b.classList.toggle('on',!!on);b.classList.toggle('hot',!!hot)};
 function stopWake(){try{wakeRec?.stop()}catch{}wakeRec=null;wakeArmed=false;clearTimeout(wakeTimer);wakeBadge(false,false)}
 function startWake(){
-  if(!S.wake||wakeRec||rec||busy)return;
+  if(!S.wake||wakeRec||rec||busy||voiceRun)return;
   if(!wakeSupported()){S.wake=false;save();toast('Wake word needs speech recognition support');return}
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
   wakeRec=new R();wakeRec.lang='en-US';wakeRec.continuous=true;wakeRec.interimResults=true;
@@ -811,16 +822,16 @@ function startWake(){
     if(m){
       const cmd=txt.slice(m.index+m[0].length).replace(/^[\s,.:;!?-]+/,'').trim();
       if(!wakeArmed){wakeArmed=true;beep();wakeBadge(true,true);toast('Yes?');clearTimeout(wakeTimer);wakeTimer=setTimeout(()=>{wakeArmed=false;wakeBadge(true,false)},6500)}
-      if(cmd.length>2&&final){wakeArmed=false;clearTimeout(wakeTimer);stopWake();input.value=cmd;size();send()}
+      if(cmd.length>2&&final){wakeArmed=false;clearTimeout(wakeTimer);runSpoken(cmd)}
     }else if(wakeArmed&&final){
       const cmd=txt.trim();
-      if(cmd.length>2){wakeArmed=false;clearTimeout(wakeTimer);stopWake();input.value=cmd;size();send()}
+      if(cmd.length>2){wakeArmed=false;clearTimeout(wakeTimer);runSpoken(cmd)}
     }
   };
   wakeRec.onerror=e=>{
     if(e.error==='not-allowed'||e.error==='service-not-allowed'){S.wake=false;save();stopWake();const sw=$('#swake');if(sw)sw.checked=false;toast('Microphone permission is needed for Hey Lustre')}
   };
-  wakeRec.onend=()=>{wakeRec=null;wakeBadge(false,false);if(S.wake&&!busy&&!rec)setTimeout(()=>startWake(),500)};
+  wakeRec.onend=()=>{wakeRec=null;wakeBadge(false,false);if(S.wake&&!busy&&!rec&&!voiceRun)setTimeout(()=>startWake(),500)};
   try{wakeRec.start();wakeBadge(true)}catch{wakeRec=null}
 }
 function syncWake(quiet){
@@ -829,6 +840,253 @@ function syncWake(quiet){
   startWake();if(!quiet)toast('Listening for “Hey Lustre”');
 }
 function setWake(on,quiet){S.wake=!!on;save();syncWake(quiet);const sw=$('#swake');if(sw)sw.checked=S.wake}
+const vnorm=t=>String(t||'').toLowerCase().replace(/['’]/g,'').replace(/[^a-z0-9.:\s-]/g,' ').replace(/-/g,' ').replace(/\s+/g,' ').trim();
+const VNUMWORDS={zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90,hundred:100};
+const vnums=t=>String(t||'').replace(/\b(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred)(?:[\s-]+(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred))*\b/g,m=>{let total=0,cur=0;m.split(/[\s-]+/).forEach(w=>{const v=VNUMWORDS[w];if(v===100){total+=(cur||1)*100;cur=0}else cur+=v});return String(total+cur)});
+const vcap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+const vissue=s=>OB_ISSUES.find(x=>x.toLowerCase()===String(s).toLowerCase())||vcap(s);
+const vval=m=>m?m[1].trim().replace(/^["'“”]+|["'“”]+$/g,'').replace(/[.!?]+$/,'').replace(/^(?:a|an|the)\s+/i,'').trim():'';
+const vrespond=msg=>{toast(msg);speak(msg)};
+const VPANELS=[[/\b(?:front left|left front|lf) fender\b|\b(?:left|l) front fender\b|\bfront (?:left|l) fender\b|\bfender (?:front )?left\b/,'fender_fl'],[/\b(?:front right|right front|rf) fender\b|\b(?:right|r) front fender\b|\bfront (?:right|r) fender\b|\bfender (?:front )?right\b/,'fender_fr'],[/\b(?:rear left|left rear|lr|l|left) quarter\b|\b(?:left|l) rear quarter\b|\bquarter (?:rear )?left\b/,'quarter_rl'],[/\b(?:rear right|right rear|rr|r|right) quarter\b|\b(?:right|r) rear quarter\b|\bquarter (?:rear )?right\b/,'quarter_rr'],[/\bdrivers?(?: side)? door\b|\bdriver front door\b|\bfront left door\b|\bleft front door\b/,'door_driver'],[/\bpassengers?(?: side)? door\b|\bpassenger front door\b|\bfront right door\b|\bright front door\b/,'door_passenger'],[/\bhood\b|\bbonnet\b/,'hood'],[/\broof\b/,'roof'],[/\btrunk\b|\bboot\b|\btailgate\b/,'trunk']];
+const VMODES=[[/\bpaint correction\b|\bpaint correct\b|\bcorrection\b/,'paintCorrect'],[/\binterior deep\b|\bdeep interior\b|\bdeep clean\b/,'intDeep'],[/\binterior detail\b|\binterior\b/,'intDetail'],[/\bfull exterior\b|\bfull detail\b|\bfull\b/,'full'],[/\btrim(?: restoration)?\b/,'trim'],[/\bheadlight(?: restoration)?\b/,'headlight'],[/\bmaintenance wash\b|\bmaintenance\b|\bwash\b/,'wash'],[/\bengine\b/,'engine']];
+const vpanel=t=>VPANELS.find(([r])=>r.test(t))?.[1]||null;
+const vmodes=t=>{
+  const keys=[];VMODES.forEach(([r,k])=>{if(r.test(t)&&!keys.includes(k))keys.push(k)});
+  if(keys.includes('intDeep')){const i=keys.indexOf('intDetail');if(i>=0)keys.splice(i,1)}
+  if(keys.includes('full')&&keys.includes('paintCorrect')&&!/\bfull (?:exterior|detail)\b/.test(t)){const i=keys.indexOf('full');if(i>=0)keys.splice(i,1)}
+  return keys;
+};
+const vapplyModes=(keys,msg)=>{const old=(jobModes().map(k=>MODES[k].n).join(' + ')).trim();if(!S.job.pkg||S.job.pkg===old)S.job.pkg=keys.map(k=>MODES[k].n).join(' + ');S.job.modes=keys.slice();S.job.mode=keys[0];S.job.step=0;prevPct=0;save();renderAll();vrespond(msg)};
+function vtimer(t){
+  const hh=t.match(/(\d+(?:\.\d+)?)\s*(?:hours?|hrs?|h)\b/),mm=t.match(/(\d+(?:\.\d+)?)\s*(?:minutes?|mins?|m)\b/),ss=t.match(/(\d+(?:\.\d+)?)\s*(?:seconds?|secs?|s)\b/);
+  let mins=hh?+hh[1]*60:0;if(mm)mins+=+mm[1];if(!mins&&ss)mins=+ss[1]/60;
+  if(!mins){const f=t.match(/(?:timer|countdown|for)\s*(?:of|for)?\s*(\d+(?:\.\d+)?)/);if(f)mins=+f[1]}
+  let label='Timer';const known=t.match(/\b(dwell|flash|cure|soak|clay|polish|break|coffee)\b/);
+  if(known)label=vcap(known[1]);
+  else{const pre=t.match(/(?:start|set|add|begin|new)\s+(?:a|an|the)?\s*(.*?)\s*(?:timer|countdown)/);if(pre){const c=pre[1].replace(/\b(?:for|of)\b.*$/,'').replace(/\d+(?:\.\d+)?\s*(?:hours?|hrs?|minutes?|mins?|seconds?|secs?|h|m|s)\b/g,'').replace(/\b(?:a|an|the|new|quick)\b/g,'').trim();if(c)label=vcap(c)}}
+  return {mins,label};
+}
+function vpaint(t){
+  const panel=vpanel(t);if(!panel)return null;
+  const m=t.match(/(-?\d+(?:\.\d+)?)\s*(microns?|micrometers?|um|mils?|mil)\b/)||t.match(/(?:log|add|record|reading|depth|is|at)\D{0,20}(-?\d+(?:\.\d+)?)/)||t.match(/(-?\d+(?:\.\d+)?)/);
+  if(!m)return null;
+  const unit=/mil/.test(m[2]||'')?'mils':/micron|micrometer|um/.test(m[2]||'')?'um':PD.unit;
+  let v=+m[1];if(unit!==PD.unit)v=unit==='mils'?v*25.4:v/25.4;
+  return {panel,v,unit};
+}
+async function runVoiceCommand(text){
+  const raw=String(text||'').replace(/^\s*hey\s+(?:lustre|luster|lustra)[\s,.:;!?-]*/i,'').replace(/\s+/g,' ').trim();
+  if(!raw)return true;
+  const t=vnums(vnorm(raw)),j=S.job;
+  if(/^(?:stop|never ?mind|nevermind|quiet|shut up|cancel that)$/.test(t)||/^stop (?:listening|the command|that)$/.test(t)){stopSpeech();closeSheet();vrespond('Okay.');return true}
+  if(/^(?:help|what can you do|what else|anything else|what else can you do|voice commands?|commands)$/.test(t)||/^(?:show|open|list)\s+(?:the\s+)?(?:voice\s+)?(?:commands?|help)$/.test(t)){vrespond('I can edit the job, add or remove services, move through steps, check tasks, start and cancel timers, log paint depth, run the dilution calculator, open any tab, read weather, add kit items, and change alerts or audio.');return true}
+  if(/\b(settings|preferences)\b/.test(t)){settings();return true}
+  if(/\balerts?\b/.test(t)&&/\b(on|off|enable|disable)\b/.test(t)){
+    const on=/\b(on|enable)\b/.test(t)&&!/\boff\b/.test(t),ok=await setAlerts(on,true);
+    vrespond(ok?(on?'Headphone alerts on':'Headphone alerts off'):'I could not enable alerts. Check notification permission in settings.');return true
+  }
+  if(/\b(audio|sound|voice|mute|unmute)\b/.test(t)&&/\b(on|off|mute|unmute|enable|disable)\b/.test(t)){
+    const on=/\b(on|unmute|enable)\b/.test(t)&&!/\boff\b/.test(t);S.audio=on;save();audUI();
+    if(on){unlock();speak('Audio on',true)}else stopSpeech();toast(on?'Audio on':'Audio off');return true
+  }
+  if(/\b(wake word|hey lustre)\b/.test(t)&&/\b(on|off|enable|disable)\b/.test(t)){
+    const on=/\b(on|enable)\b/.test(t)&&!/\boff\b/.test(t);setWake(on,true);vrespond(on?'Listening for Hey Lustre':'Wake word off');return true
+  }
+  if(/\blarge timers?\b/.test(t)&&/\b(on|off|enable|disable)\b/.test(t)){
+    S.bigTimers=/\b(on|enable)\b/.test(t)&&!/\boff\b/.test(t);save();renderT();vrespond(S.bigTimers?'Large timers on':'Large timers off');return true
+  }
+  if(/\b(timers?|countdown)\b/.test(t)&&/\b(cancel|stop|clear|remove|dismiss)\b/.test(t)){
+    const known=t.match(/\b(dwell|flash|cure|soak|clay|polish|break|coffee)\b/),before=S.timers.length;
+    if(known&&!/\ball\b/.test(t))S.timers=S.timers.filter(x=>!String(x.label).toLowerCase().includes(known[1]));else S.timers=[];
+    save();renderT();vrespond(before?`${before-S.timers.length} timer${before-S.timers.length===1?'':'s'} cancelled.`:'No timers are running.');return true
+  }
+  if((/\b(timers?|countdown)\b/.test(t)&&/\b(left|status|read|running|how (?:much|long))\b/.test(t))||/\b(?:how (?:much|long) (?:time )?(?:is )?(?:left|remaining)|time (?:left|remaining))\b/.test(t)){
+    const now=Date.now(),rows=S.timers.map(x=>{const left=Math.max(0,Math.ceil((x.end-now)/1000));return left?`${x.label} has ${Math.floor(left/60)} minutes ${left%60} seconds left`:`${x.label} is up`});
+    vrespond(rows.length?rows.join('. '):'No timers are running.');return true
+  }
+  if((/\b(timers?|countdown)\b/.test(t)&&(/\b(start|set|add|begin|new|for)\b/.test(t)||/\d+\s*(?:minutes?|mins?|seconds?|secs?|m|s)\b/.test(t)||/\d/.test(t)))||/\b(start|set|add|begin)\b.*\b(timer|countdown)\b/.test(t)){
+    const spec=vtimer(t);
+    if(!spec.mins){vrespond('How many minutes?');return true}
+    addT(spec.label,spec.mins);go('tools','timers');
+    vrespond(`${spec.label} timer started for ${spec.mins>=1?Math.round(spec.mins*10)/10+' minutes':Math.round(spec.mins*60)+' seconds'}.`);return true
+  }
+  const panelNow=vpanel(t);
+  if(/\b(paint depth|depth log|depth grid|microns?|micrometers?|mils?)\b/.test(t)||(panelNow&&/\b(log|add|record|reading|depth|paint)\b/.test(t))||(panelNow&&/\d/.test(t)&&/\b(is|at)\b/.test(t))){
+    if(/\b(switch|change|show|use|set)\b/.test(t)&&/\b(mils?|microns?|micrometers?|um)\b/.test(t)&&!/\d/.test(t)){
+      const u=/\bmil/.test(t)?'mils':'um';await pdSetUnit(u);vrespond('Paint depth units set to '+(u==='mils'?'mils':'microns'));return true
+    }
+    if(/\b(review|analy[sz]e|interpret)\b/.test(t)){await send('Review my paint depth readings and defects. Which panels are safe to keep correcting, which need caution, and which need fine polish only?');return true}
+    const panel=vpanel(t),sp=vpaint(t);
+    if(panel&&sp){
+      if(!(sp.v>0)){vrespond('That paint depth reading must be above zero.');return true}
+      const p=await pdAdd(panel,sp.v);go('tools','depth');const u=PD.unit==='mils'?'mils':'microns';
+      vrespond(`${pdName(panel)} logged at ${fmt(sp.v)} ${u}. ${p.status==='danger'?'Danger: lowest reading '+fmt(p.min)+' '+u+'. Use fine polish only.':p.status==='caution'?'Caution: lowest reading '+fmt(p.min)+' '+u+'.':'Safe: lowest reading '+fmt(p.min)+' '+u+'.'}`);return true
+    }
+    if(panel&&/\b(clear|delete|remove|reset)\b/.test(t)){delete PD.panels[panel];await savePaint();renderDepth();go('tools','depth');vrespond(pdName(panel)+' paint depth cleared');return true}
+    if(panel&&/\b(open|show|log|reading|readings|status|check|paint)\b/.test(t)){go('tools','depth');pdSheet(panel);vrespond(pdName(panel)+' paint depth');return true}
+    if(/\b(status|summary|review|read|what|how)\b/.test(t)){const s=depthSum();go('tools','depth');vrespond(s||'No paint depth readings yet. Tell me a panel and a reading.');return true}
+    if(/\b(open|show|log|grid)\b/.test(t)){go('tools','depth');vrespond('Paint depth grid.');return true}
+  }
+  if(/\b(calc|calculator|dilution|mix|ratio|bottle)\b/.test(t)){
+    const ratioM=t.match(/(?:1\s*(?:to|:)\s*|ratio\s*(?:of|to|:)?\s*)(\d+(?:\.\d+)?)/),sizeM=t.match(/(\d+(?:\.\d+)?)\s*(ounces?|oz|gallons?|gal|liters?|litres?|l|milliliters?|ml)\b/);
+    if(ratioM||sizeM){
+      if(ratioM){if(!(+ratioM[1]>0)){vrespond('The ratio must be above zero.');return true}S.ratio=+ratioM[1];$('#cr').value=''}
+      if(sizeM){$('#cs').value=sizeM[1];$('#cu').value=/gallon|gal/.test(sizeM[2])?128:/liter|litre/.test(sizeM[2])?33.814:/milliliter|ml/.test(sizeM[2])?.033814:1}
+      const chem=S.kit.chem.find(c=>t.includes(vnorm(c.name)));if(chem)$('#cn').value=chem.name;
+      save();renderCalc();go('tools','mix');vrespond(renderCalc.say||'Mix updated.');return true
+    }
+    if(/\bread|\bsay|\bspeak/.test(t)){renderCalc.say?speak(renderCalc.say,true):vrespond('Enter a container size first.');return true}
+    if(/\b(open|show|calculator|dilution|mix ratios?)\b/.test(t)){go('tools','mix');vrespond('Dilution calculator.');return true}
+  }
+  if(/\b(add|put)\b/.test(t)&&/\b(chemical|product)\b/.test(t)){
+    const nm=vnums(raw).replace(/^.*?\b(?:chemical|product)\s+(?:called\s+|named\s+)?/i,'').replace(/\s+(?:at|with)?\s*1\s*(?:to|:)\s*\d+.*$/i,'').replace(/\s+(?:ratio|dilution)\b.*$/i,'').trim();
+    if(!nm){vrespond('What is the chemical called?');return true}
+    const ratio=t.match(/(?:1\s*(?:to|:)\s*|ratio\s*(?:of|to|:)?\s*)(\d+(?:\.\d+)?)/),qty=t.match(/(\d+)\s*bottles?\b/);
+    S.kit.chem.push({id:uid(),name:nm,ratio:ratio?+ratio[1]:null,qty:qty?+qty[1]:null,note:''});save();renderKit();go('kit','chem');vrespond(nm+' added to chemicals');return true
+  }
+  if(/\b(add|put)\b/.test(t)&&/\btool\b/.test(t)){
+    const nm=raw.replace(/^.*?\btool\s+(?:called\s+|named\s+)?/i,'').trim();
+    if(!nm){vrespond('What is the tool called?');return true}
+    S.kit.tools.push({id:uid(),name:nm,cat:'',note:''});save();renderKit();go('kit','tools');vrespond(nm+' added to tools');return true
+  }
+  if(/\b(add|put)\b/.test(t)&&/\b(equipment|machine|gear)\b/.test(t)){
+    const nm=raw.replace(/^.*?\b(?:equipment|machine|gear)\s+(?:called\s+|named\s+)?/i,'').trim();
+    if(!nm){vrespond('What is the equipment called?');return true}
+    S.kit.equip.push({id:uid(),name:nm,cat:'',note:''});save();renderKit();go('kit','equip');vrespond(nm+' added to equipment');return true
+  }
+  if(/\b(kit|inventory|chemicals|products|tools|equipment)\b/.test(t)&&/\b(what|list|read|status|show|in)\b/.test(t)){
+    const names=a=>a.length?a.map(x=>x.name).join(', '):'none';
+    vrespond(`Chemicals: ${names(S.kit.chem)}. Tools: ${names(S.kit.tools)}. Equipment: ${names(S.kit.equip)}.`);return true
+  }
+  if(/\b(weather|rain|temperature|humidity|conditions)\b/.test(t)){
+    go('job');const w=await loadWx();
+    if(!w){vrespond('No weather is saved yet. Allow location access and try again.');return true}
+    vrespond(`${Math.round(w.t)} degrees, ${w.rh} percent humidity, rain chance ${w.pop} percent. ${advice(w).join(' ')}`);return true
+  }
+  let m;
+  if((m=raw.match(/\b(?:set|change|update)?\s*(?:the\s+)?vehicle\s+(?:is|to|as|should be)\s+(.+)$/i))){
+    j.vehicle=vval(m);save();renderAll();vrespond('Vehicle set to '+j.vehicle);return true
+  }
+  if((m=raw.match(/\b(?:set|change|update)?\s*(?:the\s+)?(?:client|customer)(?:'s)?(?:\s+first\s+name|\s+name)?\s+(?:is|to|as|should be)\s+(.+)$/i))){
+    j.client=vval(m);save();renderAll();vrespond('Client set to '+j.client);return true
+  }
+  if((m=raw.match(/\b(?:set|change|update)?\s*(?:the\s+)?(?:package|service package)\s+(?:is|to|as|should be)\s+(.+)$/i))){
+    j.pkg=vval(m);save();renderAll();vrespond('Package set to '+j.pkg);return true
+  }
+  if((m=raw.match(/\b(?:set|change|update)?\s*(?:the\s+)?(?:color|colour|paint color)\s+(?:is|to|as|should be)\s+(.+)$/i))){
+    j.color=vcap(vval(m));save();renderAll();vrespond('Color set to '+j.color);return true
+  }
+  if((m=raw.match(/\b(?:set|change|update)?\s*(?:the\s+)?condition\s+(?:is|to|as|should be)\s+(.+)$/i))){
+    j.condition=vcap(vval(m));save();renderAll();vrespond('Condition set to '+j.condition);return true
+  }
+  if((m=raw.match(/\b(?:set|change|update)?\s*(?:the\s+)?(?:eta|finish time|completion time|done by|ready by)\s+(?:is|to|at|for|by)?\s*(.+)$/i))){
+    S.eta=vval(m);save();renderAll();vrespond('ETA set to '+S.eta);return true
+  }
+  if((m=raw.match(/\b(?:set|change|update)?\s*(?:the\s+)?year\s+(?:is|to|as)?\s*(\d{4})\b/i))){
+    j.year=vval(m);save();renderAll();vrespond('Year set to '+j.year);return true
+  }
+  if((m=raw.match(/\b(?:set|change|update)\s+(?:the\s+)?make\s+(?:to|as)?\s+(.+)$/i)||raw.match(/\b(?:the\s+)?make\s+(?:is|to|as)\s+(.+)$/i))){
+    j.make=vval(m);save();renderAll();vrespond('Make set to '+j.make);return true
+  }
+  if((m=raw.match(/\b(?:set|change|update)\s+(?:the\s+)?model\s+(?:to|as)?\s+(.+)$/i)||raw.match(/\b(?:the\s+)?model\s+(?:is|to|as)\s+(.+)$/i))){
+    j.model=vval(m);save();renderAll();vrespond('Model set to '+j.model);return true
+  }
+  if((m=raw.match(/\b(?:set|change|update)?\s*(?:the\s+)?(?:license plate|plate|registration)\s+(?:is|to|as)?\s+(.+)$/i))){
+    j.plate=vval(m);save();renderAll();vrespond('Plate set to '+j.plate);return true
+  }
+  if((m=raw.match(/\b(?:set|change|update)?\s*(?:the\s+)?vin\s+(?:is|to|as)?\s+(.+)$/i))){
+    j.vin=vval(m);save();renderAll();vrespond('VIN set to '+j.vin);return true
+  }
+  if((m=raw.match(/\b(?:add|set|change)\s+(?:the\s+)?issues?\s+(?:to|as|saying)?\s*(.+)$/i)||raw.match(/\bissues?\s+(?:are|is|to)\s+(.+)$/i))){
+    j.issues=vval(m).split(/\s*(?:,|and)\s*/).filter(Boolean).map(vissue);save();renderAll();vrespond('Issues set to '+j.issues.join(', '));return true
+  }
+  if((m=raw.match(/\b(?:add|include)\s+(.+?)\s+(?:to|as)\s+(?:the\s+)?issues?\b/i))){
+    const add=vval(m).split(/\s*(?:,|and)\s*/).filter(Boolean).map(vissue);j.issues=[...new Set([...(j.issues||[]),...add])];save();renderAll();vrespond('Issues updated to '+j.issues.join(', '));return true
+  }
+  if((m=raw.match(/\b(?:remove|delete)\s+(.+?)\s+from\s+(?:the\s+)?issues?\b/i))){
+    const drop=vval(m).toLowerCase();j.issues=(j.issues||[]).filter(x=>x.toLowerCase()!==drop);save();renderAll();vrespond('Issue removed.');return true
+  }
+  if((m=raw.match(/\b(?:add|append|set|make)\s+(?:a\s+)?note\s+(?:that\s+|saying\s+|to\s+)?(.+)$/i)||raw.match(/\bnotes?\s+(?:is|to|saying)\s+(.+)$/i))){
+    const note=vval(m),replace=/^(?:set|change)\s+(?:the\s+)?notes?\b/i.test(raw);
+    j.notes=replace?note:(j.notes?j.notes.replace(/\s+$/,'')+'. ':'')+note;save();renderAll();vrespond(replace?'Note updated.':'Note added.');return true
+  }
+  if((m=raw.match(/^(?:add|include|also add|also do)\s+(.+)$/i))){
+    const add=vmodes(vnorm(m[1]));
+    if(add.length){const keys=jobModes(),fresh=add.filter(k=>!keys.includes(k));if(!fresh.length){vrespond(add.map(k=>MODES[k].n).join(' and ')+' already in this job.');return true}keys.push(...fresh);vapplyModes(keys,'Added '+fresh.map(k=>MODES[k].n).join(' and ')+'. Services: '+keys.map(x=>MODES[x].n).join(' + '));return true}
+  }
+  if((m=raw.match(/^(?:remove|drop|delete)\s+(.+)$/i))){
+    const drop=vmodes(vnorm(m[1]));
+    if(drop.length){const keys=jobModes(),remain=keys.filter(k=>!drop.includes(k));if(remain.length===keys.length){vrespond(drop.map(k=>MODES[k].n).join(' and ')+' not in this job.');return true}if(!remain.length){vrespond('A job needs at least one service.');return true}vapplyModes(remain,'Removed '+keys.filter(k=>!remain.includes(k)).map(k=>MODES[k].n).join(' and ')+'. Services: '+remain.map(x=>MODES[x].n).join(' + '));return true}
+  }
+  if((m=raw.match(/^(?:set|change|switch|make)\s+(?:the\s+)?(?:service|services|job type|job)\s+(?:to|as)\s+(.+)$/i))||(m=raw.match(/^(?:just|only)\s+(.+)$/i))){
+    const ks=vmodes(vnorm(m[1]));
+    if(ks.length){vapplyModes(ks,'Services set to '+ks.map(k=>MODES[k].n).join(' + ')+'.');return true}
+  }
+  if(/^(?:next|finish|complete|done|advance)(?:\s+(?:the\s+)?(?:current\s+)?(?:step|stage))?$/.test(t)||/\b(?:finish|complete|advance)\s+(?:the\s+|this\s+)?(?:current\s+)?(?:step|stage)\b/.test(t)||/\b(?:mark|finish)\s+(?:this\s+)?(?:step|stage)\s+(?:done|complete)\b/.test(t)){
+    if(j.step>=N()){vrespond('All steps are complete.');return true}advanceStep();return true
+  }
+  if(/^(?:finish|complete)\s+(?:the\s+)?job$/.test(t)){
+    j.step=N();save();renderAll();vrespond('Job complete.');return true
+  }
+  if(/^(?:back|previous|go back|last step)(?:\s+(?:a|one|the)?\s*(?:step|stage))?$/.test(t)||/\b(?:previous|last|back one|back a)\s+(?:step|stage)\b/.test(t)){
+    if(j.step>0){j.step--;save();renderAll();vrespond('Back to '+M().s[j.step][0])}else vrespond('You are on the first step.');return true
+  }
+  if((m=t.match(/\b(?:go to|jump to|set|start)\s+step\s+(\d+)\b/))){
+    const i=+m[1]-1;if(i>=0&&i<N()){j.step=i;save();renderAll();vrespond('Step '+m[1]+': '+M().s[i][0])}else vrespond('That step is not in this job.');return true
+  }
+  if(/^(?:check|tick|mark)\s+(?:everything|all|the whole step|this step)\b/.test(t)||/\bcheck all\b/.test(t)){
+    const st=Math.min(j.step,N()-1);M().s[st][1].forEach((_,i)=>j.checks[key(st,i)]=true);save();renderAll();vrespond('All tasks checked for '+M().s[st][0]+'.');return true
+  }
+  if(/^(?:uncheck|untick|clear)\s+(?:everything|all|the whole step|this step)\b/.test(t)){
+    const st=Math.min(j.step,N()-1);M().s[st][1].forEach((_,i)=>j.checks[key(st,i)]=false);save();renderAll();vrespond('All tasks unchecked for '+M().s[st][0]+'.');return true
+  }
+  if((m=t.match(/^(check|tick|uncheck|untick|mark)\s+(.+?)(?:\s+(?:as\s+)?(?:done|complete|checked|unchecked))?$/))){
+    const st=Math.min(j.step,N()-1),items=M().s[st][1],q=m[2].replace(/^the\s+/,'').replace(/\b(?:task|item|off)\b/g,'').trim();
+    const idx=items.findIndex(x=>{const n=vnorm(x);return n===q||n.includes(q)||q.includes(n)});
+    if(idx>=0){const k=key(st,idx);j.checks[k]=!['uncheck','untick'].includes(m[1]);save();renderAll();vrespond((j.checks[k]?'Checked ':'Unchecked ')+items[idx]+'.');return true}
+  }
+  if(/\b(whats next|what is next|next step|current step|where am i|what am i doing|job status|status of (?:the )?job|progress)\b/.test(t)){
+    const n=N();
+    if(/\b(whats next|what is next|next step|current step|where am i|what am i doing)\b/.test(t)&&j.step<n){
+      const st=M().s[j.step],c=st[1].filter((_,i)=>j.checks[key(j.step,i)]).length,first=st[1].find((_,i)=>!j.checks[key(j.step,i)]);
+      vrespond(`Step ${j.step+1} of ${n}: ${st[0]}. ${c} of ${st[1].length} tasks done.${first?' Next task: '+first+'.':''}`);return true
+    }
+    vrespond(`${j.vehicle||'No vehicle'} · ${M().n} · ${j.step<n?'step '+(j.step+1)+' of '+n+': '+M().s[j.step][0]:'all steps complete'}.`);return true
+  }
+  if(/\b(read|whats|what is)\b.*\bchecklist\b|\bshow (?:the )?checklist\b/.test(t)){
+    const st=Math.min(j.step,N()-1);vrespond(M().s[st][0]+' checklist: '+M().s[st][1].join('. '));return true
+  }
+  if(/\b(what|which)\b.*\bservices?\b|\bservices?\b.*\b(status|list)\b/.test(t)){vrespond('Services: '+M().n+'.');return true}
+  if(/\b(read|whats|what is|show)\b.*\bnotes?\b/.test(t)){go('log','notes');vrespond(j.notes||'No job notes yet.');return true}
+  if(/\b(read|what|status|details?)\b.*\bjob\b/.test(t)){
+    vrespond(`${j.vehicle||'No vehicle'}${j.client?', client '+j.client:''}. ${M().n}. ${j.condition||'Condition not set'}. ${j.step<N()?'Current step '+M().s[j.step][0]:'All steps complete'}.`);return true
+  }
+  if(/^(?:edit|change)\s+(?:the\s+)?job(?:\s+(?:details|editor))?$/.test(t)||/^job\s+(?:details|editor)$/.test(t)){editJob();return true}
+  if(/\b(upsell|add[-\s]?ons?|upgrade ideas)\b/.test(t)){upsell();return true}
+  const photoCmd=/^(?:open|show|go|switch|view|display|load)\b.*\b(?:photos?|pictures?|camera)\b/.test(t)||/^(?:take|add|log)\s+(?:a\s+|the\s+)?(?:before\s+|after\s+)?(?:photos?|pictures?)\b/.test(t)||/\b(?:before|after)\s+(?:photos?|pictures?)\b|\b(?:photos?|pictures?)\s+(?:before|after)\b/.test(t)||/^(?:photos?|pictures?|camera)$/.test(t);
+  if(photoCmd){
+    go('log','photos');
+    if(/\bbefore\b/.test(t))camTag='before';else if(/\bafter\b/.test(t))camTag='after';
+    vrespond('Photos open. Tap Before or After to use the camera.');return true
+  }
+  if(/\b(texts?|messages?)\b/.test(t)&&/\b(client|open|show|go|text)\b/.test(t)){go('log','texts');vrespond('Client texts ready.');return true}
+  const NAV=[[/\btimers?|countdown\b/,'tools','timers','Timers'],[/\bcalc|dilution|mix ratio/, 'tools','mix','Mix calculator'],[/\bdepth|paint gauge/,'tools','depth','Paint depth'],[/\bkit|inventory|chemicals|products/,'kit','chem','Kit'],[/\bphotos?|camera|inspection/,'log','photos','Photos'],[/\bnotes?/,'log','notes','Notes'],[/\btexts?|messages?/,'log','texts','Client texts'],[/\bask|chat/,'ask',null,'Ask'],[/\bjob|checklist|progress/,'job',null,'Job']];
+  if(/^(?:open|show|go|switch|view|take me|display|load)\b/.test(t)){
+    const hit=NAV.find(([r])=>r.test(t));if(hit){go(hit[1],hit[2]);vrespond(hit[3]+'.');return true}
+  }
+  return false;
+}
+async function runSpoken(text){
+  text=String(text||'').replace(/^\s*hey\s+(?:lustre|luster|lustra)[\s,.:;!?-]*/i,'').trim();
+  if(!text||voiceRun||busy)return;
+  voiceRun=true;if(S.wake)stopWake();
+  let handled=false;
+  try{handled=await runVoiceCommand(text)}catch(e){console.warn('Voice command failed',e)}
+  voiceRun=false;
+  if(!handled){await send(text);return}
+  input.value='';size();
+  if(S.wake)setTimeout(()=>startWake(),700);
+}
 const Q=[['flask','Mix ratios'],['check','Checklist'],['timer','Timers'],['cloud','Weather'],['camera','Snap photo'],['bulb','Upsells'],['msg','Text client']];
 $('#quick').innerHTML=Q.map(([i,l],k)=>`<button class="chipb" data-q="${k}">${ic(i)}${l}</button>`).join('');
 $$('#quick button').forEach(b=>b.onclick=async()=>{const q=+b.dataset.q;
