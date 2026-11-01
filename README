@@ -1,0 +1,16 @@
+# Clearcoat
+
+Car detailing assistant powered by Gemini. Static front end (`index.html`) plus one EdgeOne Pages Edge Function (`edge-functions/api/chat.js`) that keeps your API key server-side.
+
+## Deploy
+1. Push this folder to a GitHub repo.
+2. In EdgeOne Pages, create a project from that repo (no build command; output directory is the repo root).
+3. Add environment variables: `GEMINI_API_KEY` (required), `GEMINI_MODEL` (optional, default `gemini-2.5-flash`).
+4. Redeploy so the function picks up the variables.
+
+## How media works
+- Photos are resized in the browser (max 1600px, JPEG) before sending.
+- Videos are never uploaded whole. The browser pulls 8 evenly spaced frames and sends them as images, which keeps requests under edge payload limits and works on phones. Short clips (under ~2 minutes) work best. A slow walk-around or a light sweeping across the panel shows defects best.
+
+## Local test
+Use `edgeone pages dev` (EdgeOne CLI) with a local `.env`, then open the printed URL.
