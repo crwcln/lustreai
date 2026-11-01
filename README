@@ -1,24 +1,24 @@
 /*
 # Lustre
 
-Mobile detailing assistant powered by Gemini. Static PWA (`index.html`, `sw.js`, `manifest.webmanifest`) plus one EdgeOne Pages Edge Function (`edge-functions/api/chat.js`) that keeps your API key server-side.
+Mobile detailing assistant powered by Gemini. Static PWA (`index.html`, `sw.js`, `manifest.webmanifest`) plus two EdgeOne Pages Edge Functions that keep your API key server-side: `edge-functions/api/chat.js` (streaming answers) and `edge-functions/api/tts.js` (Gemini voice).
 
 ## Deploy
 1. Push this folder to GitHub.
 2. In EdgeOne Pages, create a project from the repo (no build command, output directory = repo root).
-3. Add env vars: `GEMINI_API_KEY` (required), `GEMINI_MODEL` (optional, default `gemini-2.5-flash`).
+3. Add env vars: `GEMINI_API_KEY` (required), `GEMINI_MODEL` (optional, default `gemini-2.5-flash`), `GEMINI_TTS_MODEL` (optional, default `gemini-2.5-flash-preview-tts`).
 4. Redeploy. Open the site on your phone over HTTPS and use "Add to Home Screen" for the offline app.
 
 ## What's inside
-- **Chat:** text, voice (mic) and photo/video input, with quick-action chips and an audio read-back toggle.
-- **Job card:** vehicle, package, and Wash ➔ Prep ➔ Correct ➔ Coat progress. Its context, the weather and depth readings are sent with every chat message.
-- **Mix:** dilution calculator (1:N, oz / gal / L / mL), saved presets with notes, timers with alarm and voice.
-- **Depth:** per-panel µm before/after, removal, defect notes, warnings.
-- **Job:** step checklists, before/after inspection photos (stored on the device), live weather advice (Open-Meteo, no key), notes, client text templates.
+- **Job (home):** vehicle card with progress ring, service type picker (full exterior, interior detail, interior deep clean, trim restoration, headlight restoration, maintenance wash, engine bay), 4-step tracker, live checklist, site weather, shortcut tiles.
+- **Ask:** streaming chat with typing effect and a stop button, voice input, photo/video attach, quick chips. Job context goes with every message.
+- **Tools:** Mix (dilution calculator, presets), Timers, Depth (µm log).
+- **Log:** inspection photos, notes, client text templates.
+- **Audio:** Gemini voices with an automatic fallback to the best voice on the device. Pick them in Settings.
 
 ## Offline
-Everything except chat and the live weather fetch works offline. Data is stored on the device (localStorage and IndexedDB), so clearing site data erases it.
+Everything except chat, Gemini voice and the live weather fetch works offline. Data lives on the device (localStorage and IndexedDB).
 
 ## Media in chat
-Photos are resized in the browser. Videos are reduced to 8 frames in the browser to stay under edge payload limits.
+Photos are resized in the browser. Videos are reduced to 8 frames to stay under edge payload limits.
 */

@@ -2,212 +2,275 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0c0e0d">
-<title>Lustre — Car detailing assistant</title>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="manifest" href="/manifest.webmanifest">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#080a09">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Lustre — Detailing assistant</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0c0e0d;--panel:#151917;--panel2:#1d2320;--line:#2f3833;--text:#f4f7f5;--mute:#a9b5ae;--g:#3dff85;--g2:#16a853;--warn:#ffc93d;--bad:#ff6b5b;--serif:'Fraunces',Georgia,serif;--sans:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif}
-*{box-sizing:border-box;margin:0}html,body{height:100%}
-body{font:16px/1.5 var(--sans);background:var(--bg);color:var(--text);display:flex;justify-content:center}
-.app{width:100%;max-width:760px;height:100%;height:100dvh;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
-header{display:flex;align-items:center;gap:10px;padding:10px 16px}
-.mark{width:40px;height:40px;flex:none}.mark .glint{transform-box:fill-box;transform-origin:center;animation:gl 1s cubic-bezier(.2,1.3,.4,1) .3s both}
-@keyframes gl{from{transform:scale(0) rotate(-60deg);opacity:0}}
-h1{font:600 24px/1 var(--serif)}.grow{flex:1}
-.pill{border:1px solid var(--line);border-radius:999px;padding:0 14px;min-height:44px;background:var(--panel);color:var(--text);font:600 14px var(--sans);display:inline-flex;align-items:center;gap:6px;cursor:pointer}
-.aud[aria-pressed=true]{background:var(--g);color:#04120a;border-color:var(--g)}
-#off{background:var(--warn);color:#201800;font-size:14px;font-weight:600;padding:6px 16px}
-.job{padding:12px 16px;border-block:1px solid var(--line);background:var(--panel)}
-.jtop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.veh{font:600 20px/1.2 var(--serif)}.sub{color:var(--mute);font-size:14px}
-.steps{display:flex;align-items:center;gap:4px;margin-top:10px}.arr{color:var(--mute);font-size:12px}
-.st{flex:1;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--mute);font:600 14px var(--sans);cursor:pointer}
-.st.done{color:var(--g);border-color:var(--g2)}.st.now{background:var(--g);color:#04120a;border-color:var(--g)}
-.bar{height:4px;background:var(--panel2);border-radius:4px;margin:10px 0}.bar i{display:block;height:100%;background:var(--g);border-radius:4px;transition:width .3s}
-.pane{display:none;flex:1;min-height:0;flex-direction:column}.pane.on{display:flex}
-.scroll{overflow-y:auto;padding:16px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
-h3{font:600 18px var(--serif);margin-bottom:10px}.hint{color:var(--mute);font-size:14px;margin-top:8px}
-.btn{min-height:48px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font:600 15px var(--sans);cursor:pointer}
-.btn.pri{background:var(--g);color:#04120a;border-color:var(--g)}.btn.sm{min-height:40px;padding:0 12px;font-size:14px}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>.f{flex:1;min-width:110px}
-.f{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:10px;min-height:48px;padding:0 12px;font:inherit;width:100%}
-textarea.f{padding:10px 12px;resize:vertical;min-height:80px}
-.lab{display:block;font-size:14px;color:var(--mute);margin:10px 0 4px}
+:root{--bg:#080a09;--card:linear-gradient(180deg,#171c19,#111512);--card2:#1b211d;--line:rgba(255,255,255,.08);--text:#f4f7f5;--mute:#a3b0a9;--g:#3dff85;--g2:#14b85a;--warn:#ffc93d;--bad:#ff6b5b;--serif:'Fraunces',Georgia,serif;--sans:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;--ease:cubic-bezier(.2,.8,.2,1)}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent;scrollbar-width:thin;scrollbar-color:#2c3a32 transparent}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:linear-gradient(#2c3a32,#1f2924);border-radius:8px;border:2px solid transparent;background-clip:padding-box}::-webkit-scrollbar-thumb:hover{background:linear-gradient(var(--g2),#0f7d3d);background-clip:padding-box;border:2px solid transparent}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%}
+body{font:16px/1.5 var(--sans);color:var(--text);background:var(--bg) radial-gradient(900px 520px at 50% -12%,rgba(61,255,133,.1),transparent 62%);display:flex;justify-content:center}
+button,input,select,textarea{font:inherit;color:inherit;touch-action:manipulation}button{cursor:pointer}
+.app{width:100%;max-width:760px;height:var(--h,100dvh);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);position:relative}
+.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 :focus-visible{outline:2px solid var(--g);outline-offset:2px}
-.chipb{min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--text);font:600 14px var(--sans);cursor:pointer;white-space:nowrap}
-.chipb.on{background:var(--g);color:#04120a;border-color:var(--g)}
-.res{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.res div{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px}
-.res b{display:block;font:600 30px/1.1 var(--serif);color:var(--g)}.res span{color:var(--mute);font-size:14px}
-.tm{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
-.tm b{font:600 28px var(--serif);font-variant-numeric:tabular-nums}.tm.done b{color:var(--bad)}
-.pn{border-top:1px solid var(--line);padding:12px 0}.pn:first-of-type{border-top:0}
-.pn .hd{display:flex;justify-content:space-between;font-weight:600;margin-bottom:6px}
-.pn .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:end}
+/* splash */
+#splash{position:fixed;inset:0;z-index:99;background:var(--bg) radial-gradient(600px 400px at 50% 40%,rgba(61,255,133,.12),transparent 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .6s var(--ease),visibility 0s .6s}
+#splash.out{opacity:0;visibility:hidden}#splash .lg{width:104px;height:104px}
+#splash h2{font:600 38px var(--serif);letter-spacing:.01em;animation:up .8s .5s var(--ease) both}#splash p{color:var(--mute);margin-top:-12px;animation:up .8s .7s var(--ease) both}
+.ld{width:130px;height:3px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}.ld::after{content:"";display:block;height:100%;width:40%;border-radius:3px;background:linear-gradient(90deg,transparent,var(--g),transparent);animation:ld 1.1s ease-in-out infinite}
+@keyframes ld{from{transform:translateX(-100%)}to{transform:translateX(330%)}}@keyframes up{from{opacity:0;transform:translateY(10px)}}
+.logo{display:block;width:100%;height:100%;overflow:visible}.logo .a{fill:none;stroke:url(#la);stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:dr .9s .25s var(--ease) forwards}.logo .a2{animation-delay:.5s}
+.logo .dot{opacity:0;animation:pop .5s .95s var(--ease) forwards;transform-box:fill-box;transform-origin:center}
+@keyframes dr{to{stroke-dashoffset:0}}@keyframes pop{from{transform:scale(0)}to{opacity:.95;transform:scale(1)}}
+/* header */
+.top{display:flex;align-items:center;gap:10px;padding:10px 16px}.top .lg{width:38px;height:38px}.top h1{font:600 24px/1 var(--serif);letter-spacing:.01em}.grow{flex:1}
+.pill{min-height:44px;min-width:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);font-weight:600;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:transform .15s,background .2s}
+.pill:active,.btn:active,.chipb:active,.tile:active{transform:scale(.96)}.pill.on{background:var(--g);color:#04120a;border-color:var(--g)}
+#off{background:var(--warn);color:#201800;font-size:14px;font-weight:600;padding:6px 16px}
+/* panes */
+.pane{display:none;flex:1;min-height:0;flex-direction:column}.pane.on{display:flex;animation:pin .32s var(--ease) both}@keyframes pin{from{opacity:0;transform:translateY(10px)}}
+.scroll{overflow-y:auto;padding:4px 16px 20px;flex:1}.sub{display:none}.sub.on{display:block;animation:pin .3s var(--ease) both}
+.seg{display:flex;gap:4px;margin:4px 16px 8px;padding:4px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.seg button{flex:1;min-height:42px;border:0;border-radius:10px;background:none;color:var(--mute);font-weight:600;font-size:15px;transition:all .25s var(--ease)}.seg button.on{background:var(--card2);color:var(--g);box-shadow:inset 0 0 0 1px rgba(61,255,133,.3)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 12px 30px -18px #000;position:relative;overflow:hidden}
+h3{font:600 19px var(--serif);margin-bottom:10px}.hint{color:var(--mute);font-size:14px;margin-top:8px}.mut{color:var(--mute);font-size:14px}
+.btn{min-height:50px;padding:0 18px;border-radius:14px;border:1px solid var(--line);background:var(--card2);color:var(--text);font-weight:600;font-size:15px;transition:transform .15s,filter .2s;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.btn.pri{background:linear-gradient(180deg,#5bff9b,#27d96d);color:#04120a;border-color:transparent;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 8px 22px -8px rgba(61,255,133,.55)}.btn.sm{min-height:42px;padding:0 14px;font-size:14px}.btn.wide{width:100%}.btn:disabled{opacity:.45}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>.f{flex:1;min-width:110px}
+.f{background:#0e1210;border:1px solid var(--line);color:var(--text);border-radius:12px;min-height:50px;padding:0 14px;font-size:16px;width:100%;transition:border-color .2s,box-shadow .2s}.f:focus{outline:0;border-color:var(--g);box-shadow:0 0 0 3px rgba(61,255,133,.15)}
+textarea.f{padding:12px 14px;resize:vertical;min-height:90px;line-height:1.45}select.f{appearance:none}
+.lab{display:block;font-size:14px;color:var(--mute);margin:12px 0 5px}
+.chipb{min-height:44px;padding:0 15px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-weight:600;font-size:14px;white-space:nowrap;display:inline-flex;align-items:center;gap:7px;transition:all .2s}.chipb.on{background:var(--g);color:#04120a;border-color:var(--g)}
+/* job hero */
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.07) 50%,transparent 60%);transform:translateX(-120%);pointer-events:none}.hero.sweep::after{animation:sw 1.4s var(--ease)}@keyframes sw{to{transform:translateX(120%)}}
+.hrow{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.veh{font:600 26px/1.15 var(--serif);letter-spacing:-.01em}
+.ring{position:relative;width:78px;height:78px;flex:none}.ring svg{transform:rotate(-90deg);width:100%;height:100%}.ring circle{fill:none;stroke-width:3;stroke-linecap:round}.rb{stroke:rgba(255,255,255,.08)}.rf{stroke:var(--g);transition:stroke-dasharray .8s var(--ease);filter:drop-shadow(0 0 3px rgba(61,255,133,.6))}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font:600 20px var(--serif)}
+.stp{display:flex;margin:4px 0 14px}.sn{flex:1;background:none;border:0;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;font-weight:600;font-size:13px;padding:4px 0}
+.sn::after{content:"";position:absolute;top:21px;left:calc(50% + 24px);right:calc(-50% + 24px);height:2px;background:rgba(255,255,255,.1);border-radius:2px}.sn:last-child::after{display:none}.sn.done::after{background:var(--g)}
+.dot{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:#0e1210;font-weight:600;font-size:15px;transition:all .35s var(--ease)}.sn.done .dot{background:rgba(61,255,133,.14);border-color:var(--g2);color:var(--g)}
+.sn.now{color:var(--text)}.sn.now .dot{background:var(--g);color:#04120a;border-color:var(--g);animation:pulse 2.2s infinite}@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(61,255,133,.5)}70%,100%{box-shadow:0 0 0 12px rgba(61,255,133,0)}}
+.dot .i{width:20px;height:20px;stroke-width:2.6}
+.nh{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:6px}.nh h3{margin:0}.cnt{font:600 15px var(--sans);color:var(--g)}
+.ck{display:flex;gap:14px;align-items:center;min-height:50px;border-top:1px solid var(--line)}.ck input{appearance:none;width:26px;height:26px;border-radius:8px;border:1.5px solid #4a5a50;background:#0e1210;flex:none;display:grid;place-items:center;transition:all .2s}
+.ck input:checked{background:var(--g);border-color:var(--g)}.ck input:checked::after{content:"";width:6px;height:12px;border:solid #04120a;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}.ck:has(input:checked) span{color:var(--mute);text-decoration:line-through}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tile{aspect-ratio:1.1;border-radius:18px;border:1px solid var(--line);background:var(--card);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:14px;transition:transform .15s,border-color .2s}.tile:hover{border-color:rgba(61,255,133,.4)}.tile .i{color:var(--g);width:26px;height:26px}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.res div{background:#0e1210;border:1px solid var(--line);border-radius:14px;padding:14px}.res b{display:block;font:600 32px/1.1 var(--serif);color:var(--g)}.res span{color:var(--mute);font-size:14px}
+.tm{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-top:1px solid var(--line)}.tm b{font:600 30px var(--serif);font-variant-numeric:tabular-nums}.tm.done b{color:var(--bad);animation:blink 1s infinite}
+.pn{border-top:1px solid var(--line);padding:14px 0}.pn:first-of-type{border-top:0}.pn .hd{display:flex;justify-content:space-between;font-weight:600;margin-bottom:8px}.pn .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .ok{color:var(--g)}.wn{color:var(--warn)}.bd{color:var(--bad)}
-.ck{display:flex;gap:12px;align-items:center;min-height:44px}.ck input{width:24px;height:24px;accent-color:var(--g);flex:none}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.grid figure{position:relative}
-.grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;border:1px solid var(--line);display:block}
-.grid figcaption{position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.8);font-size:12px;padding:1px 6px;border-radius:6px}
-.grid button{position:absolute;top:4px;right:4px;width:32px;height:32px;border-radius:50%;border:0;background:rgba(0,0,0,.8);color:#fff;font-size:16px}
-#chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth}
-.empty{margin:auto 0}.empty h2{font:600 26px/1.2 var(--serif);margin-bottom:8px}.empty p{color:var(--mute)}
-.msg{max-width:92%;line-height:1.6;font-size:16px}
-.msg.user{align-self:flex-end;background:var(--panel2);border:1px solid var(--line);padding:10px 14px;border-radius:16px 16px 4px 16px}
-.msg.bot{align-self:flex-start;padding-left:14px;border-left:3px solid var(--g)}.msg.bot p{margin-bottom:8px}.msg.bot ul,.msg.bot ol{margin:0 0 8px 20px}.msg.bot strong{color:var(--g)}
-.msg.err{border-left-color:var(--bad);color:var(--bad)}.msg code{background:var(--panel2);padding:1px 6px;border-radius:4px}
-.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}.thumbs img{width:72px;height:72px;object-fit:cover;border-radius:8px}
-.typing{display:flex;gap:5px;padding:6px 0}.typing i{width:8px;height:8px;border-radius:50%;background:var(--g);animation:b 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
-@keyframes b{0%,80%,100%{opacity:.25}40%{opacity:1}}
-.quick{display:flex;gap:8px;overflow-x:auto;padding:8px 16px;border-top:1px solid var(--line)}
-.composer{padding:8px 16px 12px}#preview{display:flex;gap:8px;flex-wrap:wrap}#preview:empty{display:none}
-.pv{position:relative;margin-bottom:8px}.pv img{width:56px;height:56px;object-fit:cover;border-radius:8px;display:block}
-.pv button{position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);color:var(--text)}
-.box{display:flex;align-items:flex-end;gap:4px;background:var(--panel);border:2px solid var(--line);border-radius:16px;padding:6px}.box:focus-within{border-color:var(--g)}
-textarea#input{flex:1;background:none;border:0;outline:0;color:var(--text);font:inherit;resize:none;max-height:140px;padding:12px 6px;line-height:1.4}
-.ib{flex:none;width:48px;height:48px;border-radius:12px;border:0;cursor:pointer;display:grid;place-items:center;background:transparent;color:var(--mute)}
-.ib.on{background:var(--bad);color:#fff}.send{background:var(--g);color:#04120a}.send:disabled{opacity:.4}
-.tabs{display:flex;border-top:1px solid var(--line);background:var(--panel);padding-bottom:env(safe-area-inset-bottom)}
-.tabs button{flex:1;min-height:58px;background:none;border:0;color:var(--mute);font:600 13px var(--sans);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer}
-.tabs button.on{color:var(--g);box-shadow:inset 0 2px 0 var(--g)}
-#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--g);color:#04120a;font-weight:600;padding:10px 16px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}#toast.on{opacity:1}
-@media(prefers-reduced-motion:reduce){.mark .glint,.typing i{animation:none}#chat{scroll-behavior:auto}}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.grid figure{position:relative;animation:pin .3s var(--ease) both}.grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;border:1px solid var(--line);display:block}
+.grid figcaption{position:absolute;left:5px;bottom:5px;background:rgba(0,0,0,.75);font-size:12px;padding:1px 7px;border-radius:6px}.grid button{position:absolute;top:5px;right:5px;width:32px;height:32px;border-radius:50%;border:0;background:rgba(0,0,0,.75);color:#fff}
+/* chat */
+.ctxb{margin:0 16px 4px;min-height:44px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);display:flex;align-items:center;gap:8px;padding:0 14px;font-size:14px;color:var(--mute);text-align:left}.ctxb b{color:var(--text);font-weight:600}.ctxb span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#chat{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:18px;scroll-behavior:smooth}
+.empty{margin:auto 0;animation:up .6s var(--ease) both}.empty .lg{width:56px;height:56px;margin-bottom:14px}.empty h2{font:600 28px/1.15 var(--serif);margin-bottom:8px}.empty p{color:var(--mute);max-width:420px}
+.msg{max-width:94%;line-height:1.65;animation:pin .35s var(--ease) both}.msg.user{align-self:flex-end;background:linear-gradient(180deg,#222b25,#1a211d);border:1px solid var(--line);padding:11px 15px;border-radius:18px 18px 4px 18px}
+.msg.bot{align-self:flex-start;padding-left:15px;border-left:2px solid var(--g)}.msg.bot p{margin-bottom:10px}.msg.bot p:last-child{margin:0}.msg.bot ul,.msg.bot ol{margin:0 0 10px 20px}.msg.bot li{margin-bottom:4px}.msg.bot strong{color:var(--g);font-weight:600}
+.msg.err{border-left-color:var(--bad);color:var(--bad)}.msg code{background:#0e1210;padding:1px 6px;border-radius:5px}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}.thumbs img{width:72px;height:72px;object-fit:cover;border-radius:10px}
+.typing{display:flex;gap:5px;padding:8px 0}.typing i{width:8px;height:8px;border-radius:50%;background:var(--g);animation:b 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}@keyframes b{0%,80%,100%{opacity:.2;transform:scale(.7)}40%{opacity:1;transform:scale(1)}}
+.caret{display:inline-block;width:8px;height:1.05em;margin-left:2px;vertical-align:-3px;background:var(--g);border-radius:2px;animation:blink 1s steps(2) infinite}@keyframes blink{50%{opacity:0}}
+.quick{display:flex;gap:8px;overflow-x:auto;padding:8px 16px;scrollbar-width:none}.quick::-webkit-scrollbar{display:none}
+.composer{padding:4px 16px 8px}#preview{display:flex;gap:8px;flex-wrap:wrap}#preview:empty{display:none}.pv{position:relative;margin-bottom:8px}.pv img{width:58px;height:58px;object-fit:cover;border-radius:10px;display:block}.pv button{position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--card2)}
+.box{display:flex;align-items:flex-end;gap:2px;background:#101512;border:1.5px solid var(--line);border-radius:22px;padding:6px;transition:border-color .2s,box-shadow .2s}.box:focus-within{border-color:rgba(61,255,133,.6);box-shadow:0 0 0 4px rgba(61,255,133,.1)}
+#input{flex:1;background:none;border:0;outline:0;resize:none;max-height:130px;padding:12px 6px;line-height:1.4;font-size:16px}#input::placeholder{color:#7d8b83}
+.ib{flex:none;width:48px;height:48px;border-radius:16px;border:0;display:grid;place-items:center;background:transparent;color:var(--mute);transition:all .2s}.ib.on{background:var(--bad);color:#fff;animation:pulse2 1.2s infinite}@keyframes pulse2{50%{opacity:.7}}
+.send{background:linear-gradient(180deg,#5bff9b,#27d96d);color:#04120a}.send:active{transform:scale(.92)}
+/* dock */
+.dock{position:relative;display:grid;grid-template-columns:repeat(4,1fr);margin:4px 12px calc(env(safe-area-inset-bottom) + 8px);padding:6px;border-radius:24px;background:rgba(20,25,22,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);box-shadow:0 14px 34px -12px #000}
+.ind{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/4);border-radius:18px;background:rgba(61,255,133,.12);box-shadow:inset 0 0 0 1px rgba(61,255,133,.32);transform:translateX(calc(var(--ti,0)*100%));transition:transform .45s cubic-bezier(.3,1.25,.4,1)}
+.dock button{position:relative;min-height:56px;background:none;border:0;color:var(--mute);font-weight:600;font-size:12.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:color .25s}.dock button.on{color:var(--g)}
+/* sheet + toast */
+#sheet{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(5px)}#sheet.on{display:flex;animation:fade .25s both}@keyframes fade{from{opacity:0}}
+.sh{width:100%;max-width:760px;max-height:88dvh;overflow:auto;background:#121714;border:1px solid var(--line);border-radius:26px 26px 0 0;padding:10px 18px calc(18px + env(safe-area-inset-bottom));animation:slide .4s var(--ease)}@keyframes slide{from{transform:translateY(100%)}}
+.grab{width:42px;height:4px;border-radius:4px;background:rgba(255,255,255,.18);margin:0 auto 14px}
+.opt{width:100%;text-align:left;padding:14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03);margin-bottom:8px;display:block;transition:all .2s}.opt.on{border-color:var(--g);background:rgba(61,255,133,.08)}.opt b{display:block;font-size:16px}.opt span{color:var(--mute);font-size:14px;display:block}.opt em{font-style:normal;font-size:13px;color:var(--g)}
+#toast{position:fixed;left:50%;bottom:104px;transform:translate(-50%,10px);background:var(--g);color:#04120a;font-weight:600;padding:11px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:all .3s var(--ease);z-index:70}#toast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:380px){.veh{font-size:22px}.ring{width:64px;height:64px}.tile{font-size:13px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}#chat{scroll-behavior:auto}}
 </style>
 </head>
 <body>
+<div id="splash"><div class="lg"></div><h2>Lustre</h2><p>Detailing assistant</p><div class="ld"></div></div>
 <div class="app">
-<header><svg class="mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true" xmlns:c2pa="http://c2pa.org/manifest"><metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYToyMGY4OTRhMy1iODkxLTQ5OTktODllMS1hZjI2NjczYjBhYmMAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaIaav+6SBt/uAJ3QThk8EyQAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDpiMmU5OGNjMi0yY2E0LTRkYWQtYTg1Mi1hNDAyYzU5ODcyYThscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNomp76hcaimvFd3cU4meXR4QAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFgge3ZCK/j11GkqGAQZTU1U2NTqaYOOoOBKArrIRc/7uI2kZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaFoP4CaIcGS3M0ftp8+3G/cAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRNAAAAAAAAAAAAAAAAAGRoYXNoWCAV1pMQGWb2Pfs7dQouLV3GVDV/Z/rjkBYkJZm95cBvo2RuYW1lbmp1bWJmIG1hbmlmZXN0amV4Y2x1c2lvbnOBomVzdGFydBizZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjIwZjg5NGEzLWI4OTEtNDk5OS04OWUxLWFmMjY2NzNiMGFiYy9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOmJjNTExMTZhLTExMWYtNDNmZC05YzdjLTc5M2M0NjZlOGMyN3JjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCB7dkIr+PXUaSoYBBlNTVTY1Oppg46g4EoCushFz/u4jaJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggOE0kyiVszMldqYV7qcomQg1C0VYulfS0sCd3xBPdXVCiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggDLLt1Y++yt3Fh5pIizcIphPcA7JbVr1ADsSqCr+bIhx0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQAFRG4B/irei+Xc8TqicUQgCNnFXEOgIMwkcrl66lY/ok38B71HEnktOyvEhzk4qG6dv+CQmpf8zvdZ2PIKPlVc=</c2pa:manifest></metadata>
-  <defs>
-    <linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d221f"/><stop offset="1" stop-color="#090b0a"/></linearGradient>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c4ffdb"/><stop offset=".5" stop-color="#3dff85"/><stop offset="1" stop-color="#14994b"/></linearGradient>
-    <radialGradient id="h" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#c4ffdb" stop-opacity=".55"/><stop offset="1" stop-color="#c4ffdb" stop-opacity="0"/></radialGradient>
-  </defs>
-  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#t)" stroke="#2f3833" stroke-width="1.2"/>
-  <path d="M23 15V38C23 45 27 49 34 49H47" fill="none" stroke="url(#g)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M21.2 19V37C21.2 42.6 24 45.6 29.5 45.8" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.3" stroke-linecap="round"/>
-  <g class="glint"><circle cx="46" cy="20" r="14" fill="url(#h)"/>
-  <path d="M46 10L47.7 18.3L56 20L47.7 21.7L46 30L44.3 21.7L36 20L44.3 18.3Z" fill="#f0fff6"/></g>
-</svg>
-<h1>Lustre</h1><span class="grow"></span>
-  <button class="pill" id="wxp" title="Site weather">Weather</button>
-  <button class="pill aud" id="aud" aria-pressed="false">🔊 Audio off</button></header>
-<div id="off" hidden>Offline: calculator, checklists, depth log, photos, timers and texts still work. Chat needs a connection.</div>
-<div class="job" id="job"></div>
+<header class="top"><div class="lg" id="hlogo"></div><h1>Lustre</h1><span class="grow"></span><button class="pill" id="wxp" aria-label="Site weather"></button><button class="pill" id="aud" aria-label="Audio read-back" aria-pressed="false"></button><button class="pill" id="set" aria-label="Settings"></button></header>
+<div id="off" hidden>Offline: everything works except chat, voice and live weather.</div>
 
-<section class="pane on" id="p-chat">
-  <div id="chat" aria-live="polite"><div class="empty" id="empty"><h2>What's the car need?</h2><p>Type, tap the mic, or snap a photo. Ask for specs, ratios, or the next step.</p></div></div>
-  <div class="quick" id="quick">
-    <button class="chipb" data-q="mix">🧪 Mix ratios</button><button class="chipb" data-q="check">✅ Checklist</button>
-    <button class="chipb" data-q="timer">⏱ Timers</button><button class="chipb" data-q="wx">🌤 Weather check</button>
-    <button class="chipb" data-q="photo">📷 Snap photo</button><button class="chipb" data-q="up">💡 Upsells</button><button class="chipb" data-q="txt">💬 Text client</button>
-  </div>
-  <div class="composer"><div id="preview"></div>
-    <div class="box">
-      <button class="ib" id="attach" aria-label="Attach photos or video"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l9-9a3.7 3.7 0 0 1 5.2 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8.3-8.3"/></svg></button>
-      <input type="file" id="file" accept="image/*,video/*" multiple hidden>
-      <button class="ib" id="mic" aria-label="Voice input"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
-      <textarea id="input" rows="1" placeholder="Ask or say a command…" aria-label="Message"></textarea>
-      <button class="ib send" id="send" aria-label="Send"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
-    </div></div>
+<section class="pane on" id="p-job"><div class="scroll">
+  <div class="card hero" id="hero"></div>
+  <div class="stp" id="stepper"></div>
+  <div class="card" id="now"></div>
+  <div class="card" id="wxs"></div>
+  <div class="tiles" id="tiles"></div>
+</div></section>
+
+<section class="pane" id="p-ask">
+  <button class="ctxb" id="ctx"></button>
+  <div id="chat" aria-live="polite"><div class="empty" id="empty"><div class="lg" id="elogo"></div><h2>What's the car need?</h2><p>Type, tap the mic, or attach a photo. Ask for specs, ratios, or the next step.</p></div></div>
+  <div class="quick" id="quick"></div>
+  <div class="composer"><div id="preview"></div><div class="box">
+    <button class="ib" id="attach" aria-label="Attach photos or video"></button><input type="file" id="file" accept="image/*,video/*" multiple hidden>
+    <button class="ib" id="mic" aria-label="Voice input"></button>
+    <textarea id="input" rows="1" placeholder="Ask or say a command…" aria-label="Message" enterkeyhint="send" autocapitalize="sentences"></textarea>
+    <button class="ib send" id="send" aria-label="Send"></button></div></div>
 </section>
 
-<section class="pane scroll" id="p-mix">
-  <div class="card"><h3>Dilution calculator</h3>
-    <label class="lab" for="cn">Chemical</label><input class="f" id="cn" list="cl" placeholder="APC, Dark Fury, iron remover…" autocomplete="off">
+<section class="pane" id="p-tools">
+  <div class="seg"><button class="on" data-s="mix">Mix</button><button data-s="timers">Timers</button><button data-s="depth">Depth</button></div>
+  <div class="scroll">
+  <div class="sub on" id="s-mix"><div class="card"><h3>Dilution calculator</h3>
+    <label class="lab" for="cn" style="margin-top:0">Chemical</label><input class="f" id="cn" list="cl" placeholder="APC, Dark Fury, iron remover…" autocomplete="off">
     <datalist id="cl"><option>APC</option><option>Dark Fury</option><option>Iron remover</option><option>Wheel cleaner</option><option>Snow foam</option><option>Glass cleaner</option><option>Interior cleaner</option></datalist>
-    <label class="lab">Container size</label>
-    <div class="row"><input class="f" id="cs" type="number" inputmode="decimal" min="0" placeholder="32"><select class="f" id="cu"><option value="1">oz</option><option value="128">gallon</option><option value="33.814">liter</option><option value="0.033814">mL</option></select></div>
-    <label class="lab">Ratio (1 part chemical : N parts water)</label>
-    <div class="row" id="rat"></div><div class="row" style="margin-top:8px"><span>1 :</span><input class="f" id="cr" type="number" inputmode="decimal" min="0" style="max-width:110px" aria-label="Custom ratio"></div>
+    <label class="lab">Container size</label><div class="row"><input class="f" id="cs" type="number" inputmode="decimal" min="0" placeholder="32"><select class="f" id="cu"><option value="1">oz</option><option value="128">gallon</option><option value="33.814">liter</option><option value="0.033814">mL</option></select></div>
+    <label class="lab">Ratio: 1 part chemical to N parts water</label><div class="row" id="rat"></div>
+    <div class="row" style="margin-top:8px"><span class="mut">Custom 1 :</span><input class="f" id="cr" type="number" inputmode="decimal" min="0" style="max-width:120px" aria-label="Custom ratio"></div>
     <div id="cres"></div>
-    <label class="lab" for="cnote">Notes for this chemical (offline sheet)</label><input class="f" id="cnote" placeholder="Dwell time, surfaces, warnings…">
-    <div class="row" style="margin-top:10px"><button class="btn pri" id="csay">Read aloud</button><button class="btn" id="csave">Save preset</button></div>
-    <div class="row" id="pre" style="margin-top:12px"></div>
-    <p class="hint">1:4 means 1 part product to 4 parts water. Always follow the product label.</p></div>
-  <div class="card" id="timers"><h3>Timers</h3>
-    <div class="row" id="tp"></div>
-    <div class="row" style="margin-top:10px"><input class="f" id="tl" placeholder="Label (dwell, flash…)"><input class="f" id="tmn" type="number" inputmode="decimal" placeholder="Minutes" style="max-width:120px"><button class="btn pri" id="tgo">Start</button></div>
-    <div id="tlist"></div></div>
+    <label class="lab" for="cnote">Notes for this chemical (kept offline)</label><input class="f" id="cnote" placeholder="Dwell time, surfaces, warnings…">
+    <div class="row" style="margin-top:12px"><button class="btn pri" id="csay"></button><button class="btn" id="csave">Save preset</button></div>
+    <div class="row" id="pre" style="margin-top:12px"></div><p class="hint">Follow the product label. Presets save on this device.</p></div></div>
+  <div class="sub" id="s-timers"><div class="card"><h3>Timers</h3><div class="row" id="tp"></div>
+    <div class="row" style="margin-top:12px"><input class="f" id="tl" placeholder="Label (dwell, flash…)"><input class="f" id="tmn" type="number" inputmode="decimal" placeholder="Min" style="max-width:100px"><button class="btn pri" id="tgo">Start</button></div><div id="tlist"></div></div></div>
+  <div class="sub" id="s-depth"><div class="card"><h3>Paint depth and defects</h3><p class="mut">Microns (µm). Measure the same spot before and after each cut.</p><div id="dp"></div>
+    <button class="btn pri wide" id="dai" style="margin-top:12px">Ask Lustre to review</button>
+    <p class="hint">Rule of thumb only: factory paint is often about 100–150 µm and repainted panels vary. Stop and reassess when a panel gets thin.</p></div></div>
+  </div>
 </section>
 
-<section class="pane scroll" id="p-depth">
-  <div class="card"><h3>Paint depth and defects</h3><p class="hint" style="margin:0 0 6px">Readings in microns (µm). Measure the same spot before and after each cut.</p><div id="dp"></div>
-    <div class="row" style="margin-top:12px"><button class="btn pri" id="dai">Ask Lustre to review</button></div>
-    <p class="hint">Rule of thumb only: factory paint is often around 100–150 µm, and repainted panels vary. Stop and reassess when a panel gets thin.</p></div>
+<section class="pane" id="p-log">
+  <div class="seg"><button class="on" data-s="photos">Photos</button><button data-s="notes">Notes</button><button data-s="texts">Texts</button></div>
+  <div class="scroll">
+  <div class="sub on" id="s-photos"><div class="card"><h3>Inspection photos</h3><label class="lab" for="ppanel" style="margin-top:0">Panel or area (optional)</label><input class="f" id="ppanel" placeholder="Hood, driver door…">
+    <div class="row" style="margin-top:12px"><button class="btn pri" data-cam="before" style="flex:1"></button><button class="btn pri" data-cam="after" style="flex:1"></button></div>
+    <input type="file" id="cam" accept="image/*" capture="environment" hidden><div class="grid" id="pg"></div></div></div>
+  <div class="sub" id="s-notes"><div class="card"><h3>Job notes</h3><textarea class="f" id="notes" style="min-height:200px" placeholder="Customer requests, defects, products used…"></textarea></div></div>
+  <div class="sub" id="s-texts"><div class="card"><h3>Client texts</h3><div class="row"><div class="f" style="padding:0;border:0;background:none"><label class="lab" style="margin-top:0" for="tcn">Client first name</label><input class="f" id="tcn"></div><div class="f" style="padding:0;border:0;background:none"><label class="lab" style="margin-top:0" for="teta">ETA or finish time</label><input class="f" id="teta" placeholder="3 PM"></div></div><div id="tpl"></div></div></div>
+  </div>
 </section>
 
-<section class="pane scroll" id="p-job">
-  <div class="card"><h3 id="ckt">Checklist</h3><div id="cks"></div></div>
-  <div class="card" id="photos"><h3>Inspection photos</h3>
-    <label class="lab" for="ppanel">Panel or area (optional)</label><input class="f" id="ppanel" placeholder="Hood, driver door…">
-    <div class="row" style="margin-top:10px"><button class="btn pri" data-cam="before">📷 Before</button><button class="btn pri" data-cam="after">📷 After</button></div>
-    <input type="file" id="cam" accept="image/*" capture="environment" hidden><div class="grid" id="pg"></div></div>
-  <div class="card"><h3>Site weather</h3><div id="wx"></div><button class="btn" id="wxr" style="margin-top:10px">Refresh weather</button></div>
-  <div class="card"><h3>Job notes</h3><textarea class="f" id="notes" placeholder="Customer requests, defects, product used…"></textarea></div>
-  <div class="card" id="texts"><h3>Client texts</h3>
-    <div class="row"><div class="f"><label class="lab" style="margin-top:0" for="tcn">Client first name</label><input class="f" id="tcn"></div><div class="f"><label class="lab" style="margin-top:0" for="teta">ETA or finish time</label><input class="f" id="teta" placeholder="3 PM"></div></div>
-    <div id="tpl"></div></div>
-</section>
-
-<nav class="tabs" aria-label="Sections">
-  <button class="on" data-t="chat"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>Chat</button>
-  <button data-t="mix"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg>Mix</button>
-  <button data-t="depth"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 18a8 8 0 1 1 16 0M12 18l4-6"/></svg>Depth</button>
-  <button data-t="job"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 13l2 2 4-4"/></svg>Job</button>
-</nav>
+<nav class="dock" id="dock" aria-label="Sections"><span class="ind"></span>
+  <button class="on" data-t="job"></button><button data-t="ask"></button><button data-t="tools"></button><button data-t="log"></button></nav>
 </div>
-<div id="toast" role="status"></div>
+<div id="sheet"><div class="sh" id="shc"></div></div><div id="toast" role="status"></div>
 
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const STEPS=['Wash','Prep','Correct','Coat'];
-const CHECK=[['Pre-rinse and foam dwell','Wheels and tires first','Two-bucket contact wash','Iron and tar decon','Clay or chemical decon','Dry with clean towels'],['Cover trim and seals','Inspect under direct light','Take paint depth readings','Panel wipe to reveal true defects','Mask edges and sharp lines'],['Test spot and judge the result','Pick pad and polish from the test','Work small sections','Wipe and inspect each section','Re-measure depth on cut panels'],['Final panel wipe','Check temp, humidity and rain','Apply in small sections','Level or buff within the flash time','Keep dry for the label cure time']];
-const PANELS=['Hood','Roof','Trunk','L fender','R fender','L door','R door','L quarter','R quarter'];
-const RAT=[2,4,10,16,32,64];
-let S={job:{vehicle:'2024 Porsche 911',pkg:'Paint correction + ceramic coating',client:'',step:0,notes:'',checks:{}},depth:{},presets:[],timers:[],audio:false,ratio:10,eta:'',wx:null};
+/* ---------- icons + logo ---------- */
+const ICON={list:'M5 4h14v17H5zM9 4v3h6V4M9 13l2 2 4-4',msg:'M4 5h16v11H9l-5 4z',flask:'M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3',book:'M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11',timer:'M12 8v5l3 2M9 2h6M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16',gauge:'M4 18a8 8 0 1 1 16 0M12 18l4-6',camera:'M4 8h3l2-3h6l2 3h3v11H4zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7',bulb:'M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3',sliders:'M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M6 14v6',spk:'M4 9v6h4l5 4V5L8 9zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11',mute:'M4 9v6h4l5 4V5L8 9zM17 9l4 6M21 9l-4 6',mic:'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3M5 11a7 7 0 0 0 14 0M12 18v3',clip:'M21 12.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l9-9a3.7 3.7 0 0 1 5.2 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8.3-8.3',up:'M12 19V5M5 12l7-7 7 7',stop:'M7 7h10v10H7z',check:'M5 12l4 4 10-10',edit:'M4 20h4L19 9l-4-4L4 16z',cloud:'M6 19a4 4 0 0 1 0-8 6 6 0 0 1 11.5 1.5A3.3 3.3 0 0 1 17 19z',chev:'M9 6l6 6-6 6',wrench:'M14 6a4 4 0 0 0 5 5l-9 9a2.1 2.1 0 0 1-3-3z'};
+const ic=(n,c='')=>`<svg class="i ${c}"><use href="#i-${n}"/></svg>`;
+document.body.insertAdjacentHTML('afterbegin',`<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><radialGradient id="lo" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#26302a"/><stop offset="1" stop-color="#090c0a"/></radialGradient><linearGradient id="lr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3dff85"/><stop offset="1" stop-color="#3dff85" stop-opacity=".06"/></linearGradient><linearGradient id="la" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#3dff85"/><stop offset="1" stop-color="#eafff2"/></linearGradient></defs>${Object.entries(ICON).map(([k,v])=>`<symbol id="i-${k}" viewBox="0 0 24 24"><path d="${v}"/></symbol>`).join('')}</svg>`);
+const LOGO='<svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="url(#lo)" stroke="url(#lr)" stroke-width="1.6"/><path class="a" pathLength="1" stroke-width="5" d="M12 38A21 21 0 0 1 38 12"/><path class="a a2" pathLength="1" stroke-width="2.2" stroke-opacity=".6" d="M19 40A15 15 0 0 1 40 19"/><circle class="dot" cx="45" cy="46" r="2.6" fill="#c4ffdb"/></svg>';
+['#splash .lg','#hlogo','#elogo'].forEach(s=>$(s).innerHTML=LOGO);
+$('#attach').innerHTML=ic('clip');$('#mic').innerHTML=ic('mic');$('#send').innerHTML=ic('up');$('#set').innerHTML=ic('sliders');$('#csay').innerHTML=ic('spk')+'Read aloud';
+$$('[data-cam]').forEach(b=>b.innerHTML=ic('camera')+(b.dataset.cam==='before'?'Before':'After'));
+$$('#dock button').forEach((b,i)=>b.innerHTML=ic(['list','msg','flask','book'][i])+['Job','Ask','Tools','Log'][i]);
+
+/* ---------- data ---------- */
+const MODES={
+full:{n:'Full exterior detail',d:'Wash, correct and protect the paint',s:[['Wash',['Pre-rinse and foam dwell','Wheels and tires first','Two-bucket contact wash','Iron and tar decon','Clay or chemical decon','Dry with clean towels']],['Prep',['Cover trim and seals','Inspect under direct light','Take paint depth readings','Panel wipe to see true defects','Mask edges and sharp lines']],['Correct',['Test spot and judge the result','Pick pad and polish from the test','Work small sections','Wipe and inspect each section','Re-measure depth on cut panels']],['Coat',['Final panel wipe','Check temp, humidity and rain','Apply in small sections','Level or buff within the flash time','Keep dry for the label cure time']]]},
+intDetail:{n:'Interior detail',d:'Vacuum, clean and protect every surface',s:[['Vacuum',['Remove mats and loose items','Brush and blow out vents and seams','Vacuum seats, carpet and trunk','Vacuum under seats']],['Clean',['Dust with a brush and cleaner','Wipe dash, doors and console','Clean seats (leather or fabric)','Spot treat stains']],['Finish',['Clean glass inside with two towels','Dress plastics with a non-greasy protectant','Condition leather','Clean mats and refit']],['Check',['Look for streaks in angled light','Check tracks and cup holders','Odor check','Photo for the job file']]]},
+intDeep:{n:'Interior deep clean',d:'Extraction, steam and stain removal',s:[['Vacuum',['Remove mats and personal items','Vacuum with the crevice tool','Agitate carpet with a brush first','Note spills and odor sources']],['Treat',['Pre-treat stains and let dwell','Test cleaner on a hidden spot','Steam seams and vents','Agitate fabric and carpet']],['Extract',['Extract in overlapping passes','Rinse with clean water','Extract again until it runs clear','Avoid soaking foam and electronics']],['Dry',['Fans or airflow on wet areas','Check for damp spots','Protect fabric or leather','Odor check before handback']]]},
+trim:{n:'Trim restoration',d:'Bring faded plastic trim back to black',s:[['Clean',['Wash and degrease trim','Scrub with a brush and cleaner','Dry completely','Note fade and white haze']],['Mask',['Tape paint and glass edges','Test the restorer on a hidden spot','Check temp and work in shade','Wear gloves']],['Restore',['Apply thin even coats','Work small sections','Wipe excess before it sets','Check for streaks']],['Cure',['Keep dry for the label cure time','Remove tape at the right time','Inspect in sunlight','Photo after']]]},
+headlight:{n:'Headlight restoration',d:'Remove haze and seal against UV',s:[['Prep',['Wash and dry the lenses','Mask surrounding paint','Check for cracks or moisture inside','Note yellowing and haze']],['Sand',['Start at the grit your kit calls for','Keep the surface wet if wet-sanding','Step through finer grits','Aim for an even uniform haze']],['Polish',['Machine or hand polish','Wipe and check clarity','Repeat if still hazy','Clean off residue']],['Seal',['Wipe with panel prep','Apply UV sealant or coating','Keep dry for the label cure time','Final photo']]]},
+wash:{n:'Maintenance wash',d:'Quick wash, decon and protect',s:[['Wash',['Rinse and foam','Wheels and tires','Contact wash','Rinse']],['Decon',['Iron spray on paint and wheels','Rinse thoroughly','Clay if needed']],['Dry',['Dry with clean towels','Blow out mirrors and seams','Glass']],['Protect',['Spray sealant or wax','Buff off','Tire dressing','Final walk-around']]]},
+engine:{n:'Engine bay clean',d:'Degrease, rinse and dress safely',s:[['Cover',['Engine cool to the touch','Cover alternator, intake and exposed electrical','Remove loose debris']],['Degrease',['Apply degreaser','Agitate with brushes','Short dwell, never let it dry']],['Rinse',['Low-pressure rinse','No direct pressure on electrical','Blow dry']],['Dress',['Apply water-based dressing to plastics','Wipe excess','Remove covers','Start the engine and check']]]}};
+const PANELS=['Hood','Roof','Trunk','L fender','R fender','L door','R door','L quarter','R quarter'],RAT=[2,4,10,16,32,64];
+let S={job:{vehicle:'2024 Porsche 911',pkg:'Full detail',client:'',mode:'full',step:0,notes:'',checks:{}},depth:{},presets:[],timers:[],audio:false,engine:'gemini',gv:'Kore',dv:'',rate:1,ratio:10,eta:'',wx:null};
 try{const o=JSON.parse(localStorage.getItem('lustre.s')||'{}');S={...S,...o,job:{...S.job,...(o.job||{})}}}catch{}
+if(!MODES[S.job.mode])S.job.mode='full';
 const save=()=>{try{localStorage.setItem('lustre.s',JSON.stringify(S))}catch{}};
+const M=()=>MODES[S.job.mode],N=()=>M().s.length,key=(st,i)=>`${S.job.mode}:${st}:${i}`;
 const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.i);toast.i=setTimeout(()=>t.classList.remove('on'),2200)};
 const fmt=n=>(n>=10?n.toFixed(1):n.toFixed(2)).replace(/\.?0+$/,'');
 
-/* ---------- audio ---------- */
-function say(t,force){if((!S.audio&&!force)||!('speechSynthesis' in window))return;speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(String(t).replace(/[*_`#]/g,'')))}
-function beep(){try{const a=new AudioContext(),o=a.createOscillator();o.connect(a.destination);o.frequency.value=880;o.start();setTimeout(()=>{o.stop();a.close()},700);navigator.vibrate?.([300,150,300])}catch{}}
-function audUI(){const b=$('#aud');b.setAttribute('aria-pressed',S.audio);b.textContent=S.audio?'🔊 Audio on':'🔇 Audio off'}
-$('#aud').onclick=()=>{S.audio=!S.audio;save();audUI();if(S.audio)say('Audio on');else speechSynthesis?.cancel()};
+/* ---------- sheet ---------- */
+const openSheet=h=>{$('#shc').innerHTML='<div class="grab"></div>'+h;$('#sheet').classList.add('on')},closeSheet=()=>$('#sheet').classList.remove('on');
+$('#sheet').onclick=e=>{if(e.target.id==='sheet')closeSheet()};
 
-/* ---------- tabs ---------- */
-function go(t,anchor){$$('.pane').forEach(p=>p.classList.toggle('on',p.id==='p-'+t));$$('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));if(anchor)setTimeout(()=>$(anchor)?.scrollIntoView({behavior:'smooth',block:'start'}),50)}
-$$('.tabs button').forEach(b=>b.onclick=()=>go(b.dataset.t));
+/* ---------- voice out ---------- */
+let actx,src,sid=0;
+const unlock=()=>{try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();actx.resume()}catch{}};
+addEventListener('pointerdown',unlock,{once:true});
+const clean=t=>t.replace(/[*_`#>]/g,'').replace(/µm/g,' microns').replace(/\bfl\.? ?oz\b/gi,'fluid ounces').replace(/\boz\b/gi,'ounces').replace(/\bmL\b/g,'milliliters').replace(/\b1\s*:\s*(\d+)/g,'1 to $1').replace(/°F/g,' degrees').replace(/\bAPC\b/g,'A P C').replace(/\bIPA\b/g,'I P A').replace(/\bPPF\b/g,'P P F').replace(/\n+/g,'. ').replace(/\s-\s/g,', ').replace(/\s+/g,' ').trim();
+function voices(){return(speechSynthesis?.getVoices?.()||[]).filter(v=>/^en/i.test(v.lang))}
+function pickVoice(){const v=voices();if(S.dv){const f=v.find(x=>x.name===S.dv);if(f)return f}
+  const sc=x=>(/natural|neural/i.test(x.name)?50:0)+(/premium|enhanced/i.test(x.name)?40:0)+(/google/i.test(x.name)?30:0)+(/siri|ava|samantha|aria|jenny|guy/i.test(x.name)?20:0)+(/en[-_]US/i.test(x.lang)?8:0)+(x.localService?0:3);
+  return v.sort((a,b)=>sc(b)-sc(a))[0]}
+function speakDev(t){const syn=window.speechSynthesis;if(!syn)return;syn.cancel();const v=pickVoice();(t.match(/[^.!?]+[.!?]*/g)||[t]).forEach(s=>{s=s.trim();if(!s)return;const u=new SpeechSynthesisUtterance(s);if(v){u.voice=v;u.lang=v.lang}u.rate=S.rate;syn.speak(u)})}
+function stopSpeech(){sid++;try{src?.stop()}catch{}try{speechSynthesis?.cancel()}catch{}}
+async function speak(t,force){if(!S.audio&&!force)return;t=clean(t).slice(0,700);if(!t)return;stopSpeech();const id=sid;
+  if(S.engine==='gemini'&&navigator.onLine&&actx){try{const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t,voice:S.gv})});if(!r.ok)throw 0;const{pcm,rate}=await r.json();if(id!==sid)return;
+    const bin=atob(pcm),n=bin.length>>1,buf=actx.createBuffer(1,n,rate),ch=buf.getChannelData(0);for(let i=0;i<n;i++){let v=bin.charCodeAt(2*i)|(bin.charCodeAt(2*i+1)<<8);if(v>=32768)v-=65536;ch[i]=v/32768}
+    await actx.resume();src=actx.createBufferSource();src.buffer=buf;src.connect(actx.destination);src.start();return}catch{}}
+  if(id===sid)speakDev(t)}
+function beep(){try{unlock();const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.frequency.value=880;g.gain.setValueAtTime(.25,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+.7);o.start();o.stop(actx.currentTime+.7);navigator.vibrate?.([300,150,300])}catch{}}
+function audUI(){const b=$('#aud');b.setAttribute('aria-pressed',S.audio);b.classList.toggle('on',S.audio);b.innerHTML=ic(S.audio?'spk':'mute')}
+$('#aud').onclick=()=>{unlock();S.audio=!S.audio;save();audUI();S.audio?speak('Audio on'):stopSpeech()};
+speechSynthesis?.addEventListener?.('voiceschanged',()=>{});
+function settings(){const vs=voices(),GV=['Kore','Charon','Puck','Aoede','Fenrir','Zephyr'];
+  openSheet(`<h3>Voice and audio</h3><label class="lab">Voice engine</label><select class="f" id="se">${[['gemini','Gemini voice (natural, needs signal)'],['device','This device']].map(([v,l])=>`<option value="${v}" ${S.engine===v?'selected':''}>${l}</option>`).join('')}</select>
+  <label class="lab">Gemini voice</label><select class="f" id="sg">${GV.map(v=>`<option ${S.gv===v?'selected':''}>${v}</option>`).join('')}</select>
+  <label class="lab">Device voice (fallback and offline)</label><select class="f" id="sd"><option value="">Best available</option>${vs.map(v=>`<option ${S.dv===v.name?'selected':''}>${esc(v.name)}</option>`).join('')}</select>
+  <label class="lab">Device speed</label><input type="range" id="sr" min=".8" max="1.3" step=".05" value="${S.rate}" style="width:100%;accent-color:var(--g)">
+  <div class="row" style="margin-top:16px"><button class="btn pri" id="st">Test voice</button><button class="btn" id="sx">Done</button></div>`);
+  const sv=()=>{S.engine=$('#se').value;S.gv=$('#sg').value;S.dv=$('#sd').value;S.rate=+$('#sr').value;save()};
+  ['se','sg','sd','sr'].forEach(i=>$('#'+i).onchange=sv);$('#st').onclick=()=>{sv();unlock();speak('Mix one to ten. For a thirty two ounce bottle, use about three ounces of chemical.',true)};$('#sx').onclick=closeSheet}
+$('#set').onclick=settings;
 
-/* ---------- job card ---------- */
-let editing=false;
-function renderJob(){const j=S.job,el=$('#job');
-  if(editing){el.innerHTML=`<div class="row"><input class="f" id="jv" value="${esc(j.vehicle)}" placeholder="Year make model" aria-label="Vehicle"><input class="f" id="jp" value="${esc(j.pkg)}" placeholder="Package" aria-label="Package"><input class="f" id="jc" value="${esc(j.client)}" placeholder="Client name" aria-label="Client"></div><div class="row" style="margin-top:8px"><button class="btn pri sm" id="js">Save</button><button class="btn sm" id="jn">New job</button></div>`;
-    $('#js').onclick=()=>{j.vehicle=$('#jv').value.trim();j.pkg=$('#jp').value.trim();j.client=$('#jc').value.trim();editing=false;save();renderAll()};
-    $('#jn').onclick=async()=>{if(!confirm('Start a new job? This clears photos, notes, depth readings and checklist.'))return;S.job={vehicle:'',pkg:'',client:'',step:0,notes:'',checks:{}};S.depth={};S.eta='';await dbx('readwrite',s=>s.clear());editing=true;save();renderAll()};return}
-  const nxt=j.step<4?`Finish ${STEPS[j.step]}`:'Job complete';
-  el.innerHTML=`<div class="jtop"><div><div class="veh">${esc(j.vehicle||'No active job')}</div><div class="sub">${esc(j.pkg||'Tap Edit to set up the job')}${j.client?' · '+esc(j.client):''}</div></div><button class="btn sm" id="je">Edit</button></div>
-  <div class="steps">${STEPS.map((s,i)=>`<button class="st ${i<j.step?'done':i===j.step?'now':''}" data-s="${i}" aria-label="${s}">${i<j.step?'✓ ':''}${s}</button>${i<3?'<span class="arr">➔</span>':''}`).join('')}</div>
-  <div class="bar"><i style="width:${j.step*25}%"></i></div><button class="btn pri sm" id="jd" ${j.step>=4?'disabled':''}>${nxt}</button>`;
-  $('#je').onclick=()=>{editing=true;renderJob()};
-  $$('.st').forEach(b=>b.onclick=()=>{j.step=+b.dataset.s;save();renderAll()});
-  $('#jd').onclick=()=>{j.step=Math.min(4,j.step+1);save();renderAll();say(j.step<4?`Next step: ${STEPS[j.step]}`:'Job complete')}}
+/* ---------- navigation ---------- */
+const TABS=['job','ask','tools','log'];let cur='job';
+function go(t,sub){cur=t;$$('.pane').forEach(p=>p.classList.toggle('on',p.id==='p-'+t));$$('#dock button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));$('#dock').style.setProperty('--ti',TABS.indexOf(t));
+  if(sub){const p=$('#p-'+t);p.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.s===sub));p.querySelectorAll('.sub').forEach(s=>s.classList.toggle('on',s.id==='s-'+sub))}
+  if(t==='ask')setTimeout(()=>chat.scrollTop=chat.scrollHeight,60)}
+$$('#dock button').forEach(b=>b.onclick=()=>go(b.dataset.t));$$('.seg button').forEach(b=>b.onclick=()=>go(b.closest('.pane').id.slice(2),b.dataset.s));
 
-/* ---------- checklist ---------- */
-const ck=st=>CHECK[st].map((t,i)=>`<label class="ck"><input type="checkbox" data-k="${st}:${i}" ${S.job.checks[st+':'+i]?'checked':''}>${esc(t)}</label>`).join('');
-document.addEventListener('change',e=>{const k=e.target.dataset?.k;if(!k)return;S.job.checks[k]=e.target.checked;save();$$(`input[data-k="${k}"]`).forEach(i=>i.checked=e.target.checked)});
-function renderCk(){const st=Math.min(S.job.step,3);$('#ckt').textContent=STEPS[st]+' checklist';$('#cks').innerHTML=ck(st)}
+/* ---------- job tab ---------- */
+let prevPct=0;
+function renderHero(){const j=S.job,m=M(),n=N(),pct=j.step/n*100;
+  $('#hero').innerHTML=`<div class="hrow"><div><div class="veh">${esc(j.vehicle||'Add a vehicle')}</div><div class="mut">${esc(j.pkg||'Set up this job')}${j.client?' · '+esc(j.client):''}</div></div><div class="ring"><svg viewBox="0 0 36 36"><circle class="rb" cx="18" cy="18" r="15.9"/><circle class="rf" cx="18" cy="18" r="15.9" pathLength="100" stroke-dasharray="${prevPct} 100"/></svg><b>${j.step}/${n}</b></div></div>
+  <div class="row" style="margin-top:14px"><button class="chipb" id="mchip">${ic('wrench')}${esc(m.n)}${ic('chev')}</button><button class="chipb" id="jedit">${ic('edit')}Edit job</button></div>`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{$('.rf')?.setAttribute('stroke-dasharray',pct+' 100');prevPct=pct}));
+  $('#mchip').onclick=pickMode;$('#jedit').onclick=editJob}
+function renderStepper(){const j=S.job;$('#stepper').innerHTML=M().s.map(([nm],i)=>`<button class="sn ${i<j.step?'done':i===j.step?'now':''}" data-s="${i}"><span class="dot">${i<j.step?ic('check'):i+1}</span>${nm}</button>`).join('');
+  $$('.sn').forEach(b=>b.onclick=()=>{j.step=+b.dataset.s;save();renderAll()})}
+const ck=st=>M().s[st][1].map((t,i)=>`<label class="ck"><input type="checkbox" data-k="${key(st,i)}" ${S.job.checks[key(st,i)]?'checked':''}><span>${esc(t)}</span></label>`).join('');
+document.addEventListener('change',e=>{const k=e.target.dataset?.k;if(!k)return;S.job.checks[k]=e.target.checked;save();$$(`input[data-k="${k}"]`).forEach(i=>i.checked=e.target.checked);renderNowCount()});
+function renderNow(){const j=S.job,n=N(),st=Math.min(j.step,n-1),done=j.step>=n;
+  $('#now').innerHTML=`<div class="nh"><div><div class="mut">${done?'All steps complete':'Now'}</div><h3>${M().s[st][0]}</h3></div><span class="cnt" id="ncnt"></span></div>${ck(st)}<button class="btn pri wide" id="jd" style="margin-top:14px" ${done?'disabled':''}>${done?'Job complete':'Finish '+M().s[st][0]}</button>`;renderNowCount();
+  $('#jd').onclick=()=>{j.step=Math.min(n,j.step+1);save();renderAll();$('#hero').classList.remove('sweep');void $('#hero').offsetWidth;$('#hero').classList.add('sweep');if(navigator.vibrate)navigator.vibrate(30);speak(j.step<n?'Next step: '+M().s[j.step][0]:'Job complete')}}
+function renderNowCount(){const j=S.job,st=Math.min(j.step,N()-1),it=M().s[st][1],c=it.filter((_,i)=>j.checks[key(st,i)]).length;const e=$('#ncnt');if(e)e.textContent=c+'/'+it.length}
+function pickMode(){openSheet('<h3>Service type</h3>'+Object.entries(MODES).map(([k,m])=>`<button class="opt ${S.job.mode===k?'on':''}" data-m="${k}"><b>${m.n}</b><span>${m.d}</span><em>${m.s.map(x=>x[0]).join(' ➔ ')}</em></button>`).join(''));
+  $$('.opt').forEach(b=>b.onclick=()=>{S.job.mode=b.dataset.m;S.job.step=0;prevPct=0;save();closeSheet();renderAll()})}
+function editJob(){const j=S.job;openSheet(`<h3>Job details</h3><label class="lab" style="margin-top:0">Vehicle</label><input class="f" id="jv" value="${esc(j.vehicle)}" placeholder="2024 Porsche 911"><label class="lab">Package</label><input class="f" id="jp" value="${esc(j.pkg)}" placeholder="Full detail"><label class="lab">Client first name</label><input class="f" id="jc" value="${esc(j.client)}">
+  <div class="row" style="margin-top:16px"><button class="btn pri" id="js">Save</button><button class="btn" id="jn">New job</button></div>`);
+  $('#js').onclick=()=>{j.vehicle=$('#jv').value.trim();j.pkg=$('#jp').value.trim();j.client=$('#jc').value.trim();save();closeSheet();renderAll()};
+  $('#jn').onclick=async()=>{if(!confirm('Start a new job? This clears photos, notes, depth readings and checklist progress.'))return;S.job={vehicle:'',pkg:'',client:'',mode:j.mode,step:0,notes:'',checks:{}};S.depth={};S.eta='';prevPct=0;await dbx('readwrite',s=>s.clear());save();closeSheet();renderAll();renderDepth();renderPhotos();editJob()}}
+const advice=w=>{const a=[];if(w.t<50||w.t>90)a.push(`${Math.round(w.t)}°F is outside the 50–90°F range many coatings call for. Check the label.`);if(w.rh>80)a.push(`Humidity is ${w.rh}%. Expect slower drying and possible hazing.`);if(w.pop>=30)a.push(`${w.pop}% chance of rain in the next 6 hours. Protect fresh product.`);if(w.uv>=6||w.t>85)a.push('Strong sun. Work in shade; panels run hotter than the air.');if(w.wind>15)a.push(`Wind near ${Math.round(w.wind)} mph. Dust will settle on wet product.`);return a.length?a:['Conditions look workable for most products.']};
+function renderWx(){const w=S.wx;$('#wxp').innerHTML=ic('cloud')+(w?`${Math.round(w.t)}°`:'');
+  $('#wxs').innerHTML=w?`<div class="nh"><div><div class="mut">Site weather · ${new Date(w.at).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}</div><h3>${Math.round(w.t)}°F · ${w.rh}% humidity</h3></div><button class="btn sm" id="wxr">Refresh</button></div><ul style="margin:0 0 0 20px">${advice(w).slice(0,3).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:`<div class="nh"><div><div class="mut">Site weather</div><h3>Check conditions</h3></div></div><p class="mut">See temperature, humidity, sun and rain warnings for this location.</p><button class="btn pri wide" id="wxr" style="margin-top:12px">Load weather</button>`;
+  $('#wxr').onclick=loadWx}
+function loadWx(){return new Promise(res=>{if(!navigator.geolocation||!navigator.onLine){toast(navigator.onLine?'Location is not available':'Offline: showing saved weather');return res(S.wx)}
+  navigator.geolocation.getCurrentPosition(async p=>{try{const j=await(await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${p.coords.latitude}&longitude=${p.coords.longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&hourly=precipitation_probability,uv_index&forecast_hours=6&temperature_unit=fahrenheit&wind_speed_unit=mph`)).json();
+    S.wx={t:j.current.temperature_2m,rh:j.current.relative_humidity_2m,wind:j.current.wind_speed_10m,pop:Math.max(...j.hourly.precipitation_probability),uv:Math.round(Math.max(...j.hourly.uv_index)),at:Date.now()};save();renderWx()}catch{toast('Could not load weather')}res(S.wx)},()=>{toast('Allow location to get site weather');res(S.wx)},{timeout:10000})})}
+$('#wxp').onclick=()=>{go('job');$('#wxs').scrollIntoView({behavior:'smooth'});if(!S.wx)loadWx()};
+const TILES=[['flask','Mix ratios',()=>go('tools','mix')],['timer','Timers',()=>go('tools','timers')],['gauge','Depth log',()=>go('tools','depth')],['camera','Snap photo',()=>go('log','photos')],['bulb','Upsell ideas',()=>upsell()],['msg','Text client',()=>go('log','texts')]];
+$('#tiles').innerHTML=TILES.map(([i,l],k)=>`<button class="tile" data-k="${k}">${ic(i)}${l}</button>`).join('');$$('.tile').forEach(b=>b.onclick=TILES[b.dataset.k][2]);
+function renderAll(){renderHero();renderStepper();renderNow();renderTpl();renderCtx();$('#tcn').value=S.job.client;$('#teta').value=S.eta;$('#notes').value=S.job.notes}
+const renderCtx=()=>{const j=S.job;$('#ctx').innerHTML=`<span><b>${esc(j.vehicle||'No vehicle')}</b> · ${esc(M().n)} · ${j.step<N()?M().s[j.step][0]:'Done'}</span>${ic('chev')}`};$('#ctx').onclick=()=>go('job');
 
 /* ---------- calculator ---------- */
-function renderCalc(){$('#rat').innerHTML=RAT.map(n=>`<button class="chipb ${S.ratio==n?'on':''}" data-r="${n}">1:${n}</button>`).join('');
+function renderCalc(){$('#rat').innerHTML=RAT.map(n=>`<button class="chipb ${S.ratio==n&&!$('#cr').value?'on':''}" data-r="${n}">1:${n}</button>`).join('');
   $$('#rat button').forEach(b=>b.onclick=()=>{S.ratio=+b.dataset.r;$('#cr').value='';save();renderCalc()});
-  $('#pre').innerHTML=S.presets.map((p,i)=>`<span class="row" style="gap:0"><button class="chipb" data-l="${i}">${esc(p.name)} 1:${p.ratio}</button><button class="chipb" data-d="${i}" aria-label="Delete ${esc(p.name)}">×</button></span>`).join('');
+  $('#pre').innerHTML=S.presets.map((p,i)=>`<span class="row" style="gap:2px"><button class="chipb" data-l="${i}">${esc(p.name)} 1:${p.ratio}</button><button class="chipb" data-d="${i}" aria-label="Delete ${esc(p.name)}">×</button></span>`).join('');
   $$('#pre [data-l]').forEach(b=>b.onclick=()=>{const p=S.presets[b.dataset.l];$('#cn').value=p.name;$('#cnote').value=p.note||'';S.ratio=p.ratio;$('#cr').value='';save();renderCalc()});
   $$('#pre [data-d]').forEach(b=>b.onclick=()=>{S.presets.splice(b.dataset.d,1);save();renderCalc()});
   const n=+$('#cr').value||S.ratio,size=+$('#cs').value,f=+$('#cu').value,out=$('#cres');renderCalc.say='';
@@ -216,7 +279,7 @@ function renderCalc(){$('#rat').innerHTML=RAT.map(n=>`<button class="chipb ${S.r
   out.innerHTML=`<div class="res"><div><b>${fmt(chem)} oz</b><span>${ml(chem)} mL ${esc(name)}</span></div><div><b>${fmt(wat)} oz</b><span>${ml(wat)} mL water</span></div></div>`;
   renderCalc.say=`${name} at 1 to ${n}. For a ${size} ${$('#cu').selectedOptions[0].text} container, use ${fmt(chem)} fluid ounces of chemical and ${fmt(wat)} fluid ounces of water.`}
 ['cn','cs','cu','cr'].forEach(id=>$('#'+id).addEventListener('input',renderCalc));
-$('#csay').onclick=()=>renderCalc.say?say(renderCalc.say,true):toast('Enter a container size first');
+$('#csay').onclick=()=>{unlock();renderCalc.say?speak(renderCalc.say,true):toast('Enter a container size first')};
 $('#csave').onclick=()=>{const name=$('#cn').value.trim();if(!name)return toast('Enter a chemical name');const r=+$('#cr').value||S.ratio,i=S.presets.findIndex(p=>p.name.toLowerCase()===name.toLowerCase()),p={name,ratio:r,note:$('#cnote').value.trim()};i<0?S.presets.push(p):S.presets[i]=p;save();renderCalc();toast('Preset saved')};
 
 /* ---------- timers ---------- */
@@ -224,95 +287,92 @@ $('#tp').innerHTML=[['Dwell',3],['Dwell',5],['Flash',3],['Cure',10],['Cure',30]]
 const addT=(l,m)=>{S.timers.push({id:Date.now(),label:l||'Timer',end:Date.now()+m*60000,fired:false});save();renderT()};
 $$('#tp button').forEach(b=>b.onclick=()=>addT(b.dataset.l,+b.dataset.m));
 $('#tgo').onclick=()=>{const m=+$('#tmn').value;if(!m)return toast('Enter minutes');addT($('#tl').value.trim(),m);$('#tl').value=$('#tmn').value=''};
-function renderT(){const now=Date.now();$('#tlist').innerHTML=S.timers.map(t=>{const left=Math.max(0,Math.ceil((t.end-now)/1000)),d=left===0;
-  return`<div class="tm ${d?'done':''}"><div><div class="sub">${esc(t.label)}</div><b>${d?'Time is up':Math.floor(left/60)+':'+String(left%60).padStart(2,'0')}</b></div><button class="btn sm" data-x="${t.id}">${d?'Dismiss':'Cancel'}</button></div>`}).join('');
+function renderT(){const now=Date.now();$('#tlist').innerHTML=S.timers.map(t=>{const left=Math.max(0,Math.ceil((t.end-now)/1000)),d=!left;return`<div class="tm ${d?'done':''}"><div><div class="mut">${esc(t.label)}</div><b>${d?'Time is up':Math.floor(left/60)+':'+String(left%60).padStart(2,'0')}</b></div><button class="btn sm" data-x="${t.id}">${d?'Dismiss':'Cancel'}</button></div>`}).join('')||'<p class="hint">No timers running.</p>';
   $$('#tlist [data-x]').forEach(b=>b.onclick=()=>{S.timers=S.timers.filter(t=>t.id!=b.dataset.x);save();renderT()});
-  S.timers.forEach(t=>{if(!t.fired&&t.end<=now){t.fired=true;save();beep();say(t.label+' timer is up',true)}})}
+  S.timers.forEach(t=>{if(!t.fired&&t.end<=now){t.fired=true;save();beep();speak(t.label+' timer is up',true)}})}
 setInterval(()=>{if(S.timers.length)renderT()},1000);
 
-/* ---------- depth tracker ---------- */
-function renderDepth(){$('#dp').innerHTML=PANELS.map(p=>{const d=S.depth[p]||{};const rem=d.b&&d.a?d.b-d.a:null;let st='',c='';
+/* ---------- depth ---------- */
+function renderDepth(){$('#dp').innerHTML=PANELS.map(p=>{const d=S.depth[p]||{},rem=d.b&&d.a?d.b-d.a:null;let st='',c='';
   if(d.a&&d.a<100){st='Thin: stop and reassess';c='bd'}else if(rem>15){st='High removal';c='wn'}else if(rem!==null){st='OK';c='ok'}
-  return`<div class="pn"><div class="hd"><span>${p}</span><span class="${c}">${st}</span></div><div class="g3"><div><label class="lab" style="margin:0">Before</label><input class="f" type="number" inputmode="decimal" data-p="${p}" data-f="b" value="${d.b??''}"></div><div><label class="lab" style="margin:0">After</label><input class="f" type="number" inputmode="decimal" data-p="${p}" data-f="a" value="${d.a??''}"></div><div><label class="lab" style="margin:0">Removed</label><div class="f" style="display:flex;align-items:center">${rem!==null?fmt(rem)+' µm':'—'}</div></div></div><input class="f" style="margin-top:8px" placeholder="Defects: swirls, RDS, etching…" data-p="${p}" data-f="n" value="${esc(d.n||'')}"></div>`}).join('');
+  return`<div class="pn"><div class="hd"><span>${p}</span><span class="${c}">${st}</span></div><div class="g3"><div><label class="lab" style="margin:0 0 4px">Before</label><input class="f" type="number" inputmode="decimal" data-p="${p}" data-f="b" value="${d.b??''}"></div><div><label class="lab" style="margin:0 0 4px">After</label><input class="f" type="number" inputmode="decimal" data-p="${p}" data-f="a" value="${d.a??''}"></div><div><label class="lab" style="margin:0 0 4px">Removed</label><div class="f" style="display:flex;align-items:center">${rem!==null?fmt(rem)+' µm':'—'}</div></div></div><input class="f" style="margin-top:8px" placeholder="Defects: swirls, RDS, etching…" data-p="${p}" data-f="n" value="${esc(d.n||'')}"></div>`}).join('');
   $$('#dp input').forEach(i=>i.onchange=()=>{const d=S.depth[i.dataset.p]=S.depth[i.dataset.p]||{},f=i.dataset.f;d[f]=f==='n'?i.value:(i.value===''?undefined:+i.value);save();renderDepth()})}
-const depthSum=()=>Object.entries(S.depth).filter(([,d])=>d.b||d.a||d.n).map(([p,d])=>`${p}: ${d.b??'?'}→${d.a??'?'} µm${d.n?' ('+d.n+')':''}`).join('; ');
-$('#dai').onclick=()=>{go('chat');send('Review my paint depth readings and defects. Which panels are safe to keep correcting, and which need caution?')};
+const depthSum=()=>Object.entries(S.depth).filter(([,d])=>d.b||d.a||d.n).map(([p,d])=>`${p}: ${d.b??'?'} to ${d.a??'?'} um${d.n?' ('+d.n+')':''}`).join('; ');
+$('#dai').onclick=()=>send('Review my paint depth readings and defects. Which panels are safe to keep correcting, and which need caution?');
 
-/* ---------- photos (IndexedDB) ---------- */
+/* ---------- photos ---------- */
 const dbp=new Promise((res,rej)=>{const r=indexedDB.open('lustre',1);r.onupgradeneeded=()=>r.result.createObjectStore('p',{keyPath:'id'});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
 const dbx=async(m,f)=>{const d=await dbp;return new Promise((res,rej)=>{const t=d.transaction('p',m),q=f(t.objectStore('p'));t.oncomplete=()=>res(q?.result);t.onerror=()=>rej(t.error)})};
-let camTag='before';
-$$('[data-cam]').forEach(b=>b.onclick=()=>{camTag=b.dataset.cam;$('#cam').click()});
+let camTag='before';$$('[data-cam]').forEach(b=>b.onclick=()=>{camTag=b.dataset.cam;$('#cam').click()});
 $('#cam').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const data=await loadImage(f,1280);await dbx('readwrite',s=>s.put({id:Date.now(),tag:camTag,panel:$('#ppanel').value.trim(),data}));toast('Saved to job file');renderPhotos()}catch(x){toast(x.message)}};
 async function renderPhotos(){const all=((await dbx('readonly',s=>s.getAll()))||[]).sort((a,b)=>a.id-b.id);
-  $('#pg').innerHTML=all.length?all.map(p=>`<figure><img src="${p.data}" alt="${p.tag} photo"><figcaption>${p.tag}${p.panel?' · '+esc(p.panel):''}</figcaption><button data-x="${p.id}" aria-label="Delete photo">×</button></figure>`).join(''):'<p class="hint">No photos yet. Snap before and after shots for the job file.</p>';
+  $('#pg').innerHTML=all.length?all.map(p=>`<figure><img src="${p.data}" alt="${p.tag} photo"><figcaption>${p.tag}${p.panel?' · '+esc(p.panel):''}</figcaption><button data-x="${p.id}" aria-label="Delete photo">×</button></figure>`).join(''):'<p class="hint" style="grid-column:1/-1">No photos yet. Snap before and after shots for the job file.</p>';
   $$('#pg [data-x]').forEach(b=>b.onclick=async()=>{await dbx('readwrite',s=>s.delete(+b.dataset.x));renderPhotos()});return all}
-
-/* ---------- weather ---------- */
-function advice(w){const a=[];if(w.t<50||w.t>90)a.push(`${Math.round(w.t)}°F is outside the 50–90°F range many coatings call for. Check the label.`);if(w.rh>80)a.push(`Humidity is ${w.rh}%. Expect slower drying and possible streaking or hazing.`);if(w.pop>=30)a.push(`${w.pop}% chance of rain in the next 6 hours. Protect fresh coating or sealant.`);if(w.uv>=6||w.t>85)a.push('Strong sun. Work in shade; panels run hotter than the air and chemicals can dry on them.');if(w.wind>15)a.push(`Wind near ${Math.round(w.wind)} mph. Dust and debris will settle on wet product.`);return a.length?a:['Conditions look workable for most products.']}
-function renderWx(){const w=S.wx;$('#wxp').textContent=w?`${Math.round(w.t)}°F · ${w.rh}%`:'Weather';
-  $('#wx').innerHTML=w?`<div class="res"><div><b>${Math.round(w.t)}°F</b><span>${w.rh}% humidity</span></div><div><b>${Math.round(w.wind)} mph</b><span>UV ${w.uv} · rain ${w.pop}%</span></div></div><ul style="margin:12px 0 0 20px">${advice(w).map(x=>`<li>${esc(x)}</li>`).join('')}</ul><p class="hint">${navigator.onLine?'Updated':'Saved'} ${new Date(w.at).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}</p>`:'<p class="hint">Tap refresh to load weather for this location.</p>'}
-function loadWx(){return new Promise(res=>{if(!navigator.geolocation||!navigator.onLine){toast(navigator.onLine?'Location is not available':'Offline: showing saved weather');return res(S.wx)}
-  navigator.geolocation.getCurrentPosition(async p=>{try{const j=await(await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${p.coords.latitude}&longitude=${p.coords.longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&hourly=precipitation_probability,uv_index&forecast_hours=6&temperature_unit=fahrenheit&wind_speed_unit=mph`)).json();
-    S.wx={t:j.current.temperature_2m,rh:j.current.relative_humidity_2m,wind:j.current.wind_speed_10m,pop:Math.max(...j.hourly.precipitation_probability),uv:Math.round(Math.max(...j.hourly.uv_index)),at:Date.now()};save();renderWx()}catch{toast('Could not load weather')}res(S.wx)},()=>{toast('Allow location to get site weather');res(S.wx)},{timeout:10000})})}
-$('#wxr').onclick=loadWx;$('#wxp').onclick=()=>{go('job','#wx');loadWx()};
+async function upsell(){go('ask');const ph=(await renderPhotos()).slice(-3).map(p=>({thumb:p.data,tag:p.tag,parts:[part(p.data)]}));send(`Suggest upsell and add-on opportunities for this job based on the vehicle, service type, current condition${ph.length?' and the attached inspection photos':''}. For each: what you see, the add-on, and one line I can say to the client.`,ph)}
 
 /* ---------- client texts ---------- */
-const TPL=[['On my way',(n,v,e)=>`Hi ${n}, I'm on my way to detail your ${v}. ETA ${e||'shortly'}.`],['Wash started',(n,v)=>`Hi ${n}, I've arrived and started the wash on your ${v}.`],['Prep done',(n,v,e)=>`Hi ${n}, just finished the prep wash on your ${v}, moving to paint correction now.${e?` On schedule for ${e} completion!`:''}`],['Coating stage',(n,v)=>`Hi ${n}, paint correction on your ${v} is done and it looks great. Applying the protection next.`],['All finished',(n,v)=>`All done, ${n}! Your ${v} is ready. I'll send care instructions so it stays looking this good.`],['Running behind',(n,v,e)=>`Hi ${n}, quick update: your ${v} is running a little behind. New finish time is ${e||'a bit later'}. Thanks for your patience!`]];
-function renderTpl(){const n=S.job.client||'there',v=S.job.vehicle||'car';$('#tpl').innerHTML=TPL.map(([l,f],i)=>`<label class="lab" for="t${i}">${l}</label><textarea class="f" id="t${i}">${esc(f(n,v,S.eta))}</textarea><div class="row" style="margin-top:6px"><button class="btn sm" data-c="${i}">Copy</button><a class="btn sm" data-s="${i}" style="display:inline-flex;align-items:center;text-decoration:none">Text</a></div>`).join('');
-  $$('#tpl [data-c]').forEach(b=>b.onclick=()=>{navigator.clipboard?.writeText($('#t'+b.dataset.c).value);toast('Copied')});
-  $$('#tpl [data-s]').forEach(a=>a.onclick=()=>{a.href='sms:?&body='+encodeURIComponent($('#t'+a.dataset.s).value)})}
-$('#tcn').oninput=e=>{S.job.client=e.target.value;save();renderTpl()};$('#teta').oninput=e=>{S.eta=e.target.value;save();renderTpl()};
-$('#notes').oninput=e=>{S.job.notes=e.target.value;save()};
+function renderTpl(){const n=S.job.client||'there',v=S.job.vehicle||'car',e=S.eta,j=S.job,m=M(),total=N(),prev=m.s[Math.max(0,Math.min(j.step,total)-1)][0].toLowerCase(),nxt=j.step<total?m.s[j.step][0].toLowerCase():'final checks',svc=m.n.toLowerCase();
+  const T=[['On my way',`Hi ${n}, I'm on my way to do the ${svc} on your ${v}. ETA ${e||'shortly'}.`],['Started',`Hi ${n}, I've arrived and started the ${svc} on your ${v}.`],['Stage update',`Hi ${n}, ${j.step>0?`just finished the ${prev} stage on your ${v}, moving to ${nxt} now.`:`starting the ${nxt} stage on your ${v} now.`}${e?` On schedule for ${e} completion!`:''}`],['Running behind',`Hi ${n}, quick update: your ${v} is running a little behind. New finish time is ${e||'a bit later'}. Thanks for your patience!`],['All finished',`All done, ${n}! Your ${v} is ready. I'll send care instructions so it stays looking this good.`]];
+  $('#tpl').innerHTML=T.map(([l,t],i)=>`<label class="lab" for="t${i}">${l}</label><textarea class="f" id="t${i}">${esc(t)}</textarea><div class="row" style="margin-top:8px"><button class="btn sm" data-c="${i}">Copy</button><a class="btn sm" data-s="${i}">Send as text</a></div>`).join('');
+  $$('#tpl [data-c]').forEach(b=>b.onclick=()=>{navigator.clipboard?.writeText($('#t'+b.dataset.c).value);toast('Copied')});$$('#tpl [data-s]').forEach(a=>a.onclick=()=>{a.href='sms:?&body='+encodeURIComponent($('#t'+a.dataset.s).value)})}
+$('#tcn').oninput=e=>{S.job.client=e.target.value;save();renderTpl();renderHero()};$('#teta').oninput=e=>{S.eta=e.target.value;save();renderTpl()};$('#notes').oninput=e=>{S.job.notes=e.target.value;save()};
 
-/* ---------- chat ---------- */
+/* ---------- chat (streaming) ---------- */
 const chat=$('#chat'),input=$('#input'),sendBtn=$('#send'),preview=$('#preview'),fileEl=$('#file');
-let history=[],pending=[],busy=false;
-function toJpeg(src,w,h,max){const s=Math.min(1,max/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*s);c.height=Math.round(h*s);c.getContext('2d').drawImage(src,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.8)}
+let history=[],pending=[],busy=false,ctl=null;
+function toJpeg(s,w,h,max){const k=Math.min(1,max/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(s,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.8)}
 const part=u=>({inlineData:{mimeType:'image/jpeg',data:u.split(',')[1]}});
 const loadImage=(f,max=1600)=>new Promise((res,rej)=>{const u=URL.createObjectURL(f),i=new Image();i.onload=()=>{res(toJpeg(i,i.naturalWidth,i.naturalHeight,max));URL.revokeObjectURL(u)};i.onerror=()=>rej(new Error('Could not read '+f.name));i.src=u});
 const frames=f=>new Promise((res,rej)=>{const u=URL.createObjectURL(f),v=document.createElement('video');v.muted=true;v.playsInline=true;v.preload='auto';v.src=u;v.onerror=()=>rej(new Error('Could not read video'));
   v.onloadedmetadata=async()=>{const d=v.duration||1,o=[];for(let i=0;i<8;i++){v.currentTime=Math.min(d-.05,d*(i+.5)/8);await new Promise(r=>v.onseeked=r);o.push(toJpeg(v,v.videoWidth,v.videoHeight,1024))}URL.revokeObjectURL(u);res({o,d})}});
-fileEl.onchange=async()=>{const fs=[...fileEl.files];fileEl.value='';for(const f of fs){if(pending.length>=6)break;try{if(f.type.startsWith('image/')){const d=await loadImage(f);pending.push({thumb:d,tag:'photo',parts:[part(d)]})}else if(f.type.startsWith('video/')){const{o,d}=await frames(f);pending.push({thumb:o[0],tag:'▶ '+Math.round(d)+'s',parts:[{text:`[The next ${o.length} images are evenly spaced frames from a ${Math.round(d)}-second video, in order.]`},...o.map(part)]})}}catch(e){addMsg('bot err',e.message)}rp()}};
+fileEl.onchange=async()=>{const fs=[...fileEl.files];fileEl.value='';for(const f of fs){if(pending.length>=6)break;try{if(f.type.startsWith('image/')){const d=await loadImage(f);pending.push({thumb:d,tag:'photo',parts:[part(d)]})}else if(f.type.startsWith('video/')){const{o,d}=await frames(f);pending.push({thumb:o[0],tag:'video',parts:[{text:`[The next ${o.length} images are evenly spaced frames from a ${Math.round(d)}-second video, in order.]`},...o.map(part)]})}}catch(e){addMsg('bot err',e.message)}rp()}};
 function rp(){preview.innerHTML='';pending.forEach((p,i)=>{const d=document.createElement('div');d.className='pv';d.innerHTML=`<img src="${p.thumb}" alt="${p.tag}"><button aria-label="Remove">×</button>`;d.querySelector('button').onclick=()=>{pending.splice(i,1);rp()};preview.appendChild(d)})}
 $('#attach').onclick=()=>fileEl.click();
 function md(t){const il=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`(.+?)`/g,'<code>$1</code>');
   return t.split(/\n{2,}/).map(b=>{const l=b.split('\n');if(l.every(x=>/^\s*[-*•]\s+/.test(x)))return'<ul>'+l.map(x=>'<li>'+il(x.replace(/^\s*[-*•]\s+/,''))+'</li>').join('')+'</ul>';if(l.every(x=>/^\s*\d+[.)]\s+/.test(x)))return'<ol>'+l.map(x=>'<li>'+il(x.replace(/^\s*\d+[.)]\s+/,''))+'</li>').join('')+'</ol>';return'<p>'+l.map(il).join('<br>')+'</p>'}).join('')}
 function addMsg(c,content,html){$('#empty')?.remove();const d=document.createElement('div');d.className='msg '+c;html?d.innerHTML=content:d.textContent=content;chat.appendChild(d);chat.scrollTop=chat.scrollHeight;return d}
-const ctx=()=>{const j=S.job,w=S.wx;return`Vehicle: ${j.vehicle||'unknown'}. Package: ${j.pkg||'unknown'}. Current step: ${STEPS[Math.min(j.step,3)]}${j.step>=4?' (all steps done)':''}. Notes: ${j.notes||'none'}.${w?` Weather: ${Math.round(w.t)}F, ${w.rh}% humidity, wind ${Math.round(w.wind)} mph, UV ${w.uv}, rain chance ${w.pop}%.`:''}${depthSum()?` Paint depth (um, before to after): ${depthSum()}.`:''}`};
-async function send(text,extra=[]){text=(text??input.value).trim();const media=[...pending,...extra];if((!text&&!media.length)||busy)return;
-  if(!navigator.onLine){addMsg('bot err','You are offline. Chat needs a connection, but the calculator, checklists, depth log, photos, timers and texts still work.');return}
-  busy=true;sendBtn.disabled=true;pending=[];rp();input.value='';size();speechSynthesis?.cancel();
+const ctx=()=>{const j=S.job,w=S.wx;return`Vehicle: ${j.vehicle||'unknown'}. Package: ${j.pkg||'unknown'}. Service type: ${M().n}. Current step: ${j.step<N()?M().s[j.step][0]:'all steps done'}. Notes: ${j.notes||'none'}.${w?` Weather: ${Math.round(w.t)}F, ${w.rh}% humidity, wind ${Math.round(w.wind)} mph, UV ${w.uv}, rain chance ${w.pop}%.`:''}${depthSum()?` Paint depth: ${depthSum()}.`:''}`};
+async function streamTo(el,body,signal,st){
+  const r=await fetch('/api/chat',{method:'POST',signal,headers:{'Content-Type':'application/json'},body});
+  if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.error||`Request failed (${r.status}). Try fewer files.`)}
+  const paint=()=>{const near=chat.scrollHeight-chat.scrollTop-chat.clientHeight<150;el.innerHTML=md(st.text.slice(0,st.shown))+'<span class="caret"></span>';if(near)chat.scrollTop=chat.scrollHeight};
+  const typer=new Promise(res=>{const tick=()=>{if(st.stop)return res();if(st.shown<st.text.length){st.shown=Math.min(st.text.length,st.shown+Math.max(2,Math.ceil((st.text.length-st.shown)/14)));paint()}if(st.done&&st.shown>=st.text.length)return res();requestAnimationFrame(tick)};tick()});
+  const rd=r.body.getReader(),dec=new TextDecoder();let buf='';
+  try{for(;;){const{value,done}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});const ls=buf.split('\n');buf=ls.pop();for(const l of ls){if(!l.startsWith('data:'))continue;try{const j=JSON.parse(l.slice(5));st.text+=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('')}catch{}}}}finally{st.done=true}
+  await typer}
+function sendUI(){sendBtn.innerHTML=ic(busy?'stop':'up');sendBtn.setAttribute('aria-label',busy?'Stop':'Send')}
+async function send(text,extra=[]){
+  if(busy){ctl?.abort();return}
+  text=(text??input.value).trim();const media=[...pending,...extra];if(!text&&!media.length)return;
+  go('ask');if(!navigator.onLine){addMsg('bot err','You are offline. Chat needs a connection, but the calculator, checklists, depth log, photos, timers and texts still work.');return}
+  unlock();busy=true;sendUI();pending=[];rp();input.value='';size();stopSpeech();
   addMsg('user',(media.length?`<div class="thumbs">${media.map(m=>`<img src="${m.thumb}" alt="">`).join('')}</div>`:'')+(text?`<div>${esc(text)}</div>`:''),true);
-  const typ=addMsg('bot','<div class="typing"><i></i><i></i><i></i></div>',true);
+  const el=addMsg('bot','<div class="typing"><i></i><i></i><i></i></div>',true),st={text:'',shown:0,done:false,stop:false};ctl=new AbortController();
   const parts=[...media.flatMap(m=>m.parts),{text:text||'What do you see here? Point out anything I should address.'}];
-  try{const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[...history,{role:'user',parts}],context:ctx()})});
-    const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status}). Try fewer files.`);
-    typ.innerHTML=md(d.text);say(d.text);history.push({role:'user',parts:[{text:(media.length?`[${media.length} attachment(s) shown] `:'')+(text||'')}]},{role:'model',parts:[{text:d.text}]})}
-  catch(e){typ.className='msg bot err';typ.textContent=e.message}
-  busy=false;sendBtn.disabled=false;chat.scrollTop=chat.scrollHeight}
-const size=()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,140)+'px'};
+  try{await streamTo(el,JSON.stringify({contents:[...history,{role:'user',parts}],context:ctx()}),ctl.signal,st)}
+  catch(e){st.stop=true;if(e.name!=='AbortError'){el.className='msg bot err';el.textContent=e.message;st.text=''}else st.text=st.text.slice(0,st.shown)}
+  if(st.text){el.innerHTML=md(st.text);history.push({role:'user',parts:[{text:(media.length?`[${media.length} attachment(s) shown] `:'')+(text||'')}]},{role:'model',parts:[{text:st.text}]});speak(st.text)}
+  else if(el.className.indexOf('err')<0){el.className='msg bot err';el.textContent='No answer came back. Try rephrasing or adding a clearer photo.'}
+  busy=false;sendUI();chat.scrollTop=chat.scrollHeight}
+const size=()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,130)+'px'};
 input.oninput=size;input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!/Mobi|Android/i.test(navigator.userAgent)){e.preventDefault();send()}};sendBtn.onclick=()=>send();
-
-/* voice */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec;
-$('#mic').onclick=()=>{if(rec){rec.stop();return}if(!SR)return toast('Voice input is not supported in this browser');
+$('#mic').onclick=()=>{unlock();if(rec){rec.stop();return}if(!SR)return toast('Voice input is not supported in this browser');
   rec=new SR();rec.lang='en-US';rec.interimResults=true;$('#mic').classList.add('on');
-  rec.onresult=e=>{input.value=[...e.results].map(r=>r[0].transcript).join('');size()};
-  rec.onend=()=>{rec=null;$('#mic').classList.remove('on');if(input.value.trim())send()};rec.onerror=()=>{};rec.start()};
+  rec.onresult=e=>{input.value=[...e.results].map(r=>r[0].transcript).join('');size()};rec.onend=()=>{rec=null;$('#mic').classList.remove('on');if(input.value.trim())send()};rec.onerror=()=>{};rec.start()};
+const Q=[['flask','Mix ratios'],['check','Checklist'],['timer','Timers'],['cloud','Weather'],['camera','Snap photo'],['bulb','Upsells'],['msg','Text client']];
+$('#quick').innerHTML=Q.map(([i,l],k)=>`<button class="chipb" data-q="${k}">${ic(i)}${l}</button>`).join('');
+$$('#quick button').forEach(b=>b.onclick=async()=>{const q=+b.dataset.q;
+  if(q===0)go('tools','mix');else if(q===2)go('tools','timers');else if(q===4)go('log','photos');else if(q===6)go('log','texts');else if(q===5)upsell();
+  else if(q===1){const st=Math.min(S.job.step,N()-1);addMsg('bot',`<p><strong>${M().s[st][0]} checklist</strong></p>`+ck(st),true);speak(M().s[st][0]+' checklist: '+M().s[st][1].join('. '))}
+  else if(q===3){const w=await loadWx();if(!w)return addMsg('bot','No weather yet. Allow location access, then try again.');const a=advice(w);addMsg('bot',`<p><strong>${Math.round(w.t)}°F, ${w.rh}% humidity, rain ${w.pop}%</strong></p><ul>${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`,true);speak(a.join(' '))}});
 
-/* quick actions */
-$$('#quick button').forEach(b=>b.onclick=async()=>{const q=b.dataset.q;
-  if(q==='mix')go('mix');else if(q==='timer')go('mix','#timers');else if(q==='photo')go('job','#photos');else if(q==='txt')go('job','#texts');
-  else if(q==='check'){const st=Math.min(S.job.step,3);addMsg('bot',`<p><strong>${STEPS[st]} checklist</strong></p>`+ck(st),true);say(STEPS[st]+' checklist: '+CHECK[st].join('. '))}
-  else if(q==='wx'){const w=await loadWx();if(!w)return addMsg('bot','No weather yet. Allow location access, then try again.');const a=advice(w);addMsg('bot',`<p><strong>${Math.round(w.t)}°F, ${w.rh}% humidity, rain ${w.pop}%</strong></p><ul>${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`,true);say(a.join(' '))}
-  else if(q==='up'){const ph=(await renderPhotos()).slice(-3).map(p=>({thumb:p.data,tag:p.tag,parts:[part(p.data)]}));send(`Suggest upsell and add-on opportunities for this job based on the vehicle, package, current condition${ph.length?' and the attached inspection photos':''}. For each: what you see, the add-on, and one line I can say to the client.`,ph)}});
-
-/* offline + boot */
+/* ---------- boot ---------- */
 const net=()=>$('#off').hidden=navigator.onLine;addEventListener('online',net);addEventListener('offline',net);net();
-function renderAll(){renderJob();renderCk();renderTpl();$('#tcn').value=S.job.client;$('#teta').value=S.eta;$('#notes').value=S.job.notes}
-audUI();renderAll();renderCalc();renderT();renderDepth();renderWx();renderPhotos();
+if(window.visualViewport){const vv=()=>{document.documentElement.style.setProperty('--h',visualViewport.height+'px');scrollTo(0,0)};visualViewport.addEventListener('resize',vv);vv()}
+audUI();sendUI();renderAll();renderCalc();renderT();renderDepth();renderWx();renderPhotos();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('/sw.js').catch(()=>{});
+Promise.all([document.fonts?.ready?.catch(()=>0),new Promise(r=>setTimeout(r,1600))]).then(()=>{$('#splash').classList.add('out');setTimeout(()=>$('#splash').remove(),800)});
 </script>
 </body>
 </html>
