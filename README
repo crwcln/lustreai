@@ -34,7 +34,9 @@ Each of the nine standard panels stores any number of readings for the current j
 - The service worker and `/api/push/subscribe` hook are in place, but `VAPID_PUBLIC_KEY` in `index.html` is empty. Add a VAPID public key and a sender endpoint to enable server push.
 
 ## Hey Lustre
-The wake word uses the browser SpeechRecognition API while Lustre is open. Say “Hey Lustre” and then a command. It pauses while the mic or a chat request is active. Browser speech recognition may need a connection, and it stops when the app is closed. Microphone access requires HTTPS and permission. If speech recognition is unsupported, use keyboard dictation or type instead.
+The wake word uses the browser SpeechRecognition API while Lustre is open. Say “Hey Lustre” and then a command. It pauses while the mic or a chat request is active. Browser speech recognition may need a connection, and it stops when the app is closed. Microphone access requires HTTPS and permission. Opening the site on a phone over a plain `http://192.168…` LAN address will block the mic; use the hosted HTTPS URL or install the hosted PWA. If speech recognition is unsupported, use keyboard dictation or type instead.
+
+The first wake start asks for microphone permission. Use Settings > Check mic to confirm the phone can open the microphone before relying on hands-free listening.
 
 On Android Chrome, hands-free listening can continue while Lustre stays open. iOS Safari and installed Home Screen apps may stop listening after a phrase or when the app goes to the background. Tap the wake badge or the mic button to restart. If the wake badge disappears, turn “Hey Lustre” back on in Settings.
 
