@@ -116,8 +116,6 @@ textarea.f{padding:12px 14px;resize:vertical;min-height:90px;line-height:1.45}se
 #wake.on{display:flex;opacity:1;transform:translateX(-50%)}
 #wake.hot{border-color:var(--g);box-shadow:0 0 0 4px rgba(61,255,133,.14)}
 #wake i{width:8px;height:8px;border-radius:50%;background:var(--g);animation:pulse 1.6s infinite;flex:none}
-#wake.idle{border-color:var(--line);color:var(--mute)}
-#wake.idle i{animation:none;background:var(--mute)}
 /* switches */
 .sw{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid var(--line);min-height:54px}
 .sw:first-of-type{border-top:0}
@@ -148,9 +146,9 @@ textarea.f{padding:12px 14px;resize:vertical;min-height:90px;line-height:1.45}se
 .legend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:8px 0 12px;font-size:12.5px;color:var(--mute)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend i{width:11px;height:11px;border-radius:3px;display:block;flex:none}
-.legend .ls{background:rgba(61,255,133,.5);box-shadow:0 0 0 1px #3dff85}
-.legend .lc{background:rgba(255,201,61,.5);box-shadow:0 0 0 1px #ffc93d}
-.legend .ld{background:rgba(255,107,91,.6);box-shadow:0 0 0 1px #ff6b5b;animation:blink 1s infinite}
+.legend .lgs{background:rgba(61,255,133,.5);box-shadow:0 0 0 1px #3dff85}
+.legend .lgc{background:rgba(255,201,61,.5);box-shadow:0 0 0 1px #ffc93d}
+.legend .lgd{background:rgba(255,107,91,.6);box-shadow:0 0 0 1px #ff6b5b;animation:blink 1s infinite}
 .pdrow{width:100%;display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);font-size:14px;margin-top:6px;text-align:left;transition:border-color .2s,background .2s}
 .pdrow:active{transform:scale(.99)}
 .pdrow span:first-child{font-weight:600}
@@ -192,6 +190,7 @@ textarea.f{padding:12px 14px;resize:vertical;min-height:90px;line-height:1.45}se
 .swatch:active{transform:scale(.92)}
 @media(max-width:380px){.veh{font-size:22px}.ring{width:64px;height:64px}.tile{font-size:13px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.01ms!important;transition-delay:0s!important}#chat{scroll-behavior:auto}}
+.wirewrap{max-width:300px}.pwv{fill:#bfe8cf;font:500 9px var(--sans);text-anchor:middle;pointer-events:none;letter-spacing:.06em}
 </style>
 </head>
 <body>
@@ -234,7 +233,7 @@ textarea.f{padding:12px 14px;resize:vertical;min-height:90px;line-height:1.45}se
     <div class="row" id="pre" style="margin-top:12px"></div><p class="hint">Follow the product label. Presets save on this device.</p></div></div>
   <div class="sub" id="s-timers"><div class="card"><div class="nh"><div><h3>Timers</h3></div><button class="chipb" id="tbig" aria-pressed="false">Large</button></div><div class="row" id="tp"></div>
     <div class="row" style="margin-top:12px"><input class="f" id="tl" placeholder="Label (dwell, flash…)"><input class="f" id="tmn" type="number" inputmode="decimal" placeholder="Min" style="max-width:100px"><button class="btn pri" id="tgo">Start</button></div><div id="tlist"></div></div></div>
-  <div class="sub" id="s-depth"><div class="card"><div class="nh"><div><h3>Paint depth grid</h3></div><span class="mut" id="pdsum"></span></div><p class="mut">Tap a panel to log multiple spots. Switch units any time — values convert automatically.</p><div id="dp"></div>
+  <div class="sub" id="s-depth"><div class="card"><div class="nh"><div><h3>Paint depth grid</h3></div><span class="mut" id="pdsum"></span></div><p class="mut">Tap a panel to log multiple spots. Switch units any time. Readings are stored in µm.</p><div id="dp"></div>
     <button class="btn pri wide" id="dai" style="margin-top:12px">Ask Lustre to review</button>
     <p class="hint">Status uses the lowest reading on each panel: green above 110 µm, yellow 85–110 µm, flashing red below 85 µm. Factory paint is often 100–150 µm; repainted panels vary.</p></div></div>
   </div>
@@ -281,15 +280,15 @@ textarea.f{padding:12px 14px;resize:vertical;min-height:90px;line-height:1.45}se
   <div class="onbfoot"><button class="btn" id="onbback">Back</button><button class="onbskip" id="onbskip" hidden>Skip</button><button class="btn pri" id="onbnext">Continue</button></div>
 </div></div>
 <input type="file" id="onbfile" accept="image/*" multiple hidden><input type="file" id="onbcam" accept="image/*" capture="environment" hidden>
-<div id="wake"><i></i><span id="waket">Listening for “Hey Lustre”</span></div>
+<div id="wake"><i></i>Listening for “Hey Lustre”</div>
 <div id="sheet"><div class="sh" id="shc"></div></div><div id="toast" role="status"></div>
 
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const SITE_VERSION='1.1.3';
+const SITE_VERSION='1.2.0';
 const SITE_UPDATES=[
-  {v:'1.1.3',date:'Nov 2, 2026',title:'Wake word fixes',items:['“Hey, Lustre” now works even when speech recognition adds punctuation.','The wake phrase is caught when “Hey” and “Lustre” arrive in separate recognition results.','The wake badge now shows Listening, Reconnecting, or Offline instead of disappearing.','Check mic now explains when the browser cannot do speech recognition or is offline.']},
+  {v:'1.2.0',date:'Nov 2, 2026',title:'Hey Lustre fixes and a bigger paint map',items:['Hey Lustre now understands how phones mishear “Lustre” (luster, lester, lusta…).','New Cloud listening engine for iPhone Home Screen apps, which cannot use browser speech recognition.','Check voice now tests speech recognition itself and explains the exact blocker.','Paint depth map redrawn with large tappable panels, live values and a fixed Danger legend swatch.','Readings are stored in µm so switching mils never shifts the numbers.']},
   {v:'1.1.2',date:'Nov 2, 2026',title:'Motion polish',items:['Tabs now slide in the direction you move.','Sheets ease out, toasts spring in, and checklist ticks animate.','Dock icons respond to taps and active tabs.','Reduced-motion settings now stop looping animations.']},
   {v:'1.1.1',date:'Nov 2, 2026',title:'Mobile bar and wake fixes',items:['The bottom bar now sits at the safe-area edge instead of floating above it.','App height follows the visible phone viewport, so browser chrome no longer lifts the dock.','Wake word now checks microphone permission before listening and reports blocked access.','Added Settings > Check mic for phone troubleshooting.']},
   {v:'1.1.0',date:'Nov 2, 2026',title:'Update wall and mobile voice',items:['New update wall with release history, available from Settings.','Mobile wake-word fixes: HTTPS and mic checks, retry handling, and split-phrase recognition.','Tap the wake badge to stop or restart listening.','Hour timers, multi-service voice changes, and sharper voice routing.']},
@@ -319,7 +318,7 @@ const STAGE_ORDER=['Cover','Vacuum','Wash','Decon','Prep','Assess','Sand','Mask'
 const RAT=[2,4,10,16,32,64];
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const freshJob=()=>({id:uid(),vehicle:'',year:'',make:'',model:'',color:'',plate:'',vin:'',pkg:'',client:'',mode:'full',modes:['full'],step:0,notes:'',condition:'',issues:[],checks:{}});
-let S={job:{id:uid(),vehicle:'2024 Porsche 911',year:'',make:'',model:'',color:'',plate:'',vin:'',pkg:'Full detail',client:'',mode:'full',modes:['full'],step:0,notes:'',condition:'',issues:[],checks:{}},depth:{},presets:[],timers:[],audio:false,alerts:false,bigTimers:false,wake:false,engine:'gemini',gv:'Kore',dv:'',rate:1,ratio:10,eta:'',wx:null,kit:{chem:[],tools:[],equip:[]}};
+let S={job:{id:uid(),vehicle:'2024 Porsche 911',year:'',make:'',model:'',color:'',plate:'',vin:'',pkg:'Full detail',client:'',mode:'full',modes:['full'],step:0,notes:'',condition:'',issues:[],checks:{}},depth:{},presets:[],timers:[],audio:false,alerts:false,bigTimers:false,wake:false,wakeEngine:'browser',engine:'gemini',gv:'Kore',dv:'',rate:1,ratio:10,eta:'',wx:null,kit:{chem:[],tools:[],equip:[]}};
 let firstRun=false;
 try{firstRun=!localStorage.getItem('lustre.s');const o=JSON.parse(localStorage.getItem('lustre.s')||'{}');S={...S,...o,job:{...S.job,...(o.job||{})},kit:{...S.kit,...(o.kit||{})}}}catch{firstRun=true}
 if(!S.job.id)S.job.id=uid();
@@ -424,7 +423,7 @@ function showUpdates(){
 }
 
 /* ---------- voice out ---------- */
-let actx,src,sid=0;
+let actx,src,sid=0,ttsBusyUntil=0;
 const unlock=()=>{try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();actx.resume()}catch{}};
 addEventListener('pointerdown',unlock,{once:true});
 const clean=t=>t.replace(/[*_`#>]/g,'').replace(/µm/g,' microns').replace(/\bfl\.? ?oz\b/gi,'fluid ounces').replace(/\boz\b/gi,'ounces').replace(/\bmL\b/g,'milliliters').replace(/\b1\s*:\s*(\d+)/g,'1 to $1').replace(/°F/g,' degrees').replace(/\bAPC\b/g,'A P C').replace(/\bIPA\b/g,'I P A').replace(/\bPPF\b/g,'P P F').replace(/\n+/g,'. ').replace(/\s-\s/g,', ').replace(/\s+/g,' ').trim();
@@ -433,8 +432,8 @@ function pickVoice(){const v=voices();if(S.dv){const f=v.find(x=>x.name===S.dv);
   const sc=x=>(/natural|neural/i.test(x.name)?50:0)+(/premium|enhanced/i.test(x.name)?40:0)+(/google/i.test(x.name)?30:0)+(/siri|ava|samantha|aria|jenny|guy/i.test(x.name)?20:0)+(/en[-_]US/i.test(x.lang)?8:0)+(x.localService?0:3);
   return v.sort((a,b)=>sc(b)-sc(a))[0]}
 function speakDev(t){const syn=window.speechSynthesis;if(!syn)return;syn.cancel();const v=pickVoice();(t.match(/[^.!?]+[.!?]*/g)||[t]).forEach(s=>{s=s.trim();if(!s)return;const u=new SpeechSynthesisUtterance(s);if(v){u.voice=v;u.lang=v.lang}u.rate=S.rate;syn.speak(u)})}
-function stopSpeech(){sid++;try{src?.stop()}catch{}try{speechSynthesis?.cancel()}catch{}}
-async function speak(t,force){if(!S.audio&&!force)return;t=clean(t).slice(0,700);if(!t)return;stopSpeech();const id=sid;
+function stopSpeech(){sid++;ttsBusyUntil=0;try{src?.stop()}catch{}try{speechSynthesis?.cancel()}catch{}}
+async function speak(t,force){if(!S.audio&&!force)return;t=clean(t).slice(0,700);if(!t)return;stopSpeech();const id=sid;ttsBusyUntil=Date.now()+Math.min(20000,t.length*75+1500);
   if(S.engine==='gemini'&&navigator.onLine&&actx){try{const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t,voice:S.gv})});if(!r.ok)throw 0;const{pcm,rate}=await r.json();if(id!==sid)return;
     const bin=atob(pcm),n=bin.length>>1,buf=actx.createBuffer(1,n,rate),ch=buf.getChannelData(0);for(let i=0;i<n;i++){let v=bin.charCodeAt(2*i)|(bin.charCodeAt(2*i+1)<<8);if(v>=32768)v-=65536;ch[i]=v/32768}
     await actx.resume();src=actx.createBufferSource();src.buffer=buf;src.connect(actx.destination);src.start();return}catch{}}
@@ -455,11 +454,12 @@ function settings(){const vs=voices(),GV=['Kore','Charon','Puck','Aoede','Fenrir
   <div class="row" style="margin-top:8px"><button class="btn sm" id="stest">Send test alert</button></div>
   <div class="sw" style="margin-top:4px"><div><b>Larger timers</b><span>Glanceable timer digits for the bench or dash.</span></div><input type="checkbox" id="sbig" ${S.bigTimers?'checked':''}></div>
   <div class="sw"><div><b>“Hey Lustre” wake word</b><span>Listens while Lustre is open, then runs your spoken command.</span></div><input type="checkbox" id="swake" ${S.wake?'checked':''}></div>
+  <div class="sw"><div><b>Listening engine</b><span>Browser is private and free but does not work in iPhone Home Screen apps. Cloud sends short clips of speech to Gemini while Lustre is open and the screen is on.</span></div><select class="f" id="swe" style="max-width:120px"><option value="browser" ${S.wakeEngine!=='cloud'?'selected':''}>Browser</option><option value="cloud" ${S.wakeEngine==='cloud'?'selected':''}>Cloud</option></select></div>
   <p class="hint" id="whint" style="margin-top:6px">${wakeWhy()||(ios?'iOS may stop hands-free listening after a phrase or when the app goes to the background. Tap the wake badge or the mic button to restart.':'')}</p>
   <p class="hint" style="margin-top:6px">Try “Hey Lustre, start a 5 minute timer”, “log 120 microns on the hood”, “add paint correction”, “next step”, or “what’s next”.</p>
   ${ios&&!standalone?'<div class="card" style="margin:16px 0 0;padding:14px"><b>Add Lustre to your Home Screen</b><p class="hint" style="margin-top:4px">In Safari tap Share, then Add to Home Screen. The Lustre mark becomes the app icon.</p></div>':''}
   <div class="verbar"><div><b>Lustre v${esc(SITE_VERSION)}</b><span>Release notes and version history.</span></div><button class="btn sm" id="snew">What’s new</button></div>
-  <div class="row" style="margin-top:16px"><button class="btn pri" id="st">Test voice</button><button class="btn" id="smic">Check mic</button><button class="btn" id="sx">Done</button></div>`);
+  <div class="row" style="margin-top:16px"><button class="btn pri" id="st">Test voice</button><button class="btn" id="smic">Check voice</button><button class="btn" id="sx">Done</button></div>`);
   const sv=()=>{S.engine=$('#se').value;S.gv=$('#sg').value;S.dv=$('#sd').value;S.rate=+$('#sr').value;save()};
   ['se','sg','sd','sr'].forEach(i=>$('#'+i).onchange=sv);
   $('#st').onclick=()=>{sv();unlock();speak('Mix one to ten. For a thirty two ounce bottle, use about three ounces of chemical.',true)};
@@ -472,6 +472,7 @@ function settings(){const vs=voices(),GV=['Kore','Charon','Puck','Aoede','Fenrir
   };
   $('#sbig').onchange=e=>{S.bigTimers=e.target.checked;save();renderT();toast(S.bigTimers?'Large timers on':'Large timers off')};
   $('#swake').onchange=e=>setWake(e.target.checked);
+  $('#swe').onchange=e=>{S.wakeEngine=e.target.value;save();const was=S.wake;stopWake();if(was)syncWake();const h=$('#whint');if(h)h.textContent=wakeWhy()};
   $('#smic').onclick=checkMic;
   $('#snew').onclick=showUpdates;
   $('#sx').onclick=closeSheet}
@@ -709,66 +710,67 @@ function renderT(){const now=Date.now(),l=$('#tlist');if(!l)return;
 $('#tbig').onclick=()=>{S.bigTimers=!S.bigTimers;save();renderT();toast(S.bigTimers?'Large timers on':'Large timers off')};
 setInterval(()=>{if(S.timers.length)renderT()},1000);
 
-/* ---------- paint depth (IndexedDB) ---------- */
+/* ---------- paint depth (IndexedDB, readings are always stored in µm) ---------- */
 const PD_PANELS=[['hood','Hood'],['roof','Roof'],['trunk','Trunk'],['door_driver','Driver door'],['door_passenger','Passenger door'],['fender_fl','L front fender'],['fender_fr','R front fender'],['quarter_rl','L rear quarter'],['quarter_rr','R rear quarter']];
 const PD_OLD={'Hood':'hood','Roof':'roof','Trunk':'trunk','L fender':'fender_fl','R fender':'fender_fr','L door':'door_driver','R door':'door_passenger','L quarter':'quarter_rl','R quarter':'quarter_rr'};
 let PD={jobId:'',unit:'um',panels:{}};
-const pdName=k=>PD_PANELS.find(x=>x[0]===k)?.[1]||k;
-const pdEmpty=id=>({jobId:id,unit:'um',panels:{},updated:Date.now()});
-const pdToUm=v=>PD.unit==='mils'?v*25.4:v;
-function pdCalc(readings){const vals=(readings||[]).map(pdToUm);if(!vals.length)return{min:null,max:null,avg:null,status:''};const min=Math.min(...vals),max=Math.max(...vals),avg=vals.reduce((a,b)=>a+b,0)/vals.length;return{min,max,avg,status:min<85?'danger':min<=110?'caution':'safe'}}
+const MIL=25.4,pdName=k=>PD_PANELS.find(x=>x[0]===k)?.[1]||k,pdEmpty=id=>({jobId:id,unit:'um',ver:2,panels:{},updated:Date.now()});
+const pdIn=v=>PD.unit==='mils'?v*MIL:v,pdU=()=>PD.unit==='mils'?'mils':'µm',pdFmt=v=>PD.unit==='mils'?(+v/MIL).toFixed(2).replace(/\.?0+$/,''):fmt(+v);
+function pdCalc(r){const v=r||[];if(!v.length)return{min:null,max:null,avg:null,status:''};const min=Math.min(...v),max=Math.max(...v),avg=v.reduce((a,b)=>a+b,0)/v.length;return{min,max,avg,status:min<85?'danger':min<=110?'caution':'safe'}}
 function pdSet(k,readings){const c=pdCalc(readings);PD.panels[k]={readings,min:c.min,max:c.max,avg:c.avg,status:c.status,updated:Date.now()};return PD.panels[k]}
 async function savePaint(){PD.updated=Date.now();try{await dbx('readwrite',s=>s.put(PD),'paint_depth_logs')}catch(e){console.warn('Paint log save failed',e)}}
 async function loadPaint(){
   try{const r=await dbx('readonly',s=>s.get(S.job.id),'paint_depth_logs');PD=r&&r.jobId===S.job.id?r:pdEmpty(S.job.id)}catch{PD=pdEmpty(S.job.id)}
   PD.panels=PD.panels||{};PD.unit=PD.unit||'um';
+  if(PD.ver!==2){if(PD.unit==='mils')Object.values(PD.panels).forEach(p=>{p.readings=(p.readings||[]).map(v=>+(v*MIL).toFixed(1))});Object.keys(PD.panels).forEach(k=>pdSet(k,PD.panels[k].readings||[]));PD.ver=2;await savePaint()}
   if(S.depth&&Object.keys(S.depth).length){
-    Object.entries(S.depth).forEach(([name,d])=>{const k=PD_OLD[name];if(!k)return;const p=PD.panels[k]=PD.panels[k]||{readings:[]};p.readings=p.readings||[];const add=v=>{if(v==null||v===''||!isFinite(+v))return;p.readings.push(+(PD.unit==='mils'?+v/25.4:+v).toFixed(2))};add(d.b);add(d.a);pdSet(k,p.readings)});
+    Object.entries(S.depth).forEach(([name,d])=>{const k=PD_OLD[name];if(!k)return;const p=PD.panels[k]=PD.panels[k]||{readings:[]};p.readings=p.readings||[];[d.b,d.a].forEach(v=>{if(v!=null&&v!==''&&isFinite(+v))p.readings.push(+v)});pdSet(k,p.readings)});
     S.depth={};save();await savePaint();
   }
   renderDepth();
 }
-async function pdAdd(k,v){v=parseFloat(v);if(!isFinite(v)||v<=0)return toast('Enter a valid reading');const p=PD.panels[k]=PD.panels[k]||{readings:[]};p.readings=p.readings||[];p.readings.push(+v.toFixed(2));pdSet(k,p.readings);await savePaint();renderDepth();return PD.panels[k]}
-async function pdSetUnit(u){if(u===PD.unit)return;const f=u==='mils'?1/25.4:25.4;Object.entries(PD.panels).forEach(([k,p])=>{p.readings=(p.readings||[]).map(v=>+(v*f).toFixed(2));pdSet(k,p.readings)});PD.unit=u;await savePaint();renderDepth();toast('Showing '+(u==='mils'?'mils':'microns'))}
+async function pdAdd(k,v){v=parseFloat(v);if(!isFinite(v)||v<=0)return toast('Enter a valid reading');const p=PD.panels[k]=PD.panels[k]||{readings:[]};p.readings=p.readings||[];p.readings.push(+pdIn(v).toFixed(1));pdSet(k,p.readings);await savePaint();renderDepth();return PD.panels[k]}
+async function pdSetUnit(u){if(u===PD.unit)return;PD.unit=u;await savePaint();renderDepth();toast('Showing '+(u==='mils'?'mils':'microns'))}
+const pdTone=st=>st==='safe'?'ok':st==='caution'?'wn':st==='danger'?'bd':'';
 function pdSheet(k){
-  const p=PD.panels[k]||{readings:[]},c=pdCalc(p.readings||[]),u=PD.unit==='mils'?'mils':'µm',st=c.status;
-  openSheet(`<h3>${esc(pdName(k))}</h3><p class="mut">${(p.readings||[]).length} spot${(p.readings||[]).length===1?'':'s'} logged. Tap a reading to remove it.</p>
+  const p=PD.panels[k]||{readings:[]},r=p.readings||[],c=pdCalc(r),u=pdU();
+  openSheet(`<h3>${esc(pdName(k))}</h3><p class="mut">${r.length} spot${r.length===1?'':'s'} logged. Tap a reading to remove it.</p>
   <div class="row" style="margin-top:12px"><input class="f" id="pdin" type="number" inputmode="decimal" step="any" min="0" placeholder="Reading in ${u}" style="flex:1"><button class="btn pri" id="pdaddb">Add</button></div>
-  <div class="row" style="margin-top:12px">${(p.readings||[]).map((v,i)=>`<button class="chipb" data-rm="${i}">${fmt(v)} ${u} ×</button>`).join('')||'<p class="hint">No spots yet. Add the first reading above.</p>'}</div>
-  <div class="res"><div><b>${c.min!=null?fmt(c.min):'—'}</b><span>Min µm</span></div><div><b>${c.avg!=null?fmt(c.avg):'—'}</b><span>Avg µm</span></div></div>
-  <p class="hint" style="margin-top:10px">Status: <b class="${st==='safe'?'ok':st==='caution'?'wn':st==='danger'?'bd':''}">${st?st.toUpperCase():'NO READINGS'}</b> · thresholds use the lowest spot (${PD.unit==='mils'?'1 mil = 25.4 µm':'µm'}).</p>
+  <div class="row" style="margin-top:12px">${r.map((v,i)=>`<button class="chipb" data-rm="${i}">${pdFmt(v)} ${u} ×</button>`).join('')||'<p class="hint">No spots yet. Add the first reading above.</p>'}</div>
+  <div class="res"><div><b>${c.min!=null?pdFmt(c.min):'—'}</b><span>Lowest (${u})</span></div><div><b>${c.avg!=null?pdFmt(c.avg):'—'}</b><span>Average (${u})</span></div></div>
+  <p class="hint" style="margin-top:10px">Status: <b class="${pdTone(c.status)}">${c.status?c.status.toUpperCase():'NO READINGS'}</b> · judged by the lowest spot. Safe above 110 µm (4.33 mils), caution 85–110, danger below 85 (3.35 mils).</p>
   <div class="row" style="margin-top:14px"><button class="btn" id="pdunitb">Switch to ${PD.unit==='mils'?'µm':'mils'}</button><button class="btn" id="pdclear">Clear panel</button></div>`);
   const add=async()=>{const el=$('#pdin');if(!el||el.value==='')return;await pdAdd(k,el.value);pdSheet(k);toast('Reading saved')};
   $('#pdaddb').onclick=add;$('#pdin').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();add()}};
-  $$('#shc [data-rm]').forEach(b=>b.onclick=async()=>{const p=PD.panels[k];if(!p)return;p.readings.splice(+b.dataset.rm,1);pdSet(k,p.readings);await savePaint();pdSheet(k);renderDepth()});
+  $$('#shc [data-rm]').forEach(b=>b.onclick=async()=>{const q=PD.panels[k];if(!q)return;q.readings.splice(+b.dataset.rm,1);pdSet(k,q.readings);await savePaint();pdSheet(k);renderDepth()});
   $('#pdunitb').onclick=async()=>{await pdSetUnit(PD.unit==='mils'?'um':'mils');pdSheet(k)};
   $('#pdclear').onclick=async()=>{delete PD.panels[k];await savePaint();closeSheet();renderDepth()};
 }
 function renderDepth(){
   const el=$('#dp');if(!el)return;
-  const cls=k=>PD.panels[k]?.status||'';
-  const stat=k=>{const p=PD.panels[k];return p&&p.readings&&p.readings.length?`${fmt(p.avg)} µm · ${p.readings.length} spot${p.readings.length===1?'':'s'}`:'Tap to log'};
-  const tone=k=>cls(k)==='safe'?'ok':cls(k)==='caution'?'wn':cls(k)==='danger'?'bd':'mut';
+  const cls=k=>PD.panels[k]?.status||'',has=k=>PD.panels[k]?.readings?.length>0;
+  const stat=k=>has(k)?`${pdFmt(PD.panels[k].avg)} ${pdU()} avg · ${PD.panels[k].readings.length} spot${PD.panels[k].readings.length===1?'':'s'}`:'Tap to log';
   const pw=(k,x,y,w,h,rx)=>`<rect class="pw ${cls(k)}" data-pd="${k}" x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" tabindex="0" role="button" aria-label="${esc(pdName(k))}"><title>${esc(pdName(k))}</title></rect>`;
-  const total=PD_PANELS.filter(([k])=>PD.panels[k]?.readings?.length).length;
-  const sum=$('#pdsum');if(sum)sum.textContent=total?total+'/9 panels':'';
-  el.innerHTML=`<div class="wirewrap"><svg class="wire" viewBox="0 0 400 220" role="img" aria-label="Top-down paint depth panel grid">
-    <rect class="body" x="10" y="26" width="380" height="168" rx="54"/>
-    ${pw('fender_fl',36,34,84,14,7)}${pw('fender_fr',36,172,84,14,7)}
-    ${pw('quarter_rl',280,34,84,14,7)}${pw('quarter_rr',280,172,84,14,7)}
-    ${pw('door_driver',132,34,136,14,7)}${pw('door_passenger',132,172,136,14,7)}
-    ${pw('hood',36,54,84,112,14)}${pw('roof',132,52,136,116,22)}${pw('trunk',280,54,84,112,14)}
-    <text class="pwt" x="78" y="113">HOOD</text><text class="pwt" x="200" y="113">ROOF</text><text class="pwt" x="322" y="113">TRUNK</text>
+  const lb=(k,cx,cy,rot,name)=>{const v=has(k)?pdFmt(PD.panels[k].min):'',t=rot?` transform="rotate(${rot} ${cx} ${cy})"`:'';return`<text class="pwt" x="${cx}" y="${cy-(v?5:-3)}"${t}>${name}</text>${v?`<text class="pwv" x="${cx}" y="${cy+9}"${t}>${v}</text>`:''}`};
+  const total=PD_PANELS.filter(([k])=>has(k)).length,sum=$('#pdsum');if(sum)sum.textContent=total?total+'/9 panels':'';
+  el.innerHTML=`<div class="wirewrap"><svg class="wire" viewBox="0 0 320 440" role="img" aria-label="Top-down paint depth panel map, front of car at the top">
+    <rect class="body" x="10" y="8" width="300" height="424" rx="84"/><text class="pwv" x="160" y="20">FRONT</text>
+    ${pw('fender_fl',20,52,52,92,14)}${pw('door_driver',20,150,52,118,10)}${pw('quarter_rl',20,274,52,104,14)}
+    ${pw('fender_fr',248,52,52,92,14)}${pw('door_passenger',248,150,52,118,10)}${pw('quarter_rr',248,274,52,104,14)}
+    ${pw('hood',84,26,152,108,22)}<rect class="glass" x="94" y="140" width="132" height="24" rx="8"/>${pw('roof',94,168,132,104,14)}<rect class="glass" x="94" y="276" width="132" height="22" rx="8"/>${pw('trunk',84,304,152,104,22)}
+    ${lb('hood',160,80,0,'HOOD')}${lb('roof',160,220,0,'ROOF')}${lb('trunk',160,356,0,'TRUNK')}
+    ${lb('fender_fl',46,98,-90,'L FENDER')}${lb('door_driver',46,209,-90,'DRIVER DOOR')}${lb('quarter_rl',46,326,-90,'L QUARTER')}
+    ${lb('fender_fr',274,98,90,'R FENDER')}${lb('door_passenger',274,209,90,'PASS. DOOR')}${lb('quarter_rr',274,326,90,'R QUARTER')}
   </svg></div>
-  <div class="legend"><span><i class="ls"></i>Safe &gt;110 µm</span><span><i class="lc"></i>Caution 85–110</span><span><i class="ld"></i>Danger &lt;85</span></div>
-  <div>${PD_PANELS.map(([k])=>`<button class="pdrow ${cls(k)}" data-pdc="${k}"><span>${esc(pdName(k))}</span><span class="${tone(k)}">${stat(k)}</span></button>`).join('')}</div>
-  <div class="row" style="margin-top:12px"><button class="btn sm" id="pdunitchip">Units: ${PD.unit==='mils'?'mils':'µm'}</button><button class="btn sm" id="pdhelp">How it works</button></div>`;
+  <div class="legend"><span><i class="lgs"></i>Safe &gt;110</span><span><i class="lgc"></i>Caution 85–110</span><span><i class="lgd"></i>Danger &lt;85</span><span>µm</span></div>
+  <div>${PD_PANELS.map(([k])=>`<button class="pdrow ${cls(k)}" data-pdc="${k}"><span>${esc(pdName(k))}</span><span class="${pdTone(cls(k))||'mut'}">${stat(k)}</span></button>`).join('')}</div>
+  <div class="row" style="margin-top:12px"><button class="btn sm" id="pdunitchip">Units: ${pdU()}</button><button class="btn sm" id="pdhelp">How it works</button></div>`;
   $$('#dp .pw').forEach(p=>{p.onclick=()=>pdSheet(p.dataset.pd);p.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pdSheet(p.dataset.pd)}}});
   $$('#dp [data-pdc]').forEach(b=>b.onclick=()=>pdSheet(b.dataset.pdc));
   $('#pdunitchip').onclick=()=>pdSetUnit(PD.unit==='mils'?'um':'mils');
-  $('#pdhelp').onclick=()=>{openSheet(`<h3>Paint depth grid</h3><p class="mut">Tap any panel to log multiple readings per section. Lustre keeps the min, max and average, then colors the panel from the lowest spot.</p><div class="legend" style="justify-content:flex-start"><span><i class="ls"></i>Safe &gt;110 µm</span><span><i class="lc"></i>Caution 85–110</span><span><i class="ld"></i>Danger &lt;85</span></div><p class="hint">1 mil = 25.4 µm. Readings are stored per job in IndexedDB. When a panel is red, stay with a fine polish or gloss enhancer — do not heavy compound.</p><button class="btn pri wide" id="pdhx" style="margin-top:12px">Got it</button>`);$('#pdhx').onclick=closeSheet};
+  $('#pdhelp').onclick=()=>openSheet(`<h3>Paint depth map</h3><p class="mut">Tap a panel on the car to log as many spots as you like. Lustre keeps the lowest, highest and average reading and colors the panel from the lowest spot, so a thin patch is never hidden by a good average.</p><div class="legend" style="justify-content:flex-start"><span><i class="lgs"></i>Safe &gt;110 µm: room for compounding</span></div><div class="legend" style="justify-content:flex-start;margin-top:0"><span><i class="lgc"></i>Caution 85–110 µm: medium polish only</span></div><div class="legend" style="justify-content:flex-start;margin-top:0"><span><i class="lgd"></i>Danger &lt;85 µm: fine polish or gloss enhancement only</span></div><p class="hint">Readings are stored in µm and shown in your chosen unit, so switching units never changes the numbers. These are rules of thumb. Repainted panels vary, so measure each panel in several spots.</p>`);
 }
-const depthSum=()=>PD_PANELS.filter(([k])=>PD.panels[k]?.readings?.length).map(([k])=>{const p=PD.panels[k];return`${pdName(k)}: ${p.readings.map(v=>fmt(v)).join('/')} ${PD.unit==='mils'?'mils':'um'} (min ${fmt(p.min)}, avg ${fmt(p.avg)}, ${p.status})`}).join('; ');
+const depthSum=()=>PD_PANELS.filter(([k])=>PD.panels[k]?.readings?.length).map(([k])=>{const p=PD.panels[k];return`${pdName(k)}: ${p.readings.map(v=>fmt(v)).join('/')} um (min ${fmt(p.min)}, avg ${fmt(p.avg)}, ${p.status})`}).join('; ');
 $('#dai').onclick=()=>send('Review my paint depth readings and defects. Which panels are safe to keep correcting, which need caution, and which need fine polish only?');
 
 /* ---------- photos ---------- */
@@ -846,7 +848,7 @@ $('#mic').onclick=()=>{
     rec.onend=()=>{rec=null;$('#mic').classList.remove('on');if(input.value.trim())runSpoken(input.value);else if(S.wake)queueWake(600)};
     rec.onerror=e=>{
       const err=e.error;
-      if(err==='not-allowed'||err==='service-not-allowed'){toast('Allow microphone access for Lustre, then try again.');if(S.wake)wakeOff()}
+      if(err==='not-allowed'||err==='service-not-allowed'){toast('Voice recognition was blocked. On iPhone turn on Dictation in Settings > General > Keyboard, and allow Microphone and Speech Recognition for Safari.');if(S.wake)wakeOff()}
       else if(err==='audio-capture'){toast('No microphone was found on this device.');if(S.wake)wakeOff()}
       else if(err==='network')toast('Voice input needs a connection. Check your signal and try again.');
     };
@@ -855,12 +857,12 @@ $('#mic').onclick=()=>{
 };
 
 /* ---------- Hey Lustre wake word ---------- */
-let wakeRec=null,wakeArmed=false,wakeTimer=null,voiceRun=false,wakeRestartT=null,wakeStartT=null,wakeTries=0,wakeWarned=false,wakeMicOK=false,wakePrimeP=null,wakeGen=0,wakeTail='',wakeTailT=0;
+let wakeRec=null,wakeArmed=false,wakeTimer=null,voiceRun=false,wakeRestartT=null,wakeStartT=null,wakeTries=0,wakeWarned=false,wakeMicOK=false,wakePrimeP=null,wakeGen=0;
 function wakeSupported(){return !!(window.SpeechRecognition||window.webkitSpeechRecognition)}
 function wakeSecure(){return location.protocol==='https:'||window.isSecureContext===true||/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)}
-function wakeWhy(){return !wakeSecure()?'Microphone needs HTTPS. Open the hosted app over HTTPS.':!wakeSupported()?'Wake word is not supported in this browser. Use the keyboard mic or type instead.':''}
+function wakeWhy(){return !wakeSecure()?'Microphone needs HTTPS. Open the hosted app over HTTPS.':S.wakeEngine==='cloud'?(navigator.mediaDevices?.getUserMedia?'':'Microphone is not available in this browser.'):!wakeSupported()?'Browser speech recognition is not available here (iPhone Home Screen apps never have it). Switch Listening engine to Cloud in Settings.':''}
 function micMsg(e){return e?.name==='NotAllowedError'||e?.name==='SecurityError'?'Allow microphone access for Lustre, then try again.':e?.name==='NotFoundError'?'No microphone was found on this device.':e?.name==='NotReadableError'?'The microphone is busy in another app. Close it and try again.':'Microphone could not start. Check the browser microphone permission.'}
-const wakeBadge=(on,hot,label,idle)=>{const b=$('#wake');if(!b)return;b.classList.toggle('on',!!on);b.classList.toggle('hot',!!hot);b.classList.toggle('idle',!!idle);if(label)$('#waket').textContent=label};
+const wakeBadge=(on,hot)=>{const b=$('#wake');if(!b)return;b.classList.toggle('on',!!on);b.classList.toggle('hot',!!hot)};
 function wakeOff(msg){S.wake=false;save();stopWake();const sw=$('#swake');if(sw)sw.checked=false;const h=$('#whint');if(h&&msg)h.textContent=msg;if(msg)toast(msg)}
 function wakePrime(){
   if(wakeMicOK)return Promise.resolve(true);
@@ -870,33 +872,88 @@ function wakePrime(){
   return wakePrimeP;
 }
 async function checkMic(){
-  if(!wakeSecure())return toast('Microphone needs HTTPS. Open the hosted app over HTTPS.');
-  if(!navigator.mediaDevices?.getUserMedia)return toast('Microphone is not available in this browser.');
+  const h=$('#whint'),rep=m=>{if(h)h.textContent=m;toast(m)};
+  if(!wakeSecure())return rep('Microphone needs HTTPS. Open the hosted app over HTTPS.');
+  if(!navigator.mediaDevices?.getUserMedia)return rep('Microphone is not available in this browser.');
   const was=S.wake;if(was)stopWake();
-  try{
-    const st=await navigator.mediaDevices.getUserMedia({audio:true});st.getTracks().forEach(t=>t.stop());wakeMicOK=true;
-    if(!wakeSupported())toast('Microphone works, but this browser cannot listen for “Hey Lustre”. Use Chrome or Edge, or tap the mic button.');
-    else if(navigator.onLine===false)toast('Microphone works. “Hey Lustre” needs a connection, so it will resume when you are back online.');
-    else toast('Microphone works. Turn on “Hey Lustre” and say it clearly.');
-  }
-  catch(e){toast(micMsg(e))}
-  if(was&&S.wake)queueWake(500);
+  try{const st=await navigator.mediaDevices.getUserMedia({audio:true});st.getTracks().forEach(t=>t.stop());wakeMicOK=true}catch(e){rep(micMsg(e));return}
+  if(S.wakeEngine==='cloud'){rep('Microphone works. Cloud listening only needs the mic, so you are set.');if(was)queueWake(400);return}
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R){rep('Microphone works, but this browser has no speech recognition. Switch Listening engine to Cloud.');return}
+  rep('Microphone works. Now testing speech recognition: say anything…');
+  const blocked='Speech recognition is blocked. On iPhone turn on Dictation in Settings > General > Keyboard and allow Speech Recognition, or switch Listening engine to Cloud.';
+  await new Promise(done=>{const r=new R();const to=setTimeout(()=>{try{r.abort()}catch{}rep('Speech recognition started but heard nothing. Try again.');done()},7000);
+    r.onresult=()=>{clearTimeout(to);rep('Mic and speech recognition both work.');try{r.stop()}catch{}done()};
+    r.onerror=e=>{clearTimeout(to);rep(({'not-allowed':blocked,'service-not-allowed':blocked,'network':'Speech recognition needs a connection.','no-speech':'No speech heard. Try again closer to the phone.','audio-capture':'No microphone found.'})[e.error]||('Speech recognition error: '+e.error));done()};
+    r.onend=()=>{clearTimeout(to);done()};
+    try{r.start()}catch(x){clearTimeout(to);rep('Speech recognition could not start: '+x.message);done()}});
+  if(was&&S.wake)queueWake(500)
 }
 function wakeClearStart(){clearTimeout(wakeStartT);wakeStartT=null}
 function queueWake(ms){
   if(wakeRestartT)return;
   wakeRestartT=setTimeout(()=>{wakeRestartT=null;startWake()},ms)
 }
-function stopWake(){wakeGen++;try{wakeRec?.stop()}catch{}wakeRec=null;wakeArmed=false;wakeTail='';wakeTailT=0;wakeClearStart();clearTimeout(wakeTimer);clearTimeout(wakeRestartT);wakeRestartT=null;wakeBadge(false,false)}
+function stopWake(){cloudStop();wakeGen++;try{wakeRec?.stop()}catch{}wakeRec=null;wakeArmed=false;wakeClearStart();clearTimeout(wakeTimer);clearTimeout(wakeRestartT);wakeRestartT=null;wakeBadge(false,false)}
+
+/* fuzzy wake phrase: speech engines often hear "Lustre" as luster, lester, lusta… */
+function lev(a,b){const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);for(let j=1;j<=n;j++)d[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
+const WAKE_PRE=/^(hey|hay|hi|hello|okay|ok|a|yo|hate)$/;
+const lusClose=w=>w.length>=4&&w.length<=8&&Math.min(lev(w,'luster'),lev(w,'lustre'))<=1;
+const lusLoose=w=>w.length>=5&&w.length<=9&&(/^l[ue]s[td]?[aeiou]?r?[aeiou]?$/.test(w)||Math.min(lev(w,'luster'),lev(w,'lester'))<=2);
+function wakeMatch(raw){const t=String(raw||'').toLowerCase().replace(/[,!?;"]/g,' ').split(/\s+/).filter(Boolean),L=t.map(x=>x.replace(/[^a-z]/g,''));
+  for(let i=0;i<t.length;i++){const pre=i>0&&WAKE_PRE.test(L[i-1]);
+    for(const n of [2,1]){const w=L.slice(i,i+n).join('');if(!w||L.slice(i,i+n).some(x=>!x))continue;
+      if((i===0||pre)&&lusClose(w)||pre&&lusLoose(w))return{cmd:t.slice(i+n).join(' ').replace(/^[.:-]+\s*/,'')}}}
+  return null}
+function wakeLabel(x){const b=$('#wake');if(b&&b.childNodes[1])b.childNodes[1].textContent=x}
+function wakeArm(){if(wakeArmed)return;wakeArmed=true;beep();wakeBadge(true,true);toast('Yes?');clearTimeout(wakeTimer);wakeTimer=setTimeout(()=>{wakeArmed=false;wakeBadge(true,false)},6500)}
+function wakeHandle(txt,prev,final){const hit=wakeMatch(txt)||(prev?wakeMatch(prev+' '+txt):null);
+  if(hit){wakeArm();if(hit.cmd.length>2&&final){wakeArmed=false;clearTimeout(wakeTimer);runSpoken(hit.cmd)}}
+  else if(wakeArmed&&final){const c=String(txt).trim();if(c.length>2){wakeArmed=false;clearTimeout(wakeTimer);runSpoken(c)}}}
+function offerCloud(why){
+  if(confirm(why+'\n\nUse Cloud listening instead? While Lustre is open it sends short clips of speech to Gemini to hear “Hey Lustre”. Nothing is sent when it is off.')){S.wakeEngine='cloud';S.wake=true;save();const e=$('#swe');if(e)e.value='cloud';const w=$('#swake');if(w)w.checked=true;stopWake();startWake()}else wakeOff()}
+function wakeBlocked(err){stopWake();
+  if(wakeHeard){wakeLabel('Tap to resume “Hey Lustre”');wakeBadge(true,false);return}
+  offerCloud('Browser speech recognition was blocked ('+err+'). On iPhone it needs Dictation turned on, and it does not work in Home Screen apps.')}
+let wakeHeard=false,cw=null,wl=null,cwSent=[];
+const speakingNow=()=>Date.now()<ttsBusyUntil||!!window.speechSynthesis?.speaking;
+async function keepAwake(){try{wl=await navigator.wakeLock?.request('screen')}catch{}}
+function cloudStop(){if(!cw)return;try{cw.node.disconnect();cw.src.disconnect();cw.stream.getTracks().forEach(t=>t.stop());cw.ctx.close()}catch{}cw=null;try{wl?.release()}catch{}wl=null}
+function wav16(f,inRate){const r=16000,k=inRate/r,n=Math.floor(f.length/k),o=new Int16Array(n);for(let i=0;i<n;i++){let a=0,c=0;for(let j=Math.floor(i*k);j<Math.floor((i+1)*k)&&j<f.length;j++){a+=f[j];c++}const v=Math.max(-1,Math.min(1,c?a/c:0));o[i]=v<0?v*32768:v*32767}
+  const h=new DataView(new ArrayBuffer(44)),w=(p,s)=>[...s].forEach((ch,i)=>h.setUint8(p+i,ch.charCodeAt(0)));w(0,'RIFF');h.setUint32(4,36+n*2,true);w(8,'WAVEfmt ');h.setUint32(16,16,true);h.setUint16(20,1,true);h.setUint16(22,1,true);h.setUint32(24,r,true);h.setUint32(28,r*2,true);h.setUint16(32,2,true);h.setUint16(34,16,true);w(36,'data');h.setUint32(40,n*2,true);return new Blob([h,o],{type:'audio/wav'})}
+async function cloudSend(chunks,rate){
+  const now=Date.now();cwSent=cwSent.filter(t=>now-t<60000);if(cwSent.length>=12)return;cwSent.push(now);
+  const f=new Float32Array(chunks.reduce((a,c)=>a+c.length,0));let p=0;chunks.forEach(c=>{f.set(c,p);p+=c.length});
+  wakeLabel('Listening for “Hey Lustre” …');
+  try{const b64=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.readAsDataURL(wav16(f,rate))});
+    const r=await fetch('/api/stt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({audio:b64,mime:'audio/wav'})});const d=await r.json().catch(()=>({}));
+    if(r.ok&&d.text&&S.wake&&!busy&&!voiceRun)wakeHandle(d.text,'',true)}catch{}
+  wakeLabel('Listening for “Hey Lustre”')}
+async function cloudStart(){
+  if(cw||!S.wake||busy||voiceRun||rec||document.visibilityState==='hidden')return;
+  try{const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();await ctx.resume().catch(()=>{});
+    if(ctx.state!=='running'){stream.getTracks().forEach(t=>t.stop());ctx.close();wakeLabel('Tap to start “Hey Lustre”');wakeBadge(true,false);return}
+    const srcN=ctx.createMediaStreamSource(stream),node=ctx.createScriptProcessor(4096,1,1),rate=ctx.sampleRate,pre=[];
+    const st={talking:false,silent:0,t:0,floor:.008,buf:[]};
+    node.onaudioprocess=e=>{const x=e.inputBuffer.getChannelData(0),c=new Float32Array(x),dur=x.length/rate;let q=0;for(let i=0;i<x.length;i++)q+=x[i]*x[i];const rms=Math.sqrt(q/x.length);
+      if(busy||voiceRun||rec||speakingNow()){st.talking=false;pre.length=0;return}
+      if(!st.talking){st.floor=st.floor*.97+rms*.03;pre.push(c);if(pre.length>4)pre.shift();if(rms>Math.max(.025,st.floor*3.2)){st.talking=true;st.buf=[...pre];st.t=0;st.silent=0}}
+      else{st.buf.push(c);st.t+=dur;if(rms<Math.max(.018,st.floor*2))st.silent+=dur;else st.silent=0;
+        if(st.silent>.8||st.t>9){const buf=st.buf,spoke=st.t-st.silent;st.talking=false;pre.length=0;if(spoke>.45)cloudSend(buf,rate)}}};
+    srcN.connect(node);node.connect(ctx.destination);cw={stream,ctx,node,src:srcN};wakeHeard=true;wakeLabel('Listening for “Hey Lustre”');wakeBadge(true,false);keepAwake();
+  }catch(e){wakeOff(micMsg(e))}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&S.wake&&S.wakeEngine==='cloud'&&!cw)queueWake(300);if(document.visibilityState==='visible'&&cw)keepAwake()});
 async function startWake(){
   if(!S.wake||wakeRec||rec||busy||voiceRun||document.visibilityState==='hidden')return;
   const why=wakeWhy();if(why){wakeOff(why);return}
-  if(navigator.onLine===false){wakeBadge(true,false,'Offline — waiting for connection',true);return}
+  if(S.wakeEngine==='cloud')return cloudStart();
   if(!wakeMicOK){const ok=await wakePrime();if(!ok||!S.wake||wakeRec||rec||busy||voiceRun||document.visibilityState==='hidden')return}
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
   wakeGen++;const gen=wakeGen;
   wakeRec=new R();wakeRec.lang='en-US';wakeRec.continuous=true;wakeRec.interimResults=true;wakeRec.maxAlternatives=1;
-  wakeRec.onstart=()=>{if(gen!==wakeGen)return;wakeClearStart();wakeTries=0;wakeBadge(true,false,'Listening for “Hey Lustre”')};
+  wakeRec.onstart=()=>{if(gen!==wakeGen)return;wakeClearStart();wakeTries=0;wakeHeard=true;wakeLabel('Listening for “Hey Lustre”');wakeBadge(true,false)};
   wakeRec.onresult=e=>{
     if(gen!==wakeGen)return;
     wakeTries=0;
@@ -904,66 +961,44 @@ async function startWake(){
     let txt='';for(let i=e.resultIndex;i<e.results.length;i++)txt+=e.results[i][0].transcript;
     const last=e.results[e.results.length-1],final=!!(last&&last.isFinal);
     const prev=e.resultIndex>0&&e.results[e.resultIndex-1]?.[0]?.transcript||'';
-    const now=Date.now(),carry=now-wakeTailT<2500?wakeTail:'';
-    const joined=(prev+' '+carry+' '+txt).replace(/\s+/g,' ').trim();
-    const wakeRe=/\bhey[\s,.:;!?-]+(?:lust(?:re|er|ra|ro|ar|ere)?|loost(?:re|er))\b/;
-    const m=txt.toLowerCase().match(wakeRe),jm=!m?joined.toLowerCase().match(wakeRe):null;
-    const split=!m&&jm&&jm.index+jm[0].length>joined.length-txt.trim().length+1;
-    const hit=m||(split?jm:null);
-    if(hit){
-      wakeTail='';wakeTailT=0;
-      const src=m?txt:joined,cmd=src.slice(hit.index+hit[0].length).replace(/^[\s,.:;!?-]+/,'').trim();
-      if(!wakeArmed){wakeArmed=true;beep();wakeBadge(true,true,'Listening for your command');toast('Yes?');clearTimeout(wakeTimer);wakeTimer=setTimeout(()=>{wakeArmed=false;wakeBadge(true,false,'Listening for “Hey Lustre”')},6500)}
-      if(cmd.length>2&&final){wakeArmed=false;clearTimeout(wakeTimer);runSpoken(cmd)}
-    }else if(wakeArmed&&final){
-      const cmd=txt.trim();
-      if(cmd.length>2){wakeArmed=false;clearTimeout(wakeTimer);runSpoken(cmd)}
-    }else if(!wakeArmed&&txt.trim()){
-      wakeTail=(carry+' '+txt.trim()).trim().slice(-80);wakeTailT=now;
-    }
+    wakeHandle(txt,prev,final);
   };
   wakeRec.onerror=e=>{
     if(gen!==wakeGen)return;
     wakeClearStart();
     const err=e.error;
-    if(err==='not-allowed'){wakeOff('Allow microphone access for Lustre, then turn Hey Lustre back on.');return}
-    if(err==='service-not-allowed'){wakeOff('Speech recognition is blocked or unavailable. Try Chrome or Edge, then turn Hey Lustre back on.');return}
+    if(err==='not-allowed'||err==='service-not-allowed'){wakeBlocked(err);return}
     if(err==='audio-capture'){wakeOff('No microphone was found on this device.');return}
     if(err==='language-not-supported'){wakeOff('Voice recognition is not available for this language.');return}
-    if(err==='network'){wakeTries++;wakeBadge(true,false,'Reconnecting after network error…',true);if(!wakeWarned){wakeWarned=true;toast('Speech recognition needs a connection. Use the mic button if it stays offline.')}}
+    if(err==='network'){wakeTries++;if(!wakeWarned){wakeWarned=true;toast('Speech recognition needs a connection. Use the mic button if it stays offline.')}}
   };
   wakeRec.onend=()=>{
     if(gen!==wakeGen)return;
-    wakeClearStart();wakeRec=null;
-    if(S.wake&&!busy&&!rec&&!voiceRun&&document.visibilityState!=='hidden'){
-      wakeBadge(true,false,'Reconnecting…',true);queueWake(Math.min(220+wakeTries*500,2200));
-    }else wakeBadge(false,false);
+    wakeClearStart();wakeRec=null;wakeBadge(false,false);
+    if(S.wake&&!busy&&!rec&&!voiceRun&&document.visibilityState!=='hidden')queueWake(Math.min(450+wakeTries*650,3500))
   };
   wakeClearStart();
   wakeStartT=setTimeout(()=>{
     if(gen!==wakeGen||!wakeRec)return;
     try{wakeRec.abort?.()}catch{}
-    wakeRec=null;wakeTries++;
-    if(wakeTries<3){wakeBadge(true,false,'Reconnecting…',true);queueWake(800)}
+    wakeRec=null;wakeBadge(false,false);wakeTries++;
+    if(wakeTries<3)queueWake(800);
     else wakeOff('Hands-free listening did not start. Tap the mic to talk.');
   },8000);
-  try{wakeRec.start();wakeBadge(true,false,'Starting listener…',true)}catch(e){
+  try{wakeRec.start();wakeBadge(true)}catch(e){
     if(gen!==wakeGen)return;
-    wakeClearStart();wakeRec=null;wakeTries++;
-    if(wakeTries<3){wakeBadge(true,false,'Reconnecting…',true);queueWake(900*wakeTries)}
+    wakeClearStart();wakeRec=null;wakeBadge(false,false);wakeTries++;
+    if(wakeTries<3)queueWake(900*wakeTries);
     else wakeOff('Hands-free listening stopped. Tap the mic to talk.');
   }
 }
 function syncWake(quiet){
   if(!S.wake){stopWake();return}
   const why=wakeWhy();if(why){wakeOff(quiet?'':why);return}
-  if(navigator.onLine===false){wakeBadge(true,false,'Offline — waiting for connection',true);if(!quiet)toast('Hey Lustre needs a connection. It will resume when you are back online.');return}
   startWake();if(!quiet)toast('Listening for “Hey Lustre”');
 }
-function setWake(on,quiet){S.wake=!!on;save();syncWake(quiet);const sw=$('#swake');if(sw)sw.checked=S.wake;return S.wake}
+function setWake(on,quiet){if(on&&S.wakeEngine!=='cloud'&&!wakeSupported()){offerCloud('Browser speech recognition is not available here (iPhone Home Screen apps never have it).');return S.wake}S.wake=!!on;save();syncWake(quiet);const sw=$('#swake');if(sw)sw.checked=S.wake;return S.wake}
 $('#wake').onclick=()=>{if(!S.wake)return;stopWake();wakeTries=0;startWake()};
-window.addEventListener('online',()=>{if(S.wake&&!wakeRec&&!busy&&!rec&&!voiceRun)queueWake(250)});
-window.addEventListener('offline',()=>{if(!S.wake)return;stopWake();wakeBadge(true,false,'Offline — waiting for connection',true)});
 const vnorm=t=>String(t||'').toLowerCase().replace(/['’]/g,'').replace(/[^a-z0-9.:\s-]/g,' ').replace(/-/g,' ').replace(/\s+/g,' ').trim();
 const VNUMWORDS={zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90,hundred:100};
 const vnums=t=>String(t||'').replace(/\b(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred)(?:[\s-]+(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred))*\b/g,m=>{let total=0,cur=0;m.split(/[\s-]+/).forEach(w=>{const v=VNUMWORDS[w];if(v===100){total+=(cur||1)*100;cur=0}else cur+=v});return String(total+cur)});

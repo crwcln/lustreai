@@ -1,12 +1,12 @@
 /*
 # Lustre
 
-Mobile detailing assistant powered by Gemini. Static PWA (`index.html`, `sw.js`, `manifest.webmanifest`) plus edge functions that keep your API key server-side: `api/chat` (streaming answers) and `api/tts` (Gemini voice).
+Mobile detailing assistant powered by Gemini. Static PWA (`index.html`, `sw.js`, `manifest.webmanifest`) plus edge functions that keep your API key server-side: `api/chat` (streaming answers), `api/tts` (Gemini voice) and `api/stt` (Cloud “Hey Lustre” listening). All three live in `edge-functions/api/`.
 
 ## Deploy
 1. Push this folder to GitHub.
 2. In EdgeOne Pages, create a project from the repo (no build command, output directory = repo root).
-3. Add env vars: `GEMINI_API_KEY` (required), `GEMINI_MODEL` (optional, default `gemini-2.5-flash`), `GEMINI_TTS_MODEL` (optional, default `gemini-2.5-flash-preview-tts`).
+3. Add env vars: `GEMINI_API_KEY` (required), `GEMINI_MODEL` (optional, default `gemini-2.5-flash`), `GEMINI_TTS_MODEL` (optional, default `gemini-2.5-flash-preview-tts`), `GEMINI_STT_MODEL` (optional, used by Cloud listening, defaults to `GEMINI_MODEL`).
 4. Redeploy. Open the site on your phone over HTTPS and use "Add to Home Screen" for the offline app.
 
 ## What's inside
@@ -25,7 +25,7 @@ The current version is shown under the Lustre title and in Settings. To ship an 
 Select one or more services during setup or from the Job tab. Lustre merges shared stages (for example Wash or Correct) into one checklist and orders the remaining stages for the job. The package label, progress tracker, client texts and AI context all use the full service list.
 
 ## Paint depth
-Each of the nine standard panels stores any number of readings for the current job in IndexedDB. The panel color comes from the lowest reading: safe above 110 µm, caution at 85–110 µm, danger below 85 µm. Units switch between microns and mils (1 mil = 25.4 µm).
+Each of the nine standard panels (`hood`, `roof`, `trunk`, `door_driver`, `door_passenger`, `fender_fl`, `fender_fr`, `quarter_rl`, `quarter_rr`) keeps any number of readings for the job in the IndexedDB store `paint_depth_logs` (keyPath `jobId`). Readings are always stored in µm and shown in µm or mils, so switching units never changes the numbers. Min, max, average and status are recomputed on every save. Status uses the lowest spot: safe above 110 µm, caution 85–110 µm, danger below 85 µm (flashing red on the car map).
 
 ## Alerts and timers
 - Headphone alerts use native system notifications through the service worker. Enable them in Settings; the OS decides whether the sound routes to connected headphones.
@@ -34,19 +34,17 @@ Each of the nine standard panels stores any number of readings for the current j
 - The service worker and `/api/push/subscribe` hook are in place, but `VAPID_PUBLIC_KEY` in `index.html` is empty. Add a VAPID public key and a sender endpoint to enable server push.
 
 ## Hey Lustre
-The wake word uses the browser SpeechRecognition API while Lustre is open. Say “Hey Lustre” and then a command. It pauses while the mic or a chat request is active. Browser speech recognition may need a connection, and it stops when the app is closed. Microphone access requires HTTPS and permission. Opening the site on a phone over a plain `http://192.168…` LAN address will block the mic; use the hosted HTTPS URL or install the hosted PWA. If speech recognition is unsupported, use keyboard dictation or type instead.
+Two listening engines (Settings > Listening engine):
+- **Browser** uses the browser's speech recognition. Free and private, but iPhone Home Screen apps do not have it at all, and Safari only allows it with Dictation turned on and a tap to start.
+- **Cloud** keeps the microphone open, detects speech locally, and sends only short clips that contain speech to `/api/stt` (Gemini) to listen for “Hey Lustre”. It needs the screen on, so Lustre requests a screen wake lock. It is limited to 12 clips a minute and pauses while Lustre is talking. Turn it on from Settings, or accept the prompt that appears when Browser is unavailable.
 
-The first wake start asks for microphone permission. Use Settings > Check mic to confirm the phone can open the microphone and can run browser speech recognition before relying on hands-free listening. The wake badge shows Listening, Reconnecting, or Offline. Check mic now reports unsupported speech recognition and missing connections instead of only testing the microphone.
+The wake phrase is matched loosely because phones mishear “Lustre” (luster, lester, lusta, lust er). Say “Hey Lustre” followed by a command, or say it alone and then the command. **Settings > Check voice** tests the microphone and speech recognition separately and tells you which one is blocked.
 
-On Android Chrome, hands-free listening can continue while Lustre stays open. iOS Safari and installed Home Screen apps may stop listening after a phrase or when the app goes to the background. Tap the wake badge or the mic button to restart. If the wake badge disappears, turn “Hey Lustre” back on in Settings. Speech recognition may add punctuation or split “Hey” and “Lustre” into separate results; Lustre accepts both.
-
-Commands run locally first and fall back to the Gemini chat when Lustre does not recognize them. Examples:
-- Job: “set vehicle to 2022 BMW M3”, “set client to Sam”, “set ETA to 3 PM”, “add note that trim needs dressing”, “add paint correction”, “remove trim restoration”, “next step”, “back a step”, “check foam dwell”, “what’s next”.
+Commands run locally first and fall back to the Gemini chat. Examples:
+- Job: “set vehicle to 2022 BMW M3”, “set client to Sam”, “set ETA to 3 PM”, “add note that trim needs dressing”, “add paint correction”, “next step”, “what’s next”.
 - Timers: “start a 5 minute dwell timer”, “cancel the cure timer”, “how much time is left”, “large timers on”.
 - Depth and mix: “log 120 microns on the hood”, “add 4.5 mils to the driver’s door”, “paint depth status”, “switch depth to mils”, “calculate 1 to 10 for a 32 ounce bottle”.
-- App: “open timers”, “open kit”, “show checklist”, “what’s the weather”, “turn on alerts”, “audio off”, “wake word on”, “what’s new”, “what version”, “help”.
-
-Voice commands reuse the same job, checklist, timer, calculator, paint-depth and kit state as the touch UI. Enabling alerts by voice can still be limited by the browser’s notification permission prompt.
+- App: “open timers”, “open kit”, “show checklist”, “what’s the weather”, “audio off”, “what’s new”, “help”.
 
 ## iOS home screen
 `apple-touch-icon.png` (180 px), `icon-192.png`, `icon-512.png` and `icon-maskable-512.png` are generated from the Lustre mark. In Safari, tap Share > Add to Home Screen to use it as the app icon.
