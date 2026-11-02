@@ -352,7 +352,7 @@ const key=(st,i)=>{const ks=jobModes();if(ks.length===1)return `${ks[0]}:${st}:$
 const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.i);toast.i=setTimeout(()=>t.classList.remove('on'),2200)};
 const fmt=n=>(n>=10?n.toFixed(1):n.toFixed(2)).replace(/\.?0+$/,'');
 /* ---------- system notifications ---------- */
-const VAPID_PUBLIC_KEY='';
+const VAPID_PUBLIC_KEY='BHUcNLNpShwycu3sFSTfwZU4AzXZofEJrdWxW6GaPQoEInGyFsDXWrtPQ9-6Rh1kKzty1IjQbJVu-FAjY0ASspA';
 function urlBase64ToUint8Array(base64String){
   const padding='='.repeat((4-(base64String.length%4))%4);
   const base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');
