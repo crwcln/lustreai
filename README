@@ -19,7 +19,7 @@ Mobile detailing assistant powered by Gemini. Static PWA (`index.html`, `sw.js`,
 - **Audio:** Gemini voices with an automatic fallback to the best voice on the device. Pick them in Settings.
 
 ## Site version and update wall
-The current version is shown under the Lustre title and in Settings. To ship an update, change `SITE_VERSION` near the top of the script in `index.html`, then add or edit the matching entry in `SITE_UPDATES` (newest first). The update wall opens automatically for returning users when the version changes, and is always available from Settings > What’s new. Bump the cache name in `sw.js` whenever you change the app shell.
+The current version is shown in Settings and beside the Lustre title when space allows. To ship an update, change `SITE_VERSION` near the top of the script in `index.html`, then add or edit the matching entry in `SITE_UPDATES` (newest first). The update wall opens automatically for returning users when the version changes, and is always available from Settings > What’s new. Bump the cache name in `sw.js` whenever you change the app shell.
 
 ## Multiple services
 Select one or more services during setup or from the Job tab. Lustre merges shared stages (for example Wash or Correct) into one checklist and orders the remaining stages for the job. The package label, progress tracker, client texts and AI context all use the full service list.
