@@ -1,5 +1,5 @@
 // Network-first for the app shell, cache fallback when offline. Chat API is never cached.
-const C = 'lustre-v6';
+const C = 'lustre-v7';
 const SHELL = ['/', '/index.html', '/favicon.svg', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png', '/apple-touch-icon.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(C).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => {})))));
