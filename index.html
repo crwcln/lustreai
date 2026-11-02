@@ -97,7 +97,7 @@ textarea.f{padding:12px 14px;resize:vertical;min-height:90px;line-height:1.45}se
 .opt{width:100%;text-align:left;padding:14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03);margin-bottom:8px;display:block;transition:all .2s}.opt.on{border-color:var(--g);background:rgba(61,255,133,.08)}.opt b{display:block;font-size:16px}.opt span{color:var(--mute);font-size:14px;display:block}.opt em{font-style:normal;font-size:13px;color:var(--g)}
 #toast{position:fixed;left:50%;bottom:104px;transform:translate(-50%,10px);background:var(--g);color:#04120a;font-weight:600;padding:11px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:all .3s var(--ease);z-index:70}#toast.on{opacity:1;transform:translate(-50%,0)}
 /* hands-free / wake */
-#wake{position:fixed;top:calc(env(safe-area-inset-top) + 66px);left:50%;transform:translateX(-50%) translateY(-6px);z-index:50;display:none;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(18,24,20,.92);border:1px solid rgba(61,255,133,.35);color:var(--g);font-size:12.5px;font-weight:600;backdrop-filter:blur(12px);pointer-events:none;opacity:0;transition:all .25s var(--ease)}
+#wake{position:fixed;top:calc(env(safe-area-inset-top) + 66px);left:50%;transform:translateX(-50%) translateY(-6px);z-index:50;display:none;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(18,24,20,.92);border:1px solid rgba(61,255,133,.35);color:var(--g);font-size:12.5px;font-weight:600;backdrop-filter:blur(12px);pointer-events:auto;cursor:pointer;user-select:none;opacity:0;transition:all .25s var(--ease)}
 #wake.on{display:flex;opacity:1;transform:translateX(-50%)}
 #wake.hot{border-color:var(--g);box-shadow:0 0 0 4px rgba(61,255,133,.14)}
 #wake i{width:8px;height:8px;border-radius:50%;background:var(--g);animation:pulse 1.6s infinite;flex:none}
@@ -422,6 +422,7 @@ function settings(){const vs=voices(),GV=['Kore','Charon','Puck','Aoede','Fenrir
   <div class="row" style="margin-top:8px"><button class="btn sm" id="stest">Send test alert</button></div>
   <div class="sw" style="margin-top:4px"><div><b>Larger timers</b><span>Glanceable timer digits for the bench or dash.</span></div><input type="checkbox" id="sbig" ${S.bigTimers?'checked':''}></div>
   <div class="sw"><div><b>“Hey Lustre” wake word</b><span>Listens while Lustre is open, then runs your spoken command.</span></div><input type="checkbox" id="swake" ${S.wake?'checked':''}></div>
+  <p class="hint" id="whint" style="margin-top:6px">${wakeWhy()||(ios?'iOS may stop hands-free listening after a phrase or when the app goes to the background. Tap the wake badge or the mic button to restart.':'')}</p>
   <p class="hint" style="margin-top:6px">Try “Hey Lustre, start a 5 minute timer”, “log 120 microns on the hood”, “add paint correction”, “next step”, or “what’s next”.</p>
   ${ios&&!standalone?'<div class="card" style="margin:16px 0 0;padding:14px"><b>Add Lustre to your Home Screen</b><p class="hint" style="margin-top:4px">In Safari tap Share, then Add to Home Screen. The Lustre mark becomes the app icon.</p></div>':''}
   <div class="row" style="margin-top:16px"><button class="btn pri" id="st">Test voice</button><button class="btn" id="sx">Done</button></div>`);
@@ -793,34 +794,60 @@ async function send(text,extra=[]){
   catch(e){st.stop=true;if(e.name!=='AbortError'){el.className='msg bot err';el.textContent=e.message;st.text=''}else st.text=st.text.slice(0,st.shown)}
   if(st.text){el.innerHTML=md(st.text);history.push({role:'user',parts:[{text:(media.length?`[${media.length} attachment(s) shown] `:'')+(text||'')}]},{role:'model',parts:[{text:st.text}]});speak(st.text)}
   else if(el.className.indexOf('err')<0){el.className='msg bot err';el.textContent='No answer came back. Try rephrasing or adding a clearer photo.'}
-  busy=false;sendUI();chat.scrollTop=chat.scrollHeight;if(S.wake)setTimeout(()=>startWake(),1400)}
+  busy=false;sendUI();chat.scrollTop=chat.scrollHeight;if(S.wake)queueWake(1400)}
 const size=()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,130)+'px'};
 input.oninput=size;input.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!/Mobi|Android/i.test(navigator.userAgent)){e.preventDefault();send()}};sendBtn.onclick=()=>send();
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec;
-$('#mic').onclick=()=>{unlock();if(rec){rec.stop();return}if(!SR)return toast('Voice input is not supported in this browser');
+$('#mic').onclick=()=>{
+  if(busy||voiceRun)return toast('Wait for the current command to finish');
+  unlock();if(rec){rec.stop();return}
+  if(!SR)return toast('Voice input is not supported in this browser');
+  if(!wakeSecure())return toast('Microphone needs HTTPS. Open the hosted app over HTTPS.');
   if(S.wake)stopWake();
-  rec=new SR();rec.lang='en-US';rec.interimResults=true;$('#mic').classList.add('on');
-  rec.onresult=e=>{input.value=[...e.results].map(r=>r[0].transcript).join('');size()};
-  rec.onend=()=>{rec=null;$('#mic').classList.remove('on');if(input.value.trim())runSpoken(input.value);else if(S.wake)setTimeout(()=>startWake(),600)};
-  rec.onerror=()=>{};rec.start()};
+  try{
+    rec=new SR();rec.lang='en-US';rec.interimResults=true;$('#mic').classList.add('on');
+    rec.onresult=e=>{input.value=[...e.results].map(r=>r[0].transcript).join('');size()};
+    rec.onend=()=>{rec=null;$('#mic').classList.remove('on');if(input.value.trim())runSpoken(input.value);else if(S.wake)queueWake(600)};
+    rec.onerror=e=>{
+      const err=e.error;
+      if(err==='not-allowed'||err==='service-not-allowed'){toast('Allow microphone access for Lustre, then try again.');if(S.wake)wakeOff()}
+      else if(err==='audio-capture'){toast('No microphone was found on this device.');if(S.wake)wakeOff()}
+      else if(err==='network')toast('Voice input needs a connection. Check your signal and try again.');
+    };
+    rec.start();
+  }catch(e){rec=null;$('#mic').classList.remove('on');toast('Microphone could not start. Tap the mic again.');if(S.wake)queueWake(900)}
+};
 
 /* ---------- Hey Lustre wake word ---------- */
-let wakeRec=null,wakeArmed=false,wakeTimer=null,voiceRun=false;
-const wakeSupported=()=>!!(window.SpeechRecognition||window.webkitSpeechRecognition);
+let wakeRec=null,wakeArmed=false,wakeTimer=null,voiceRun=false,wakeRestartT=null,wakeTries=0,wakeWarned=false;
+function wakeSupported(){return !!(window.SpeechRecognition||window.webkitSpeechRecognition)}
+function wakeSecure(){return location.protocol==='https:'||window.isSecureContext===true||/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)}
+function wakeWhy(){return !wakeSecure()?'Microphone needs HTTPS. Open the hosted app over HTTPS.':!wakeSupported()?'Wake word is not supported in this browser. Use the keyboard mic or type instead.':''}
 const wakeBadge=(on,hot)=>{const b=$('#wake');if(!b)return;b.classList.toggle('on',!!on);b.classList.toggle('hot',!!hot)};
-function stopWake(){try{wakeRec?.stop()}catch{}wakeRec=null;wakeArmed=false;clearTimeout(wakeTimer);wakeBadge(false,false)}
+function wakeOff(msg){S.wake=false;save();stopWake();const sw=$('#swake');if(sw)sw.checked=false;const h=$('#whint');if(h&&msg)h.textContent=msg;if(msg)toast(msg)}
+function queueWake(ms){
+  if(wakeRestartT)return;
+  wakeRestartT=setTimeout(()=>{wakeRestartT=null;startWake()},ms)
+}
+function stopWake(){try{wakeRec?.stop()}catch{}wakeRec=null;wakeArmed=false;clearTimeout(wakeTimer);clearTimeout(wakeRestartT);wakeRestartT=null;wakeBadge(false,false)}
 function startWake(){
-  if(!S.wake||wakeRec||rec||busy||voiceRun)return;
-  if(!wakeSupported()){S.wake=false;save();toast('Wake word needs speech recognition support');return}
+  if(!S.wake||wakeRec||rec||busy||voiceRun||document.visibilityState==='hidden')return;
+  const why=wakeWhy();if(why){wakeOff(why);return}
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
-  wakeRec=new R();wakeRec.lang='en-US';wakeRec.continuous=true;wakeRec.interimResults=true;
+  wakeRec=new R();wakeRec.lang='en-US';wakeRec.continuous=true;wakeRec.interimResults=true;wakeRec.maxAlternatives=1;
+  wakeRec.onstart=()=>{wakeTries=0;wakeBadge(true,false)};
   wakeRec.onresult=e=>{
+    wakeTries=0;
     if(busy||rec)return;
     let txt='';for(let i=e.resultIndex;i<e.results.length;i++)txt+=e.results[i][0].transcript;
     const last=e.results[e.results.length-1],final=!!(last&&last.isFinal);
-    const m=txt.toLowerCase().match(/hey\s+(lustre|luster|lustra)/);
-    if(m){
-      const cmd=txt.slice(m.index+m[0].length).replace(/^[\s,.:;!?-]+/,'').trim();
+    const prev=e.resultIndex>0&&e.results[e.resultIndex-1]?.[0]?.transcript||'';
+    const joined=prev+' '+txt,wakeRe=/hey\s+(lustre|luster|lustra)/;
+    const m=txt.toLowerCase().match(wakeRe),jm=!m?joined.toLowerCase().match(wakeRe):null;
+    const split=!m&&jm&&jm.index+jm[0].length>prev.length+1;
+    const hit=m||(split?jm:null);
+    if(hit){
+      const src=m?txt:joined,cmd=src.slice(hit.index+hit[0].length).replace(/^[\s,.:;!?-]+/,'').trim();
       if(!wakeArmed){wakeArmed=true;beep();wakeBadge(true,true);toast('Yes?');clearTimeout(wakeTimer);wakeTimer=setTimeout(()=>{wakeArmed=false;wakeBadge(true,false)},6500)}
       if(cmd.length>2&&final){wakeArmed=false;clearTimeout(wakeTimer);runSpoken(cmd)}
     }else if(wakeArmed&&final){
@@ -829,17 +856,29 @@ function startWake(){
     }
   };
   wakeRec.onerror=e=>{
-    if(e.error==='not-allowed'||e.error==='service-not-allowed'){S.wake=false;save();stopWake();const sw=$('#swake');if(sw)sw.checked=false;toast('Microphone permission is needed for Hey Lustre')}
+    const err=e.error;
+    if(err==='not-allowed'||err==='service-not-allowed'){wakeOff('Allow microphone access for Lustre, then turn Hey Lustre back on.');return}
+    if(err==='audio-capture'){wakeOff('No microphone was found on this device.');return}
+    if(err==='language-not-supported'){wakeOff('Voice recognition is not available for this language.');return}
+    if(err==='network'){wakeTries++;if(!wakeWarned){wakeWarned=true;toast('Speech recognition needs a connection. Use the mic button if it stays offline.')}}
   };
-  wakeRec.onend=()=>{wakeRec=null;wakeBadge(false,false);if(S.wake&&!busy&&!rec&&!voiceRun)setTimeout(()=>startWake(),500)};
-  try{wakeRec.start();wakeBadge(true)}catch{wakeRec=null}
+  wakeRec.onend=()=>{
+    wakeRec=null;wakeBadge(false,false);
+    if(S.wake&&!busy&&!rec&&!voiceRun&&document.visibilityState!=='hidden')queueWake(Math.min(450+wakeTries*650,3500))
+  };
+  try{wakeRec.start();wakeBadge(true)}catch(e){
+    wakeRec=null;wakeBadge(false,false);wakeTries++;
+    if(wakeTries<3)queueWake(900*wakeTries);
+    else wakeOff('Hands-free listening stopped. Tap the mic to talk.');
+  }
 }
 function syncWake(quiet){
   if(!S.wake){stopWake();return}
-  if(!wakeSupported()){S.wake=false;save();if(!quiet)toast('Wake word needs speech recognition support');return}
-  startWake();if(!quiet)toast('Listening for “Hey Lustre”');
+  const why=wakeWhy();if(why){wakeOff(quiet?'':why);return}
+  startWake();if(!quiet&&wakeRec)toast('Listening for “Hey Lustre”');
 }
-function setWake(on,quiet){S.wake=!!on;save();syncWake(quiet);const sw=$('#swake');if(sw)sw.checked=S.wake}
+function setWake(on,quiet){S.wake=!!on;save();syncWake(quiet);const sw=$('#swake');if(sw)sw.checked=S.wake;return S.wake}
+$('#wake').onclick=()=>{if(!S.wake)return;stopWake();wakeTries=0;startWake()};
 const vnorm=t=>String(t||'').toLowerCase().replace(/['’]/g,'').replace(/[^a-z0-9.:\s-]/g,' ').replace(/-/g,' ').replace(/\s+/g,' ').trim();
 const VNUMWORDS={zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90,hundred:100};
 const vnums=t=>String(t||'').replace(/\b(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred)(?:[\s-]+(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred))*\b/g,m=>{let total=0,cur=0;m.split(/[\s-]+/).forEach(w=>{const v=VNUMWORDS[w];if(v===100){total+=(cur||1)*100;cur=0}else cur+=v});return String(total+cur)});
@@ -890,7 +929,10 @@ async function runVoiceCommand(text){
     if(on){unlock();speak('Audio on',true)}else stopSpeech();toast(on?'Audio on':'Audio off');return true
   }
   if(/\b(wake word|hey lustre)\b/.test(t)&&/\b(on|off|enable|disable)\b/.test(t)){
-    const on=/\b(on|enable)\b/.test(t)&&!/\boff\b/.test(t);setWake(on,true);vrespond(on?'Listening for Hey Lustre':'Wake word off');return true
+    const on=/\b(on|enable)\b/.test(t)&&!/\boff\b/.test(t);
+    if(on){const ok=setWake(true,true);vrespond(ok?'Listening for Hey Lustre':(wakeWhy()||'Wake word could not start. Tap the mic to talk.'))}
+    else{setWake(false,true);vrespond('Wake word off')}
+    return true
   }
   if(/\blarge timers?\b/.test(t)&&/\b(on|off|enable|disable)\b/.test(t)){
     S.bigTimers=/\b(on|enable)\b/.test(t)&&!/\boff\b/.test(t);save();renderT();vrespond(S.bigTimers?'Large timers on':'Large timers off');return true
@@ -1085,7 +1127,7 @@ async function runSpoken(text){
   voiceRun=false;
   if(!handled){await send(text);return}
   input.value='';size();
-  if(S.wake)setTimeout(()=>startWake(),700);
+  if(S.wake)queueWake(700);
 }
 const Q=[['flask','Mix ratios'],['check','Checklist'],['timer','Timers'],['cloud','Weather'],['camera','Snap photo'],['bulb','Upsells'],['msg','Text client']];
 $('#quick').innerHTML=Q.map(([i,l],k)=>`<button class="chipb" data-q="${k}">${ic(i)}${l}</button>`).join('');
@@ -1098,8 +1140,13 @@ $$('#quick button').forEach(b=>b.onclick=async()=>{const q=+b.dataset.q;
 const net=()=>$('#off').hidden=navigator.onLine;addEventListener('online',net);addEventListener('offline',net);net();
 if(window.visualViewport){const vv=()=>{document.documentElement.style.setProperty('--h',visualViewport.height+'px');scrollTo(0,0)};visualViewport.addEventListener('resize',vv);vv()}
 audUI();sendUI();renderAll();renderCalc();renderKit();renderT();renderDepth();renderWx();renderPhotos();loadPaint();
-if(S.wake&&!wakeSupported()){S.wake=false;save()}
+if(S.wake&&wakeWhy()){S.wake=false;save()}
 addEventListener('pointerdown',()=>{if(S.wake&&!wakeRec)startWake()},{once:true});
+addEventListener('pagehide',()=>stopWake());
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){stopWake();return}
+  if(S.wake&&!wakeRec&&!busy&&!rec&&!voiceRun)queueWake(350);
+});
 if(firstRun)setTimeout(()=>openOnboarding(true),400);
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('/sw.js').catch(()=>{});
 Promise.all([document.fonts?.ready?.catch(()=>0),new Promise(r=>setTimeout(r,1600))]).then(()=>{$('#splash').classList.add('out');setTimeout(()=>$('#splash').remove(),800)});

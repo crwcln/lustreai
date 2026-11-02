@@ -1,3 +1,4 @@
+/*
 # Lustre
 
 Mobile detailing assistant powered by Gemini. Static PWA (`index.html`, `sw.js`, `manifest.webmanifest`) plus edge functions that keep your API key server-side: `api/chat` (streaming answers) and `api/tts` (Gemini voice).
@@ -30,7 +31,9 @@ Each of the nine standard panels stores any number of readings for the current j
 - The service worker and `/api/push/subscribe` hook are in place, but `VAPID_PUBLIC_KEY` in `index.html` is empty. Add a VAPID public key and a sender endpoint to enable server push.
 
 ## Hey Lustre
-The wake word uses the browser SpeechRecognition API while Lustre is open. Say “Hey Lustre” and then a command. It pauses while the mic or a chat request is active. Browser speech recognition may need a connection, and it stops when the app is closed.
+The wake word uses the browser SpeechRecognition API while Lustre is open. Say “Hey Lustre” and then a command. It pauses while the mic or a chat request is active. Browser speech recognition may need a connection, and it stops when the app is closed. Microphone access requires HTTPS and permission. If speech recognition is unsupported, use keyboard dictation or type instead.
+
+On Android Chrome, hands-free listening can continue while Lustre stays open. iOS Safari and installed Home Screen apps may stop listening after a phrase or when the app goes to the background. Tap the wake badge or the mic button to restart. If the wake badge disappears, turn “Hey Lustre” back on in Settings.
 
 Commands run locally first and fall back to the Gemini chat when Lustre does not recognize them. Examples:
 - Job: “set vehicle to 2022 BMW M3”, “set client to Sam”, “set ETA to 3 PM”, “add note that trim needs dressing”, “add paint correction”, “remove trim restoration”, “next step”, “back a step”, “check foam dwell”, “what’s next”.
@@ -48,3 +51,4 @@ Everything except chat, Gemini voice, live weather and wake-word speech recognit
 
 ## Media in chat
 Photos are resized in the browser. Videos are reduced to 8 frames to stay under edge payload limits.
+*/
