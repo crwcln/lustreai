@@ -36,9 +36,9 @@ Each of the nine standard panels stores any number of readings for the current j
 ## Hey Lustre
 The wake word uses the browser SpeechRecognition API while Lustre is open. Say “Hey Lustre” and then a command. It pauses while the mic or a chat request is active. Browser speech recognition may need a connection, and it stops when the app is closed. Microphone access requires HTTPS and permission. Opening the site on a phone over a plain `http://192.168…` LAN address will block the mic; use the hosted HTTPS URL or install the hosted PWA. If speech recognition is unsupported, use keyboard dictation or type instead.
 
-The first wake start asks for microphone permission. Use Settings > Check mic to confirm the phone can open the microphone before relying on hands-free listening.
+The first wake start asks for microphone permission. Use Settings > Check mic to confirm the phone can open the microphone and can run browser speech recognition before relying on hands-free listening. The wake badge shows Listening, Reconnecting, or Offline. Check mic now reports unsupported speech recognition and missing connections instead of only testing the microphone.
 
-On Android Chrome, hands-free listening can continue while Lustre stays open. iOS Safari and installed Home Screen apps may stop listening after a phrase or when the app goes to the background. Tap the wake badge or the mic button to restart. If the wake badge disappears, turn “Hey Lustre” back on in Settings.
+On Android Chrome, hands-free listening can continue while Lustre stays open. iOS Safari and installed Home Screen apps may stop listening after a phrase or when the app goes to the background. Tap the wake badge or the mic button to restart. If the wake badge disappears, turn “Hey Lustre” back on in Settings. Speech recognition may add punctuation or split “Hey” and “Lustre” into separate results; Lustre accepts both.
 
 Commands run locally first and fall back to the Gemini chat when Lustre does not recognize them. Examples:
 - Job: “set vehicle to 2022 BMW M3”, “set client to Sam”, “set ETA to 3 PM”, “add note that trim needs dressing”, “add paint correction”, “remove trim restoration”, “next step”, “back a step”, “check foam dwell”, “what’s next”.
