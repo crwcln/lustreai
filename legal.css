@@ -1,7 +1,7 @@
 :root{--bg:#080a09;--card:rgba(18,24,20,.86);--line:rgba(255,255,255,.1);--text:#f4f7f5;--mute:#a7b4ad;--g:#3dff85;--warn:#ffc93d;--serif:'Fraunces',Georgia,serif;--sans:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif}
 *{box-sizing:border-box}
 html{background:var(--bg)}
-body{margin:0;color:var(--text);font:16px/1.72 var(--sans);background:radial-gradient(900px 620px at 50% -14%,rgba(61,255,133,.14),transparent 64%),radial-gradient(780px 620px at 108% 102%,rgba(20,184,90,.09),transparent 68%),linear-gradient(180deg,#0b0f0c 0%,#080a09 46%,#060807 100%);background-attachment:fixed;min-height:100vh}
+body{margin:0;color:var(--text);font:16px/1.72 var(--sans);background-color:var(--bg);background-image:radial-gradient(900px 620px at 50% -14%,rgba(61,255,133,.14),transparent 64%),radial-gradient(780px 620px at 108% 102%,rgba(20,184,90,.09),transparent 68%),linear-gradient(180deg,#0b0f0c 0%,#080a09 46%,#060807 100%);background-attachment:scroll;min-height:100vh;min-height:100dvh}
 a{color:var(--g);text-underline-offset:3px}
 main{width:min(100% - 40px,760px);margin:0 auto;padding:28px 0 64px}
 .top{display:flex;align-items:center;gap:12px;margin-bottom:36px}
