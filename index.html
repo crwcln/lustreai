@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Lustre">
 <title>Lustre — Detailing assistant</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
-<meta name="google-client-id" content="">
+<meta name="google-client-id" content="329202705786-pm5hn7gblp813asv6tbt2llur99oockv.apps.googleusercontent.com">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -44,7 +44,7 @@ button,input,select,textarea{font:inherit;color:inherit;touch-action:manipulatio
 .seg{display:flex;gap:5px;margin:6px 20px 14px;padding:5px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
 .seg button{flex:1;min-height:44px;border:0;border-radius:11px;background:none;color:var(--mute);font-weight:600;font-size:15px;transition:background .34s var(--ease),color .34s var(--ease),box-shadow .34s var(--ease)}.seg button.on{background:var(--card2);color:var(--g);box-shadow:inset 0 0 0 1px rgba(61,255,133,.32)}
 .card{background:radial-gradient(420px 220px at 100% 0%,rgba(61,255,133,.065),transparent 68%),var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;margin-bottom:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 18px 38px -22px #000;position:relative;overflow:hidden}
-h3{font:600 20px var(--serif);margin-bottom:12px}.hint{color:var(--mute);font-size:14.5px;line-height:1.55;margin-top:10px}.mut{color:var(--mute);font-size:14.5px;line-height:1.55}
+h3{font:600 20px var(--serif);margin-bottom:12px}.hint{color:var(--mute);font-size:14.5px;line-height:1.55;margin-top:10px}.mut{color:var(--mute);font-size:14.5px;line-height:1.55}.hint a,.mut a{color:var(--g);text-decoration:underline;text-underline-offset:3px}
 .btn{min-height:52px;padding:0 20px;border-radius:15px;border:1px solid var(--line);background:var(--card2);color:var(--text);font-weight:600;font-size:15px;transition:transform .24s var(--spring),filter .28s,background .28s,border-color .28s,box-shadow .28s;display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none}
 .btn.pri{background:linear-gradient(180deg,#5bff9b,#27d96d);color:#04120a;border-color:transparent;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 8px 22px -8px rgba(61,255,133,.55)}.btn.sm{min-height:44px;padding:0 15px;font-size:14px}.btn.wide{width:100%}.btn:disabled{opacity:.45}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>.f{flex:1;min-width:110px}
@@ -303,6 +303,8 @@ textarea.f{padding:14px 15px;resize:vertical;min-height:96px;line-height:1.55}se
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const GOOGLE_CLIENT_ID=(document.querySelector('meta[name="google-client-id"]')?.content||'').trim();
+const GOOGLE_SCOPE='openid email profile https://www.googleapis.com/auth/drive.appdata';
 const SITE_VERSION='1.4.0';
 const SITE_UPDATES=[
   {v:'1.4.0',date:'Nov 2, 2026',title:'Your job, remembered',items:['Optional Google sign-in saves job data, kit, paint readings and photos to your Google Drive app data folder.','Restore the same job on another device after signing in.','Automatic backup after changes while signed in.','New privacy policy and terms of service, linked in Settings.']},
@@ -524,7 +526,9 @@ function settings(){const vs=voices(),GV=['Kore','Charon','Puck','Aoede','Fenrir
   $('#swe').onchange=e=>{S.wakeEngine=e.target.value;save();const was=S.wake;stopWake();if(was)syncWake();const h=$('#whint');if(h)h.textContent=wakeWhy()};
   $('#smic').onclick=checkMic;
   $('#snew').onclick=showUpdates;
-  $('#sx').onclick=closeSheet}
+  $('#sx').onclick=closeSheet;
+  bindAccount();
+  if(GOOGLE_CLIENT_ID)loadGis().catch(()=>{})}
 $('#set').onclick=settings;
 
 /* ---------- navigation ---------- */
@@ -583,7 +587,7 @@ async function cancelOnboard(){
   if(!OB)return;
   if(OB.i>0&&!confirm('Cancel this setup? Photos added during onboarding will be removed.'))return;
   for(const p of (OB.d.photos||[])){try{await dbx('readwrite',s=>s.delete(p.id))}catch{}}
-  closeOnboard();renderAll();renderPhotos();renderDepth();
+  cloud.photos?.();closeOnboard();renderAll();renderPhotos();renderDepth();
   toast('New job cancelled');
 }
 function obCollect(){
@@ -600,7 +604,7 @@ function renderObPhotos(){
   g.innerHTML=(OB.d.photos||[]).map(p=>`<figure><img src="${p.data}" alt="Inspection photo"><button data-obx="${p.id}" aria-label="Remove photo">×</button></figure>`).join('');
   $$('#obPhotos [data-obx]').forEach(b=>b.onclick=async()=>{
     try{await dbx('readwrite',s=>s.delete(+b.dataset.obx))}catch{}
-    OB.d.photos=OB.d.photos.filter(p=>p.id!=+b.dataset.obx);renderObPhotos();
+    OB.d.photos=OB.d.photos.filter(p=>p.id!=+b.dataset.obx);renderObPhotos();cloud.photos?.();
   });
 }
 async function addObPhotos(files){
@@ -614,7 +618,7 @@ async function addObPhotos(files){
       OB.d.photos.push({id,data});
     }catch(e){toast(e.message)}
   }
-  renderObPhotos();toast('Photos added');
+  renderObPhotos();cloud.photos?.();toast('Photos added');
 }
 $('#onbfile').onchange=e=>{addObPhotos([...e.target.files]);e.target.value=''};
 $('#onbcam').onchange=e=>{addObPhotos([...e.target.files]);e.target.value=''};
@@ -628,7 +632,8 @@ function renderOB(){
   let h='';
   if(i===0){
     h=`<div class="lg">${LOGO}</div><h2>New job, walked once</h2><p class="lead">Set up the vehicle like a customer hand-off. Add the basics, note condition and issues, then snap optional photos. Skip anything and edit later.</p>
-    <div class="row"><span class="chipb on">${ic('check')}About a minute</span><span class="chipb">${ic('camera')}Photos optional</span><span class="chipb">${ic('timer')}Timers ready</span></div>`;
+    <div class="row"><span class="chipb on">${ic('check')}About a minute</span><span class="chipb">${ic('camera')}Photos optional</span><span class="chipb">${ic('timer')}Timers ready</span></div>
+    <p class="hint">By continuing, you agree to the <a href="/terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>`;
   }else if(i===1){
     h=`<h2>Which car is it?</h2><p class="lead">Year, make and model. Color helps you spot a repainted panel later.</p>
     <div class="row"><div class="f" style="padding:0;border:0;background:none"><label class="lab" style="margin-top:0" for="obYear">Year</label><input class="f" id="obYear" type="number" inputmode="numeric" min="1900" max="2100" value="${esc(D.year)}" placeholder="2024"></div><div class="f" style="padding:0;border:0;background:none"><label class="lab" style="margin-top:0" for="obMake">Make</label><input class="f" id="obMake" value="${esc(D.make)}" placeholder="Porsche"></div></div>
@@ -686,6 +691,7 @@ async function finishOnboarding(){
   j.condition=D.condition;j.issues=D.issues.slice();j.notes=D.notes;j.step=0;
   S.job=j;S.eta=D.eta;S.timers=[];S.depth={};prevPct=0;
   try{await dbx('readwrite',s=>{s.clear();staged.forEach(p=>s.put({id:p.id,tag:'before',panel:'',jobId:j.id,data:p.data}))})}catch{}
+  cloud.photos?.();
   try{await dbx('readwrite',s=>s.delete(oldId),'paint_depth_logs')}catch{}
   PD=pdEmpty(j.id);await savePaint();save();
   closeOnboard();renderAll();renderT();renderDepth();await renderPhotos();
@@ -767,7 +773,7 @@ const MIL=25.4,pdName=k=>PD_PANELS.find(x=>x[0]===k)?.[1]||k,pdEmpty=id=>({jobId
 const pdIn=v=>PD.unit==='mils'?v*MIL:v,pdU=()=>PD.unit==='mils'?'mils':'µm',pdFmt=v=>PD.unit==='mils'?(+v/MIL).toFixed(2).replace(/\.?0+$/,''):fmt(+v);
 function pdCalc(r){const v=r||[];if(!v.length)return{min:null,max:null,avg:null,status:''};const min=Math.min(...v),max=Math.max(...v),avg=v.reduce((a,b)=>a+b,0)/v.length;return{min,max,avg,status:min<85?'danger':min<=110?'caution':'safe'}}
 function pdSet(k,readings){const c=pdCalc(readings);PD.panels[k]={readings,min:c.min,max:c.max,avg:c.avg,status:c.status,updated:Date.now()};return PD.panels[k]}
-async function savePaint(){PD.updated=Date.now();try{await dbx('readwrite',s=>s.put(PD),'paint_depth_logs')}catch(e){console.warn('Paint log save failed',e)}}
+async function savePaint(){PD.updated=Date.now();try{await dbx('readwrite',s=>s.put(PD),'paint_depth_logs')}catch(e){console.warn('Paint log save failed',e)}cloud.state?.()}
 async function loadPaint(){
   try{const r=await dbx('readonly',s=>s.get(S.job.id),'paint_depth_logs');PD=r&&r.jobId===S.job.id?r:pdEmpty(S.job.id)}catch{PD=pdEmpty(S.job.id)}
   PD.panels=PD.panels||{};PD.unit=PD.unit||'um';
@@ -831,11 +837,45 @@ const dbp=new Promise((res,rej)=>{const r=indexedDB.open('lustre',2);
   r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
 const dbx=async(m,f,store='p')=>{const d=await dbp;return new Promise((res,rej)=>{const t=d.transaction(store,m),q=f(t.objectStore(store));t.oncomplete=()=>res(q?.result);t.onerror=()=>rej(t.error)})};
 let camTag='before';$$('[data-cam]').forEach(b=>b.onclick=()=>{camTag=b.dataset.cam;$('#cam').click()});
-$('#cam').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const data=await loadImage(f,1280);await dbx('readwrite',s=>s.put({id:Date.now(),tag:camTag,panel:$('#ppanel').value.trim(),data}));toast('Saved to job file');renderPhotos()}catch(x){toast(x.message)}};
+$('#cam').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const data=await loadImage(f,1280);await dbx('readwrite',s=>s.put({id:Date.now(),tag:camTag,panel:$('#ppanel').value.trim(),data}));toast('Saved to job file');renderPhotos();cloud.photos?.()}catch(x){toast(x.message)}};
 async function renderPhotos(){const all=((await dbx('readonly',s=>s.getAll()))||[]).sort((a,b)=>a.id-b.id);
   $('#pg').innerHTML=all.length?all.map(p=>`<figure><img src="${p.data}" alt="${p.tag} photo"><figcaption>${p.tag}${p.panel?' · '+esc(p.panel):''}</figcaption><button data-x="${p.id}" aria-label="Delete photo">×</button></figure>`).join(''):'<p class="hint" style="grid-column:1/-1">No photos yet. Snap before and after shots for the job file.</p>';
-  $$('#pg [data-x]').forEach(b=>b.onclick=async()=>{await dbx('readwrite',s=>s.delete(+b.dataset.x));renderPhotos()});return all}
+  $$('#pg [data-x]').forEach(b=>b.onclick=async()=>{await dbx('readwrite',s=>s.delete(+b.dataset.x));renderPhotos();cloud.photos?.()});return all}
 async function upsell(){go('ask');const ph=(await renderPhotos()).slice(-3).map(p=>({thumb:p.data,tag:p.tag,parts:[part(p.data)]}));send(`Suggest upsell and add-on opportunities for this job based on the vehicle, service type, current condition${ph.length?' and the attached inspection photos':''}. For each: what you see, the add-on, and one line I can say to the client.`,ph)}
+
+const GGL='<svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.71-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72A5.41 5.41 0 0 1 3.69 9c0-.6.1-1.18.28-1.72V4.95H.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.05l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>';
+const AUTH={user:null,token:'',exp:0,stateId:null,photoId:null,last:0,busy:false,restoring:false,warned:false};
+try{const a=JSON.parse(localStorage.getItem('lustre.google')||'null');if(a&&a.user&&a.user.email){AUTH.user=a.user;AUTH.stateId=a.stateId||null;AUTH.photoId=a.photoId||null;AUTH.last=+a.last||0}}catch{}
+const saveAuth=()=>{try{localStorage.setItem('lustre.google',JSON.stringify({user:AUTH.user,stateId:AUTH.stateId,photoId:AUTH.photoId,last:AUTH.last}))}catch{}};
+const authTime=t=>t?new Date(t).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
+let gisP=null;
+function loadGis(){if(window.google?.accounts?.oauth2)return Promise.resolve();if(gisP)return gisP;gisP=new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.defer=true;s.onload=()=>res();s.onerror=()=>{gisP=null;rej(new Error('Could not load Google sign-in'))};document.head.appendChild(s)});return gisP}
+function getToken(prompt=''){return new Promise((res,rej)=>{let done=false;const ok=v=>{if(done)return;done=true;res(v)},bad=e=>{if(done)return;done=true;rej(e)};try{const c=google.accounts.oauth2.initTokenClient({client_id:GOOGLE_CLIENT_ID,scope:GOOGLE_SCOPE,callback:r=>r.error?bad(new Error(r.error_description||r.error)):ok(r),error_callback:e=>bad(new Error(e?.message||'Google sign-in was cancelled'))});c.requestAccessToken({prompt})}catch(e){bad(e)}})}
+async function driveFetch(url,opts={}){if(!AUTH.token)throw new Error('Google session expired. Sign in again.');const h={...(opts.headers||{}),Authorization:'Bearer '+AUTH.token};const r=await fetch(url,{...opts,headers:h});if(r.status===401){AUTH.token='';AUTH.exp=0;throw new Error('Google session expired. Sign in again.')}return r}
+async function driveFind(name){const q=encodeURIComponent(`name='${name}' and trashed=false`);const r=await driveFetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${q}&fields=files(id,name,modifiedTime,size)&orderBy=modifiedTime%20desc`);if(!r.ok)throw new Error('Could not check Google Drive');const j=await r.json();return j.files?.[0]||null}
+async function driveRead(id){if(!id)return null;const r=await driveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?alt=media`);if(r.status===404)return null;if(!r.ok)throw new Error('Could not read the Google Drive backup');try{return await r.json()}catch{return null}}
+async function drivePut(name,data,id,force){const content=JSON.stringify(data),size=new Blob([content]).size;if(force||size>4500000)return drivePutLarge(name,content,id,size);const boundary='lustre'+Date.now().toString(36)+Math.random().toString(36).slice(2);const meta={name,mimeType:'application/json'};if(!id)meta.parents=['appDataFolder'];const body=`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(meta)}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${content}\r\n--${boundary}--`;const base='https://www.googleapis.com/upload/drive/v3/files';const r=await driveFetch(id?`${base}/${encodeURIComponent(id)}?uploadType=multipart`:`${base}?uploadType=multipart`,{method:id?'PATCH':'POST',headers:{'Content-Type':`multipart/related; boundary=${boundary}`},body});if(r.status===404&&id)return drivePut(name,data,null,force);if(!r.ok)throw new Error('Could not save to Google Drive');const j=await r.json();return j.id||id}
+async function drivePutLarge(name,content,id,size){size=size||new Blob([content]).size;const meta={name,mimeType:'application/json'};if(!id)meta.parents=['appDataFolder'];const base='https://www.googleapis.com/upload/drive/v3/files';const init=await driveFetch(id?`${base}/${encodeURIComponent(id)}?uploadType=resumable`:`${base}?uploadType=resumable`,{method:id?'PATCH':'POST',headers:{'Content-Type':'application/json; charset=UTF-8','X-Upload-Content-Type':'application/json','X-Upload-Content-Length':String(size)},body:JSON.stringify(meta)});if(init.status===404&&id)return drivePutLarge(name,content,null);if(!init.ok)throw new Error('Could not start the Google Drive upload');const loc=init.headers?.get?.('Location')||init.headers?.get?.('location');if(!loc)throw new Error('Google Drive did not return an upload session');const r=await fetch(loc,{method:'PUT',headers:{'Content-Type':'application/json','X-Upload-Content-Type':'application/json'},body:content});if(!r.ok)throw new Error('Could not finish the Google Drive upload');const j=await r.json();return j.id||id}
+async function connectGoogle(){if(!GOOGLE_CLIENT_ID)throw new Error('Google sign-in is not set up yet');await loadGis();const t=await getToken(AUTH.user?'':'consent');AUTH.token=t.access_token;AUTH.exp=Date.now()+(+t.expires_in||3600)*1000;AUTH.warned=false;if(!AUTH.user){const r=await driveFetch('https://www.googleapis.com/oauth2/v3/userinfo');if(!r.ok)throw new Error('Could not read your Google profile');const j=await r.json();AUTH.user={name:j.name||j.email||'Google user',email:j.email||'',sub:j.sub||''};saveAuth()}}
+async function ensureDrive(interactive=true){if(!AUTH.user)throw new Error('Sign in with Google first');if(!AUTH.token||Date.now()>AUTH.exp-60000){if(!interactive)throw new Error('Google session expired. Sign in again.');await connectGoogle()}if(AUTH.stateId===null){const f=await driveFind('lustre-job.json');AUTH.stateId=f?.id||'';saveAuth()}if(AUTH.photoId===null){const f=await driveFind('lustre-photos.json');AUTH.photoId=f?.id||'';saveAuth()}}
+const statePayload=()=>({app:'lustre',version:1,updatedAt:new Date().toISOString(),state:S,paint:PD});
+const photosPayload=async()=>({app:'lustre',version:1,updatedAt:new Date().toISOString(),photos:(await dbx('readonly',s=>s.getAll()))||[]});
+async function uploadState(interactive=true){await ensureDrive(interactive);AUTH.stateId=await drivePut('lustre-job.json',statePayload(),AUTH.stateId);AUTH.last=Date.now();saveAuth()}
+async function uploadPhotos(interactive=true){await ensureDrive(interactive);AUTH.photoId=await drivePut('lustre-photos.json',await photosPayload(),AUTH.photoId);AUTH.last=Date.now();saveAuth()}
+function cloudError(e,silent){const m=e?.message||'Google Drive sync failed';if(/expired|sign in/i.test(m)){AUTH.token='';AUTH.exp=0;renderAccount();if(!AUTH.warned){AUTH.warned=true;toast('Google session expired. Reconnect in Settings to keep syncing.')}}if(!silent&&!/expired|sign in/i.test(m))toast(m)}
+async function syncNow(silent=false){if(AUTH.busy)return;AUTH.busy=true;try{await uploadState(true);await uploadPhotos(true);renderAccount();if(!silent)toast('Saved to Google Drive')}catch(e){cloudError(e,silent)}finally{AUTH.busy=false}}
+const pendingCloud={state:false,photos:false};let cloudT=null;
+function queueCloud(kind){if(!AUTH.user||!AUTH.token||AUTH.restoring)return;pendingCloud[kind]=true;clearTimeout(cloudT);cloudT=setTimeout(flushCloud,1800)}
+async function flushCloud(){if(!AUTH.user||!AUTH.token||AUTH.restoring)return;if(AUTH.busy){cloudT=setTimeout(flushCloud,1200);return}const k={...pendingCloud};pendingCloud.state=false;pendingCloud.photos=false;if(!k.state&&!k.photos)return;AUTH.busy=true;try{if(k.state)await uploadState(false);if(k.photos)await uploadPhotos(false);renderAccount()}catch(e){cloudError(e,true)}finally{AUTH.busy=false}}
+cloud.state=()=>queueCloud('state');cloud.photos=()=>queueCloud('photos');
+async function restoreBackup(remote,photos){if(!remote||remote.app!=='lustre'||!remote.state)throw new Error('That backup is not readable');AUTH.restoring=true;try{const b=remote.state,next={...S,...b};next.job={...S.job,...(b.job||{})};next.kit={...S.kit,...(b.kit||{})};['chem','tools','equip'].forEach(k=>{if(!Array.isArray(next.kit[k]))next.kit[k]=[]});next.job.issues=Array.isArray(next.job.issues)?next.job.issues:[];if(!MODES[next.job.mode])next.job.mode='full';if(!Array.isArray(next.job.modes)||!next.job.modes.length)next.job.modes=[next.job.mode];next.job.modes=[...new Set(next.job.modes.filter(k=>MODES[k]))];if(!next.job.modes.length)next.job.modes=[next.job.mode];next.job.mode=next.job.modes[0];S=next;if(!S.job.id)S.job.id=uid();localStorage.setItem('lustre.s',JSON.stringify(S));PD=remote.paint&&typeof remote.paint==='object'?remote.paint:pdEmpty(S.job.id);PD.jobId=S.job.id;PD.panels=PD.panels||{};PD.unit=PD.unit||'um';PD.ver=2;await dbx('readwrite',s=>s.put(PD),'paint_depth_logs');const list=photos&&Array.isArray(photos.photos)?photos.photos:[];await dbx('readwrite',s=>{s.clear();list.forEach(p=>s.put(p))});renderAll();renderCalc();renderKit();renderT();renderDepth();renderPhotos();audUI();renderWx();AUTH.last=Date.now();saveAuth()}finally{AUTH.restoring=false}}
+async function signIn(){try{await connectGoogle();await ensureDrive(true);const remote=await driveRead(AUTH.stateId),photos=await driveRead(AUTH.photoId);renderAccount();if(remote&&remote.updatedAt){const when=authTime(Date.parse(remote.updatedAt))||remote.updatedAt;if(confirm(`Google Drive backup from ${when} found. Restore it to this device? Choose Cancel to keep this device and replace that backup.`)){await restoreBackup(remote,photos);renderAccount();toast('Restored from Google Drive')}else{await syncNow(true);toast('This device is backed up to Google Drive')}}else{await syncNow(true);toast('Signed in to Google Drive')}}catch(e){toast(e.message||'Google sign-in failed')}}
+async function restoreNow(){try{await ensureDrive(true);const remote=await driveRead(AUTH.stateId),photos=await driveRead(AUTH.photoId);if(!remote)return toast('No Google Drive backup yet');if(!confirm('Restore from Google Drive? This replaces the job on this device.'))return;await restoreBackup(remote,photos);renderAccount();toast('Restored from Google Drive')}catch(e){toast(e.message||'Could not restore')}}
+async function deleteCloud(){if(!confirm('Delete the Lustre backup from Google Drive? Data on this device stays.'))return;try{await ensureDrive(true);for(const id of [AUTH.stateId,AUTH.photoId])if(id){const r=await driveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}`,{method:'DELETE'});if(!r.ok&&r.status!==404)throw new Error('Could not delete the Drive backup')}AUTH.stateId='';AUTH.photoId='';AUTH.last=0;saveAuth();renderAccount();toast('Google Drive backup deleted')}catch(e){toast(e.message||'Could not delete the backup')}}
+async function signOut(){if(AUTH.token&&window.google?.accounts?.oauth2?.revoke){try{google.accounts.oauth2.revoke(AUTH.token)}catch{}}AUTH.user=null;AUTH.token='';AUTH.exp=0;AUTH.stateId=null;AUTH.photoId=null;AUTH.last=0;AUTH.warned=false;try{localStorage.removeItem('lustre.google')}catch{}renderAccount();toast('Signed out. Local data stays on this device')}
+function accountHTML(){const u=AUTH.user;if(u){const initial=(u.name||u.email||'G').trim().charAt(0).toUpperCase();return `<div class="acct"><div class="accttop"><div class="avatar">${esc(initial)}</div><div><b>${esc(u.name||'Google account')}</b><span>${esc(u.email||'')}</span></div></div><p class="hint">Job data, kit, paint readings and photos save to your Google Drive app data folder. Lustre cannot see the rest of your Drive.</p><div class="row"><button class="btn sm pri" id="async">${AUTH.token?'Sync now':'Reconnect & sync'}</button><button class="btn sm" id="arestore">Restore</button><button class="btn sm" id="adel">Delete cloud backup</button><button class="btn sm" id="asignout">Sign out</button></div><p class="hint" id="astat">${AUTH.last?'Last backup '+esc(authTime(AUTH.last)):'Not backed up yet'}</p></div>`}const setup=!GOOGLE_CLIENT_ID?'<p class="hint">Google sign-in needs a Web Client ID in the page meta tag before it can be enabled.</p>':'';return `<div class="acct"><b>Google account</b><p class="hint">Sign in to save this job, kit, paint readings and photos to your Google Drive app data folder, then restore them on another device.</p>${setup}<button class="btn wide ${GOOGLE_CLIENT_ID?'gbtn':''}" id="asignin" ${GOOGLE_CLIENT_ID?'':'disabled'}>${GGL}Sign in with Google</button><p class="hint">Lustre only uses the hidden app data folder. It cannot see the rest of your Drive. <a href="/privacy.html" target="_blank" rel="noopener">Privacy</a> | <a href="/terms.html" target="_blank" rel="noopener">Terms</a></p></div>`}
+function renderAccount(){const w=$('#acctwrap');if(!w)return;w.innerHTML=accountHTML();bindAccount()}
+function bindAccount(){const a=$('#asignin'),s=$('#async'),r=$('#arestore'),d=$('#adel'),o=$('#asignout');if(a)a.onclick=signIn;if(s)s.onclick=()=>syncNow(false);if(r)r.onclick=restoreNow;if(d)d.onclick=deleteCloud;if(o)o.onclick=signOut}
 
 /* ---------- client texts ---------- */
 function renderTpl(){const n=S.job.client||'there',v=S.job.vehicle||'car',e=S.eta,j=S.job,m=M(),total=N(),prev=m.s[Math.max(0,Math.min(j.step,total)-1)][0].toLowerCase(),nxt=j.step<total?m.s[j.step][0].toLowerCase():'final checks',svc=m.n.toLowerCase();

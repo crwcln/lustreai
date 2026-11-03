@@ -7,7 +7,8 @@ Mobile detailing assistant powered by Gemini. Static PWA (`index.html`, `sw.js`,
 1. Push this folder to GitHub.
 2. In EdgeOne Pages, create a project from the repo (no build command, output directory = repo root).
 3. Add env vars: `GEMINI_API_KEY` (required), `GEMINI_MODEL` (optional, default `gemini-2.5-flash`), `GEMINI_TTS_MODEL` (optional, default `gemini-2.5-flash-preview-tts`), `GEMINI_STT_MODEL` (optional, used by Cloud listening, defaults to `GEMINI_MODEL`).
-4. Redeploy. Open the site on your phone over HTTPS and use "Add to Home Screen" for the offline app.
+4. Optional Google sign-in: create a Google OAuth **Web application** client ID, enable the Google Drive API, add your production origin (and any local test origin) as an authorized JavaScript origin, then put the client ID in the `google-client-id` meta tag near the top of `index.html`. No client secret is needed for this browser token flow.
+5. Redeploy. Open the site on your phone over HTTPS and use "Add to Home Screen" for the offline app.
 
 ## What's inside
 - **New job wizard:** full-screen setup for vehicle, one or more services, condition, issues, optional photos, client and ETA. Runs on first launch and from Job > New job. Cancel leaves the current job untouched.
@@ -16,10 +17,31 @@ Mobile detailing assistant powered by Gemini. Static PWA (`index.html`, `sw.js`,
 - **Tools:** Mix (dilution calculator, presets), Timers (standard or large digits), Depth (multi-spot paint depth grid).
 - **Kit:** chemicals with mix ratios, tools and equipment. Chemical entries can jump to the calculator.
 - **Log:** inspection photos, notes, client text templates.
+- **Account:** optional Google sign-in that backs up job data, kit, paint readings and photos to Google Drive app data, with restore, sync and delete controls in Settings.
+- **Legal:** Privacy Policy (`privacy.html`) and Terms of Service (`terms.html`), linked from Settings and onboarding.
 - **Audio:** Gemini voices with an automatic fallback to the best voice on the device. Pick them in Settings.
 
 ## Site version and update wall
 The current version is shown in Settings and beside the Lustre title when space allows. To ship an update, change `SITE_VERSION` near the top of the script in `index.html`, then add or edit the matching entry in `SITE_UPDATES` (newest first). The update wall opens automatically for returning users when the version changes, and is always available from Settings > What’s new. Bump the cache name in `sw.js` whenever you change the app shell.
+
+## Google sign-in and Drive backup
+The app works fully without an account. With a Google OAuth Web Client ID configured, Settings shows **Sign in with Google**. After consent, Lustre writes two JSON files to the hidden `appDataFolder` in the user's own Google Drive:
+
+- `lustre-job.json` - current job, settings, kit, timers, notes and paint-depth readings.
+- `lustre-photos.json` - job inspection photos.
+
+Signing in on another device offers to restore that backup. While signed in, changes sync automatically after a short debounce. The access token stays in memory; the app stores only the Google profile and Drive file IDs in local storage. **Delete cloud backup** removes both Drive files without touching local data. Lustre cannot see the rest of the user's Drive because it only requests `https://www.googleapis.com/auth/drive.appdata`.
+
+The client ID is public and lives in:
+
+```html
+<meta name="google-client-id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
+```
+
+Configure the OAuth consent screen, add the production origin under **Authorized JavaScript origins**, and add test users while the app is in testing. No client secret is required. Google may require OAuth verification before external users can grant the `drive.appdata` scope, so plan for the consent-screen review before a public launch.
+
+## Privacy and terms
+`privacy.html` and `terms.html` are styled standalone pages linked from Settings, the Google account panel and first-run onboarding. They contain visible placeholders for the operator name, contact email and governing region. Replace those before publishing, and have the final text reviewed for your jurisdiction. The privacy policy describes local storage, Google Drive app data, Gemini/EdgeOne processing, Open-Meteo, notifications and the Google API Limited Use disclosure.
 
 ## Multiple services
 Select one or more services during setup or from the Job tab. Lustre merges shared stages (for example Wash or Correct) into one checklist and orders the remaining stages for the job. The package label, progress tracker, client texts and AI context all use the full service list.
@@ -50,7 +72,7 @@ Commands run locally first and fall back to the Gemini chat. Examples:
 `apple-touch-icon.png` (180 px), `icon-192.png`, `icon-512.png` and `icon-maskable-512.png` are generated from the Lustre mark. In Safari, tap Share > Add to Home Screen to use it as the app icon.
 
 ## Offline
-Everything except chat, Gemini voice, live weather and wake-word speech recognition works offline. Data lives on the device (localStorage and IndexedDB).
+Everything except chat, Gemini voice, live weather, Google sign-in/sync and wake-word speech recognition works offline. Data lives on the device (localStorage and IndexedDB). If Google sign-in is enabled, a copy can also live in the user's Google Drive app data folder.
 
 ## Media in chat
 Photos are resized in the browser. Videos are reduced to 8 frames to stay under edge payload limits.
